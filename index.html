@@ -234,7 +234,7 @@
                         </div>
                     </div>
 
-                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT (DITAMPILKAN DI BAWAHNYA) -->
+                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT (DITAMPILKAN DI BAWAHNYA DENGAN FOTO & TIMER LIVE) -->
                     <div id="tab-content-team" class="space-y-4 hidden">
                         <div class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
                             <div>
@@ -278,6 +278,7 @@
         let activeStartTime = null;
         let timerInterval = null;
         let globalTimerInterval = null;
+        let teamTimerInterval = null;
 
         // Cek sesi login saat halaman dimuat
         window.addEventListener('DOMContentLoaded', async () => {
@@ -363,7 +364,6 @@
             alert(`Fitur "${menuName}" sedang dipilih.`);
         }
 
-        // Handler untuk mengecek status perizinan saat menu layanan diklik
         function handleMenuClick(menuName, callback) {
             if (!("Notification" in window) || Notification.permission !== 'granted') {
                 alert("PERIZINAN LAYANAN HARUS DI AKTIFKAN");
@@ -372,7 +372,6 @@
             callback();
         }
 
-        // Meminta Izin Notifikasi Browser
         async function requestNotificationPermission() {
             if (!("Notification" in window)) return "Not Supported";
             let permission = Notification.permission;
@@ -425,6 +424,7 @@
 
         function closeIstirahatMenu() {
             if (timerInterval) clearInterval(timerInterval);
+            if (teamTimerInterval) clearInterval(teamTimerInterval);
             if (teamRealtimeChannel) {
                 supabaseClient.removeChannel(teamRealtimeChannel);
             }
@@ -444,14 +444,15 @@
             const contentTeam = document.getElementById('tab-content-team');
 
             if (tabName === 'pribadi') {
+                if (teamTimerInterval) clearInterval(teamTimerInterval);
                 btnPribadi.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm";
                 btnTeam.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800";
                 contentPribadi.classList.remove('hidden');
                 contentTeam.classList.add('hidden');
                 loadIstirahatHistory();
             } else if (tabName === 'team') {
-                btnTeam.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm";
                 btnPribadi.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800";
+                btnTeam.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm";
                 contentTeam.classList.remove('hidden');
                 contentPribadi.classList.add('hidden');
                 loadTeamIstirahatData();
@@ -459,7 +460,7 @@
             }
         }
 
-        // --- LOGIKA DATA TEAM ISTIRAHAT (MENGGUNAKAN SAFE SEPARATE FETCH) ---
+        // --- LOGIKA DATA TEAM ISTIRAHAT DENGAN FOTO & LIVE TIMER ---
         async function loadTeamIstirahatData() {
             const today = new Date().toISOString().split('T')[0];
             const container = document.getElementById('team-istirahat-list-container');
@@ -468,7 +469,7 @@
             container.innerHTML = `<p class="text-slate-400 text-center py-4">Memuat data tim...</p>`;
 
             try {
-                // 1. Ambil data istirahat yang sedang aktif hari ini
+                // 1. Ambil data istirahat yang aktif hari ini
                 const { data: istirahatData, error: errIstirahat } = await supabaseClient
                     .from('data_istirahat')
                     .select('*')
@@ -482,10 +483,11 @@
 
                 if (!istirahatData || istirahatData.length === 0) {
                     container.innerHTML = `<p class="text-slate-400 text-center py-4">Tidak ada karyawan yang sedang beristirahat saat ini.</p>`;
+                    if (teamTimerInterval) clearInterval(teamTimerInterval);
                     return;
                 }
 
-                // 2. Ambil data nama karyawan untuk dicocokkan
+                // 2. Ambil data nama karyawan
                 const { data: karData, error: errKar } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar');
@@ -502,35 +504,112 @@
                 let html = '';
                 istirahatData.forEach(item => {
                     const nama = karMap[item.nip] || `NIP: ${item.nip}`;
-                    const jamMulai = item.jam_mulai ? (item.jam_mulai.split(':').length === 3 ? item.jam_mulai.substring(0, 5) : item.jam_mulai) : '-';
+                    const jamMulai = item.jam_mulai ? (item.jam_mulai.split(':').length === 2 ? item.jam_mulai + ':00' : item.jam_mulai) : '00:00:00';
                     const initial = nama.charAt(0).toUpperCase();
 
                     html += `
-                        <div class="p-3 bg-rose-50/70 border border-rose-100 rounded-xl flex items-center justify-between transition hover:bg-rose-100/50">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-rose-600 text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0">
-                                    ${initial}
+                        <div class="p-3 bg-rose-50/70 border border-rose-100 rounded-xl flex items-center justify-between transition hover:bg-rose-100/50 gap-2">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <div class="w-10 h-10 relative rounded-xl overflow-hidden shadow-sm flex items-center justify-center bg-rose-600 text-white font-bold text-sm shrink-0">
+                                    <img id="team-photo-${item.nip}" src="" alt="Foto" class="w-full h-full object-cover hidden">
+                                    <span id="team-initials-${item.nip}" class="flex items-center justify-center w-full h-full">${initial}</span>
                                 </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 text-xs">${nama}</h4>
+                                <div class="overflow-hidden">
+                                    <h4 class="font-bold text-slate-800 text-xs truncate">${nama}</h4>
                                     <p class="text-[11px] text-slate-500 mt-0.5">
-                                        Mulai: <span class="font-medium text-slate-700">${jamMulai}</span> &bull; 
+                                        Mulai: <span class="font-medium text-slate-700">${jamMulai.substring(0, 5)}</span> &bull; 
                                         <span class="text-rose-600 font-bold uppercase">${item.keterangan}</span>
                                     </p>
                                 </div>
                             </div>
-                            <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full animate-pulse shrink-0">
-                                Istirahat
-                            </span>
+                            <div class="text-right shrink-0">
+                                <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full font-mono animate-pulse team-live-timer" data-starttime="${jamMulai}">
+                                    00:00:00
+                                </span>
+                            </div>
                         </div>
                     `;
                 });
 
                 container.innerHTML = html;
+
+                // 3. Muat foto untuk setiap anggota tim secara asinkronus
+                istirahatData.forEach(item => {
+                    loadTeamMemberPhoto(item.nip);
+                });
+
+                // 4. Mulai timer berjalan untuk team
+                startTeamLiveTimers();
+
             } catch (err) {
                 console.error("Gagal memuat team istirahat:", err.message);
                 container.innerHTML = `<p class="text-rose-500 text-center py-4">Gagal memuat team istirahat.</p>`;
             }
+        }
+
+        // Fungsi memuat foto rekan kerja dari storage Supabase
+        async function loadTeamMemberPhoto(nip) {
+            const photoImg = document.getElementById(`team-photo-${nip}`);
+            const userInitials = document.getElementById(`team-initials-${nip}`);
+            if (!photoImg || !userInitials) return;
+
+            const possiblePaths = [
+                nip.toString(),
+                `${nip}.jpg`,
+                `${nip}.jpeg`,
+                `${nip}.png`,
+                `${nip}.JPG`,
+                `${nip}.JPEG`,
+                `${nip}.PNG`
+            ];
+
+            for (const path of possiblePaths) {
+                try {
+                    const { data, error } = await supabaseClient.storage
+                        .from('FOTO SALES')
+                        .download(path);
+
+                    if (!error && data) {
+                        const objectUrl = URL.createObjectURL(data);
+                        photoImg.src = objectUrl;
+                        photoImg.classList.remove('hidden');
+                        userInitials.classList.add('hidden');
+                        break;
+                    }
+                } catch (e) {
+                    // Coba path ekstensi berikutnya
+                }
+            }
+        }
+
+        // Fungsi Timer Berjalan Jam, Menit, Detik untuk Team Istirahat
+        function startTeamLiveTimers() {
+            if (teamTimerInterval) clearInterval(teamTimerInterval);
+
+            teamTimerInterval = setInterval(() => {
+                const timerElements = document.querySelectorAll('.team-live-timer');
+                timerElements.forEach(el => {
+                    const startTimeStr = el.getAttribute('data-starttime');
+                    if (!startTimeStr) return;
+
+                    const [h, m, s = 0] = startTimeStr.split(':').map(Number);
+                    const startDate = new Date();
+                    startDate.setHours(h, m, s, 0);
+
+                    const now = new Date();
+                    let diffSec = Math.floor((now - startDate) / 1000);
+                    if (diffSec < 0) diffSec = 0;
+
+                    const hours = Math.floor(diffSec / 3600);
+                    const minutes = Math.floor((diffSec % 3600) / 60);
+                    const seconds = diffSec % 60;
+
+                    el.innerText = 
+                        String(hours).padStart(2, '0') + ':' + 
+                        String(minutes).padStart(2, '0') + ':' + 
+                        String(seconds).padStart(2, '0');
+                });
+            }, 1000);
         }
 
         function setupTeamIstirahatRealtime() {
@@ -573,7 +652,6 @@
                         activeIstirahatId = activeRecord.id;
                         activeStartTime = activeRecord.jam_mulai;
 
-                        // Ubah card utama menjadi merah menyala dengan animasi berdenyut (pulse)
                         card.className = "p-4 bg-gradient-to-br from-rose-600 to-red-700 text-white border border-rose-500 rounded-2xl text-left flex flex-col justify-between shadow-lg shadow-rose-300 transition-all duration-300 hover:scale-[1.02] active:scale-95 group animate-pulse";
                         iconContainer.className = "w-10 h-10 bg-white/20 text-white rounded-xl flex items-center justify-center mb-3 transition shadow-sm";
                         titleEl.className = "font-bold text-white text-sm tracking-wide";
@@ -585,7 +663,6 @@
                     }
                 }
 
-                // Kembalikan ke warna normal tema Indah/Indigo jika tidak ada istirahat aktif
                 activeIstirahatId = null;
                 activeStartTime = null;
                 if (globalTimerInterval) clearInterval(globalTimerInterval);
@@ -1014,6 +1091,7 @@
             }
             if (timerInterval) clearInterval(timerInterval);
             if (globalTimerInterval) clearInterval(globalTimerInterval);
+            if (teamTimerInterval) clearInterval(teamTimerInterval);
             
             localStorage.removeItem('emp_nip');
             localStorage.removeItem('emp_nama');

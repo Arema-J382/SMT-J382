@@ -180,10 +180,21 @@
                         </div>
                     </div>
 
+                    <!-- Informasi Total Istirahat Hari Ini -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-3.5 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-[11px] text-emerald-600 font-bold uppercase tracking-wider">Total Istirahat Hari Ini</p>
+                            <h3 id="total-istirahat-text" class="text-base font-bold text-slate-800">0 Menit</h3>
+                        </div>
+                        <div class="w-9 h-9 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+
                     <!-- Riwayat & Durasi Istirahat -->
                     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5">
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Riwayat & Durasi Istirahat Hari Ini</p>
-                        <div id="istirahat-history-container" class="space-y-2 max-h-48 overflow-y-auto text-xs pr-1">
+                        <div id="istirahat-history-container" class="space-y-2 max-h-40 overflow-y-auto text-xs pr-1">
                             <p class="text-slate-400 text-center py-3">Memuat riwayat...</p>
                         </div>
                     </div>
@@ -207,6 +218,8 @@
 
         let realtimeChannel = null;
         let activeIstirahatId = null;
+        let activeStartTime = null;
+        let timerInterval = null;
 
         // Cek sesi login saat halaman dimuat
         window.addEventListener('DOMContentLoaded', async () => {
@@ -355,19 +368,23 @@
         }
 
         function closeIstirahatMenu() {
+            if (timerInterval) clearInterval(timerInterval);
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('main-menu-section').classList.remove('hidden');
             document.getElementById('header-title').innerText = 'Menu Utama';
             document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan';
         }
 
-        // --- MANAJEMEN DATA ISTIRAHAT & DURASI ---
+        // --- MANAJEMEN DATA ISTIRAHAT, TIMER LIVE, & TOTAL ---
         async function loadIstirahatHistory() {
             const nip = localStorage.getItem('emp_nip');
             const today = new Date().toISOString().split('T')[0];
             const container = document.getElementById('istirahat-history-container');
             const btnWrapper = document.getElementById('istirahat-btn-wrapper');
             const keteranganSelect = document.getElementById('istirahat-keterangan');
+            const totalTextEl = document.getElementById('total-istirahat-text');
+
+            if (timerInterval) clearInterval(timerInterval);
 
             container.innerHTML = `<p class="text-slate-400 text-center py-3">Memuat riwayat...</p>`;
 
@@ -385,6 +402,7 @@
 
                 if (activeRecord) {
                     activeIstirahatId = activeRecord.id;
+                    activeStartTime = activeRecord.jam_mulai;
                     keteranganSelect.value = activeRecord.keterangan;
                     keteranganSelect.disabled = true;
                     btnWrapper.innerHTML = `
@@ -392,8 +410,12 @@
                             Selesai Istirahat (${activeRecord.keterangan})
                         </button>
                     `;
+
+                    // Mulai Live Timer Jam, Menit, Detik
+                    startLiveTimer();
                 } else {
                     activeIstirahatId = null;
+                    activeStartTime = null;
                     keteranganSelect.disabled = false;
                     btnWrapper.innerHTML = `
                         <button onclick="handleMulaiIstirahat()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition text-xs">
@@ -404,17 +426,32 @@
 
                 if (!data || data.length === 0) {
                     container.innerHTML = `<p class="text-slate-400 text-center py-3">Belum ada riwayat istirahat hari ini.</p>`;
+                    totalTextEl.innerText = '0 Menit';
                     return;
                 }
 
+                // Hitung total menit istirahat hari ini yang sudah selesai
+                let totalMins = 0;
                 let html = '';
+                
                 data.forEach(item => {
                     let durasiTampil = item.durasi || '-';
                     let badgeClass = 'bg-emerald-100 text-emerald-700';
 
                     if (!item.jam_selesai) {
-                        durasiTampil = 'Sedang Berlangsung';
-                        badgeClass = 'bg-amber-100 text-amber-700 animate-pulse';
+                        durasiTampil = '<span id="live-timer-badge">00:00:00</span>';
+                        badgeClass = 'bg-amber-100 text-amber-700 font-mono';
+                    } else {
+                        // Parse durasi dalam bentuk teks misal "15 Menit" atau ambil selisih
+                        if (item.durasi && item.durasi.includes('Menit')) {
+                            const m = parseInt(item.durasi, 10);
+                            if (!isNaN(m)) totalMins += m;
+                        } else if (item.jam_mulai && item.jam_selesai) {
+                            const [h1, m1] = item.jam_mulai.split(':').map(Number);
+                            const [h2, m2] = item.jam_selesai.split(':').map(Number);
+                            const diff = (h2 * 60 + m2) - (h1 * 60 + m1);
+                            if (diff > 0) totalMins += diff;
+                        }
                     }
 
                     html += `
@@ -431,7 +468,9 @@
                         </div>
                     `;
                 });
+
                 container.innerHTML = html;
+                totalTextEl.innerText = totalMins >= 60 ? `${Math.floor(totalMins / 60)} Jam ${totalMins % 60} Menit` : `${totalMins} Menit`;
 
             } catch (err) {
                 console.error("Gagal memuat riwayat istirahat:", err.message);
@@ -439,10 +478,44 @@
             }
         }
 
+        // Fungsi Timer Berjalan Jam, Menit, Detik
+        function startLiveTimer() {
+            if (!activeStartTime) return;
+
+            const [startH, startM, startS] = activeStartTime.split(':').map(Number);
+            const startDate = new Date();
+            startDate.setHours(startH, startM, startS || 0, 0);
+
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                let diffSec = Math.floor((now - startDate) / 1000);
+                if (diffSec < 0) diffSec = 0;
+
+                const hours = Math.floor(diffSec / 3600);
+                const minutes = Math.floor((diffSec % 3600) / 60);
+                const seconds = diffSec % 60;
+
+                const formatted = 
+                    String(hours).padStart(2, '0') + ':' + 
+                    String(minutes).padStart(2, '0') + ':' + 
+                    String(seconds).padStart(2, '0');
+
+                const badgeEl = document.getElementById('live-timer-badge');
+                if (badgeEl) {
+                    badgeEl.innerText = formatted;
+                }
+            }, 1000);
+        }
+
         async function handleMulaiIstirahat() {
             const nip = parseInt(localStorage.getItem('emp_nip'), 10);
             const tanggal = new Date().toISOString().split('T')[0];
-            const jam_mulai = new Date().toTimeString().split(' ')[0];
+            
+            const now = new Date();
+            const jam_mulai = String(now.getHours()).padStart(2, '0') + ':' + 
+                              String(now.getMinutes()).padStart(2, '0') + ':' + 
+                              String(now.getSeconds()).padStart(2, '0');
+
             const keterangan = document.getElementById('istirahat-keterangan').value;
 
             try {
@@ -466,8 +539,12 @@
 
         async function handleSelesaiIstirahat() {
             if (!activeIstirahatId) return;
+            if (timerInterval) clearInterval(timerInterval);
 
-            const jam_selesai = new Date().toTimeString().split(' ')[0];
+            const now = new Date();
+            const jam_selesai = String(now.getHours()).padStart(2, '0') + ':' + 
+                                String(now.getMinutes()).padStart(2, '0') + ':' + 
+                                String(now.getSeconds()).padStart(2, '0');
 
             try {
                 const { data: currentData } = await supabaseClient
@@ -478,10 +555,15 @@
 
                 let durasiStr = '-';
                 if (currentData && currentData.jam_mulai) {
-                    const [h1, m1] = currentData.jam_mulai.split(':').map(Number);
-                    const [h2, m2] = jam_selesai.split(':').map(Number);
-                    const diffMins = (h2 * 60 + m2) - (h1 * 60 + m1);
-                    durasiStr = diffMins >= 0 ? `${diffMins} Menit` : 'Selesai';
+                    const [h1, m1, s1 = 0] = currentData.jam_mulai.split(':').map(Number);
+                    const h2 = now.getHours();
+                    const m2 = now.getMinutes();
+                    const s2 = now.getSeconds();
+
+                    const totalSecs = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+                    const totalMins = Math.round(totalSecs / 60);
+
+                    durasiStr = totalMins >= 1 ? `${totalMins} Menit` : `${totalSecs} Detik`;
                 }
 
                 const { error } = await supabaseClient
@@ -496,6 +578,7 @@
 
                 alert("Waktu istirahat selesai.");
                 activeIstirahatId = null;
+                activeStartTime = null;
                 loadIstirahatHistory();
             } catch (err) {
                 alert("Gagal menyelesaikan istirahat: " + err.message);
@@ -643,6 +726,8 @@
             if (realtimeChannel) {
                 supabaseClient.removeChannel(realtimeChannel);
             }
+            if (timerInterval) clearInterval(timerInterval);
+            
             localStorage.removeItem('emp_nip');
             localStorage.removeItem('emp_nama');
 

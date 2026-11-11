@@ -166,14 +166,13 @@
             const savedNip = localStorage.getItem('emp_nip');
             const savedNama = localStorage.getItem('emp_nama');
             if (savedNip && savedNama) {
-                // Ambil data terbaru secara real-time saat halaman dimuat ulang
                 await fetchLatestUserData(savedNip);
                 showMainMenu(localStorage.getItem('emp_nama'), savedNip);
                 setupRealtimeSync(savedNip);
             }
         });
 
-        // Ambil data terbaru dari database
+        // Ambil data terbaru dari database secara real-time
         async function fetchLatestUserData(nip) {
             try {
                 const { data, error } = await supabaseClient
@@ -216,7 +215,7 @@
                 .subscribe();
         }
 
-        // Fungsi Membunyikan Alarm Web (Web Audio API) - Hanya berjalan manual saat tombol tes diklik
+        // Fungsi Membunyikan Alarm Web (Hanya dipanggil manual via tombol tes)
         function playAlarmSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -246,7 +245,7 @@
             alert(`Fitur "${menuName}" sedang dipilih.`);
         }
 
-        // Meminta Izin Notifikasi Browser (Tanpa memicu bunyi alarm)
+        // Meminta Izin Notifikasi Browser (Tanpa bunyi alarm)
         async function requestNotificationPermission() {
             if (!("Notification" in window)) return "Not Supported";
             let permission = Notification.permission;
@@ -281,7 +280,6 @@
             loginBtn.innerText = 'Memverifikasi NIP...';
 
             try {
-                // 1. Mencocokkan NIP dengan tabel "data_karyawan"
                 const { data, error } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar')
@@ -298,17 +296,15 @@
 
                 const namaKaryawan = data.nama_kar;
 
-                // 2. Meminta izin notifikasi browser (Tanpa memutar suara alarm/sound apapun)
+                // Meminta izin notifikasi browser tanpa bunyi alarm
                 await requestNotificationPermission();
 
-                // 3. Generate Token Perangkat
                 let deviceToken = localStorage.getItem('device_token_int');
                 if (!deviceToken) {
                     deviceToken = Math.floor(Math.random() * 900000000) + 100000000;
                     localStorage.setItem('device_token_int', deviceToken);
                 }
 
-                // 4. Kirim data ke tabel "data_employee"
                 const { error: insertError } = await supabaseClient
                     .from('data_employee')
                     .upsert({
@@ -321,14 +317,10 @@
                     console.error('Gagal menyimpan token ke data_employee:', insertError.message);
                 }
 
-                // Simpan sesi login di localStorage HP
                 localStorage.setItem('emp_nip', data.nip_kar);
                 localStorage.setItem('emp_nama', namaKaryawan);
 
-                // Setup Realtime & Masuk ke Menu Utama
                 setupRealtimeSync(data.nip_kar);
-
-                // 5. Masuk ke Menu Utama
                 showMainMenu(namaKaryawan, data.nip_kar);
 
             } catch (err) {
@@ -340,8 +332,8 @@
             }
         }
 
-        // Tampilkan Tampilan Menu Utama & Muat Foto Otomatis
-        function showMainMenu(nama, nip) {
+        // Tampilkan Tampilan Menu Utama & Muat Foto Otomatis Menggunakan Storage Download
+        async function showMainMenu(nama, nip) {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('logout-btn-header').classList.remove('hidden');
             
@@ -354,29 +346,43 @@
             document.getElementById('user-nip').innerText = `NIP: ${nip}`;
             document.getElementById('user-initials').innerText = nama.charAt(0).toUpperCase();
 
-            // Memuat Foto secara otomatis dari Bucket "FOTO SALES" dengan fallback ekstensi
+            // Memuat foto otomatis dari Bucket "FOTO SALES"
             const photoImg = document.getElementById('user-photo');
             const userInitials = document.getElementById('user-initials');
-            const photoResult = supabaseClient.storage.from('FOTO SALES').getPublicUrl(nip.toString());
+            
+            const possiblePaths = [
+                nip.toString(),
+                `${nip}.jpg`,
+                `${nip}.jpeg`,
+                `${nip}.png`,
+                `${nip}.JPG`,
+                `${nip}.JPEG`,
+                `${nip}.PNG`
+            ];
 
-            if (photoResult && photoResult.data && photoResult.data.publicUrl) {
-                photoImg.onerror = function() {
-                    if (!this.dataset.triedJpg) {
-                        this.dataset.triedJpg = 'true';
-                        const jpgResult = supabaseClient.storage.from('FOTO SALES').getPublicUrl(`${nip}.jpg`);
-                        this.src = jpgResult.data.publicUrl;
-                    } else if (!this.dataset.triedPng) {
-                        this.dataset.triedPng = 'true';
-                        const pngResult = supabaseClient.storage.from('FOTO SALES').getPublicUrl(`${nip}.png`);
-                        this.src = pngResult.data.publicUrl;
-                    } else {
-                        this.classList.add('hidden');
-                        userInitials.classList.remove('hidden');
+            let photoLoaded = false;
+            for (const path of possiblePaths) {
+                try {
+                    const { data, error } = await supabaseClient.storage
+                        .from('FOTO SALES')
+                        .download(path);
+
+                    if (!error && data) {
+                        const objectUrl = URL.createObjectURL(data);
+                        photoImg.src = objectUrl;
+                        photoImg.classList.remove('hidden');
+                        userInitials.classList.add('hidden');
+                        photoLoaded = true;
+                        break;
                     }
-                };
-                photoImg.src = photoResult.data.publicUrl;
-                photoImg.classList.remove('hidden');
-                userInitials.classList.add('hidden');
+                } catch (err) {
+                    // Lanjutkan mencoba ekstensi berikutnya jika gagal
+                }
+            }
+
+            if (!photoLoaded) {
+                photoImg.classList.add('hidden');
+                userInitials.classList.remove('hidden');
             }
 
             const statusNotifEl = document.getElementById('status-notif');

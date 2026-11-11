@@ -101,7 +101,7 @@
                         </div>
                     </div>
 
-                    <!-- Grid Menu Utama dengan Warna & Animasi Card -->
+                    <!-- Grid Menu Utama (Kembali 4 Menu Standar dengan Warna & Animasi Card) -->
                     <div>
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 px-1">Menu Layanan</p>
                         <div id="menu-grid" class="grid grid-cols-2 gap-3">
@@ -114,7 +114,7 @@
                                 </div>
                                 <div>
                                     <h3 id="main-menu-istirahat-title" class="font-bold text-slate-800 text-sm">ISTIRAHAT KARYAWAN</h3>
-                                    <p id="main-menu-istirahat-desc" class="text-[11px] text-indigo-600 font-medium mt-0.5">Catat istirahat</p>
+                                    <p id="main-menu-istirahat-desc" class="text-[11px] text-indigo-600 font-medium mt-0.5">Catat istirahat & team</p>
                                     <p id="main-menu-timer" class="text-[11px] font-mono font-bold text-white mt-1 hidden"></p>
                                 </div>
                             </button>
@@ -165,7 +165,7 @@
                 </div>
             </div>
 
-            <!-- BAGIAN 3: SUBMENU ISTIRAHAT -->
+            <!-- BAGIAN 3: MENU ISTIRAHAT KARYAWAN (BERISI 2 SUB-MENU TAB: "ISTIRAHAT" & "TEAM ISTIRAHAT") -->
             <div id="istirahat-section" class="flex-1 flex flex-col justify-between hidden fade-in">
                 <div class="space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200">
@@ -173,51 +173,87 @@
                             <button onclick="closeIstirahatMenu()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                             </button>
-                            <h2 class="font-bold text-slate-800 text-base">ISTIRAHAT</h2>
+                            <h2 class="font-bold text-slate-800 text-base">ISTIRAHAT KARYAWAN</h2>
                         </div>
                     </div>
 
-                    <!-- Form Input Istirahat -->
-                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">KETERANGAN</label>
-                            <select id="istirahat-keterangan" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 bg-slate-50 text-xs font-medium">
-                                <option value="MAKAN">MAKAN</option>
-                                <option value="SHOLAT">SHOLAT</option>
-                            </select>
+                    <!-- TAB SWITCHER: SUB-MENU "ISTIRAHAT" & "TEAM ISTIRAHAT" BERBAMBINGAN -->
+                    <div class="grid grid-cols-2 gap-2 bg-slate-200/70 p-1 rounded-2xl">
+                        <button onclick="switchIstirahatTab('pribadi')" id="tab-btn-pribadi" 
+                            class="py-2.5 px-3 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm">
+                            Istirahat
+                        </button>
+                        <button onclick="switchIstirahatTab('team')" id="tab-btn-team" 
+                            class="py-2.5 px-3 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800">
+                            Team Istirahat
+                        </button>
+                    </div>
+
+                    <!-- KONTEN SUB-MENU 1: ISTIRAHAT PRIBADI -->
+                    <div id="tab-content-pribadi" class="space-y-4">
+                        <!-- Form Input Istirahat -->
+                        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">KETERANGAN</label>
+                                <select id="istirahat-keterangan" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 bg-slate-50 text-xs font-medium">
+                                    <option value="MAKAN">MAKAN</option>
+                                    <option value="SHOLAT">SHOLAT</option>
+                                </select>
+                            </div>
+
+                            <div id="istirahat-btn-wrapper" class="pt-1">
+                                <button onclick="handleMulaiIstirahat()" id="btn-mulai-istirahat" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition-all active:scale-95 text-xs">
+                                    MULAI
+                                </button>
+                            </div>
                         </div>
 
-                        <div id="istirahat-btn-wrapper" class="pt-1">
-                            <button onclick="handleMulaiIstirahat()" id="btn-mulai-istirahat" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition-all active:scale-95 text-xs">
-                                MULAI
-                            </button>
+                        <!-- TAMPILAN TIMER BERJALAN BESAR DI ATAS TOTAL -->
+                        <div id="large-timer-card" class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 shadow-sm text-center hidden">
+                            <p class="text-[11px] text-amber-700 font-bold uppercase tracking-wider mb-1">⏱️ Waktu Istirahat Berlangsung</p>
+                            <h2 id="large-timer-display" class="text-2xl sm:text-3xl font-black text-amber-800 tracking-wider font-mono">00:00:00</h2>
+                        </div>
+
+                        <!-- Informasi Total Istirahat Hari Ini -->
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-3.5 shadow-sm flex justify-between items-center">
+                            <div>
+                                <p class="text-[11px] text-emerald-600 font-bold uppercase tracking-wider">Total Istirahat Hari Ini</p>
+                                <h3 id="total-istirahat-text" class="text-sm sm:text-base font-bold text-slate-800">0 Jam 0 Menit 0 Detik</h3>
+                            </div>
+                            <div class="w-9 h-9 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+
+                        <!-- Riwayat & Durasi Istirahat -->
+                        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5">
+                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Riwayat & Durasi Istirahat Hari Ini</p>
+                            <div id="istirahat-history-container" class="space-y-2 max-h-40 overflow-y-auto touch-scroll text-xs pr-1">
+                                <p class="text-slate-400 text-center py-3">Memuat riwayat...</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- TAMPILAN TIMER BERJALAN BESAR DI ATAS TOTAL -->
-                    <div id="large-timer-card" class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 shadow-sm text-center hidden">
-                        <p class="text-[11px] text-amber-700 font-bold uppercase tracking-wider mb-1">⏱️ Waktu Istirahat Berlangsung</p>
-                        <h2 id="large-timer-display" class="text-2xl sm:text-3xl font-black text-amber-800 tracking-wider font-mono">00:00:00</h2>
+                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT (TAMPIL DI BAWAHNYA) -->
+                    <div id="tab-content-team" class="space-y-4 hidden">
+                        <div class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-[11px] text-rose-600 font-bold uppercase tracking-wider">Karyawan Sedang Istirahat</p>
+                                <h3 id="team-active-count-text" class="text-lg font-black text-slate-800 mt-0.5">0 Orang Aktif</h3>
+                            </div>
+                            <div class="w-10 h-10 bg-rose-600 text-white rounded-xl flex items-center justify-center shadow-md shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Daftar Rekan Kerja Istirahat Hari Ini</p>
+                            <div id="team-istirahat-list-container" class="space-y-2.5 max-h-72 overflow-y-auto touch-scroll text-xs pr-1">
+                                <p class="text-slate-400 text-center py-4">Memuat data tim...</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Informasi Total Istirahat Hari Ini -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-3.5 shadow-sm flex justify-between items-center">
-                        <div>
-                            <p class="text-[11px] text-emerald-600 font-bold uppercase tracking-wider">Total Istirahat Hari Ini</p>
-                            <h3 id="total-istirahat-text" class="text-sm sm:text-base font-bold text-slate-800">0 Jam 0 Menit 0 Detik</h3>
-                        </div>
-                        <div class="w-9 h-9 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                    </div>
-
-                    <!-- Riwayat & Durasi Istirahat -->
-                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5">
-                        <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Riwayat & Durasi Istirahat Hari Ini</p>
-                        <div id="istirahat-history-container" class="space-y-2 max-h-52 overflow-y-auto touch-scroll text-xs pr-1">
-                            <p class="text-slate-400 text-center py-3">Memuat riwayat...</p>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-slate-100 text-center shrink-0">
@@ -237,6 +273,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let realtimeChannel = null;
+        let teamRealtimeChannel = null;
         let activeIstirahatId = null;
         let activeStartTime = null;
         let timerInterval = null;
@@ -379,23 +416,131 @@
             }
         }
 
-        // Navigasi ke Menu Istirahat
+        // Navigasi ke Menu Istirahat (Default buka tab 'pribadi')
         function openIstirahatMenu() {
             document.getElementById('main-menu-section').classList.add('hidden');
             document.getElementById('istirahat-section').classList.remove('hidden');
-            document.getElementById('header-title').innerText = 'Istirahat';
-            document.getElementById('header-subtitle').innerText = 'Pencatatan Waktu & Durasi Istirahat';
-            loadIstirahatHistory();
+            document.getElementById('header-title').innerText = 'Istirahat Karyawan';
+            document.getElementById('header-subtitle').innerText = 'Pencatatan Waktu & Pantau Team';
+            switchIstirahatTab('pribadi');
         }
 
         function closeIstirahatMenu() {
             if (timerInterval) clearInterval(timerInterval);
+            if (teamRealtimeChannel) {
+                supabaseClient.removeChannel(teamRealtimeChannel);
+            }
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('main-menu-section').classList.remove('hidden');
             document.getElementById('header-title').innerText = 'Menu Utama';
             document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan';
             const nip = localStorage.getItem('emp_nip');
             if (nip) checkActiveBreakStatus(nip);
+        }
+
+        // --- PENGALIH TAB DI DALAM MENU ISTIRAHAT KARYAWAN ("ISTIRAHAT" vs "TEAM ISTIRAHAT") ---
+        function switchIstirahatTab(tabName) {
+            const btnPribadi = document.getElementById('tab-btn-pribadi');
+            const btnTeam = document.getElementById('tab-btn-team');
+            const contentPribadi = document.getElementById('tab-content-pribadi');
+            const contentTeam = document.getElementById('tab-content-team');
+
+            if (tabName === 'pribadi') {
+                btnPribadi.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm";
+                btnTeam.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800";
+                contentPribadi.classList.remove('hidden');
+                contentTeam.classList.add('hidden');
+                loadIstirahatHistory();
+            } else if (tabName === 'team') {
+                btnTeam.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm";
+                btnPribadi.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800";
+                contentTeam.classList.remove('hidden');
+                contentPribadi.classList.add('hidden');
+                loadTeamIstirahatData();
+                setupTeamIstirahatRealtime();
+            }
+        }
+
+        // --- LOGIKA DATA TEAM ISTIRAHAT ---
+        async function loadTeamIstirahatData() {
+            const today = new Date().toISOString().split('T')[0];
+            const container = document.getElementById('team-istirahat-list-container');
+            const countText = document.getElementById('team-active-count-text');
+
+            container.innerHTML = `<p class="text-slate-400 text-center py-4">Memuat data tim...</p>`;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('data_istirahat')
+                    .select(`
+                        id,
+                        nip,
+                        jam_mulai,
+                        keterangan,
+                        data_karyawan (nama_kar)
+                    `)
+                    .eq('tanggal', today)
+                    .is('jam_selesai', null)
+                    .order('jam_mulai', { ascending: false });
+
+                if (error) throw error;
+
+                countText.innerText = `${data ? data.length : 0} Orang Aktif`;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<p class="text-slate-400 text-center py-4">Tidak ada karyawan yang sedang beristirahat saat ini.</p>`;
+                    return;
+                }
+
+                let html = '';
+                data.forEach(item => {
+                    const nama = item.data_karyawan?.nama_kar || `NIP: ${item.nip}`;
+                    const jamMulai = item.jam_mulai ? (item.jam_mulai.split(':').length === 3 ? item.jam_mulai.substring(0, 5) : item.jam_mulai) : '-';
+                    const initial = nama.charAt(0).toUpperCase();
+
+                    html += `
+                        <div class="p-3 bg-rose-50/70 border border-rose-100 rounded-xl flex items-center justify-between transition hover:bg-rose-100/50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-rose-600 text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0">
+                                    ${initial}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-xs">${nama}</h4>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">
+                                        Mulai: <span class="font-medium text-slate-700">${jamMulai}</span> &bull; 
+                                        <span class="text-rose-600 font-bold uppercase">${item.keterangan}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full animate-pulse shrink-0">
+                                Istirahat
+                            </span>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (err) {
+                console.error("Gagal memuat team istirahat:", err.message);
+                container.innerHTML = `<p class="text-rose-500 text-center py-4">Gagal memuat data team istirahat.</p>`;
+            }
+        }
+
+        function setupTeamIstirahatRealtime() {
+            if (teamRealtimeChannel) {
+                supabaseClient.removeChannel(teamRealtimeChannel);
+            }
+
+            teamRealtimeChannel = supabaseClient
+                .channel('public:team_istirahat_live')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'data_istirahat'
+                }, payload => {
+                    loadTeamIstirahatData();
+                })
+                .subscribe();
         }
 
         // --- CEK STATUS ISTIRAHAT AKTIF UNTUK CARD MENU UTAMA ---
@@ -449,7 +594,7 @@
             }
         }
 
-        // --- MANAJEMEN DATA ISTIRAHAT, TIMER LIVE, & TOTAL ---
+        // --- MANAJEMEN DATA ISTIRAHAT PRIBADI, TIMER LIVE, & TOTAL ---
         async function loadIstirahatHistory() {
             const nip = localStorage.getItem('emp_nip');
             const today = new Date().toISOString().split('T')[0];
@@ -485,7 +630,6 @@
                             Selesai Istirahat (${activeRecord.keterangan})
                         </button>
                     `;
-                    // Tampilkan kotak timer besar
                     largeTimerCard.classList.remove('hidden');
                     startLiveTimer();
                 } else {
@@ -497,7 +641,6 @@
                             Mulai Istirahat
                         </button>
                     `;
-                    // Sembunyikan kotak timer besar
                     largeTimerCard.classList.add('hidden');
                 }
 
@@ -569,7 +712,7 @@
             }
         }
 
-        // Fungsi Timer Berjalan di Sub-menu Istirahat
+        // Fungsi Timer Berjalan di Sub-menu Istirahat Pribadi
         function startLiveTimer() {
             if (!activeStartTime) return;
 
@@ -858,6 +1001,9 @@
         function handleLogout() {
             if (realtimeChannel) {
                 supabaseClient.removeChannel(realtimeChannel);
+            }
+            if (teamRealtimeChannel) {
+                supabaseClient.removeChannel(teamRealtimeChannel);
             }
             if (timerInterval) clearInterval(timerInterval);
             if (globalTimerInterval) clearInterval(globalTimerInterval);

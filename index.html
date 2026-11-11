@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* Mencegah auto-zoom di iOS saat fokus input */
-        input { font-size: 16px !important; }
+        input, select { font-size: 16px !important; }
         .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(6px); }
@@ -99,13 +99,13 @@
                     <div>
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 px-1">Menu Layanan</p>
                         <div id="menu-grid" class="grid grid-cols-2 gap-3">
-                            <button onclick="handleMenuClick('Presensi / Absensi', () => showAlertFeature('Presensi / Absensi'))" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
+                            <button onclick="handleMenuClick('Istirahat', () => openIstirahatMenu())" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
                                 <div class="w-10 h-10 bg-indigo-50 group-hover:bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-3 transition">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-slate-800 text-sm">Absensi</h3>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">Catat kehadiran</p>
+                                    <h3 class="font-bold text-slate-800 text-sm">Istirahat</h3>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Catat istirahat</p>
                                 </div>
                             </button>
 
@@ -148,6 +148,50 @@
                 </div>
             </div>
 
+            <!-- BAGIAN 3: SUBMENU ISTIRAHAT -->
+            <div id="istirahat-section" class="flex-1 flex flex-col justify-between hidden fade-in">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                        <div class="flex items-center gap-2">
+                            <button onclick="closeIstirahatMenu()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <h2 class="font-bold text-slate-800 text-base">Menu Istirahat</h2>
+                        </div>
+                    </div>
+
+                    <!-- Form Input Istirahat -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+                        <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Form Pencatatan Istirahat</p>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Keterangan</label>
+                            <select id="istirahat-keterangan" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 bg-slate-50 text-xs font-medium">
+                                <option value="MAKAN">MAKAN</option>
+                                <option value="SHOLAT">SHOLAT</option>
+                            </select>
+                        </div>
+
+                        <div id="istirahat-btn-wrapper" class="pt-1">
+                            <button onclick="handleMulaiIstirahat()" id="btn-mulai-istirahat" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition text-xs">
+                                Mulai Istirahat
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Istirahat -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5">
+                        <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Riwayat Istirahat Hari Ini</p>
+                        <div id="istirahat-history-container" class="space-y-2 max-h-44 overflow-y-auto text-xs pr-1">
+                            <p class="text-slate-400 text-center py-3">Memuat riwayat...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 text-center">
+                    <p class="text-[11px] text-slate-400">Terhubung ke Supabase • Vercel Ready</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -160,6 +204,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let realtimeChannel = null;
+        let activeIstirahatId = null; // Menyimpan ID jika sedang aktif istirahat
 
         // Cek sesi login saat halaman dimuat
         window.addEventListener('DOMContentLoaded', async () => {
@@ -254,7 +299,7 @@
             callback();
         }
 
-        // Meminta Izin Notifikasi Browser (Backend Notification Permission)
+        // Meminta Izin Notifikasi Browser
         async function requestNotificationPermission() {
             if (!("Notification" in window)) return "Not Supported";
             let permission = Notification.permission;
@@ -265,7 +310,7 @@
             return permission;
         }
 
-        // Handler saat teks status diklik untuk mengubah/memeriksa perizinan kembali
+        // Handler saat teks status diklik
         async function handleStatusClick() {
             if (!("Notification" in window)) {
                 alert("Browser perangkat ini tidak mendukung perizinan aplikasi.");
@@ -295,6 +340,157 @@
             } else {
                 statusNotifEl.innerText = 'Ditolak / Blokir';
                 statusNotifEl.className = 'font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 cursor-pointer transition hover:opacity-80';
+            }
+        }
+
+        // Navigasi ke Menu Istirahat
+        function openIstirahatMenu() {
+            document.getElementById('main-menu-section').classList.add('hidden');
+            document.getElementById('istirahat-section').classList.remove('hidden');
+            document.getElementById('header-title').innerText = 'Istirahat';
+            document.getElementById('header-subtitle').innerText = 'Pencatatan Waktu Istirahat';
+            loadIstirahatHistory();
+        }
+
+        function closeIstirahatMenu() {
+            document.getElementById('istirahat-section').classList.add('hidden');
+            document.getElementById('main-menu-section').classList.remove('hidden');
+            document.getElementById('header-title').innerText = 'Menu Utama';
+            document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan';
+        }
+
+        // --- MANAJEMEN DATA ISTIRAHAT KE SUPABASE ---
+        async function loadIstirahatHistory() {
+            const nip = localStorage.getItem('emp_nip');
+            const today = new Date().toISOString().split('T')[0];
+            const container = document.getElementById('istirahat-history-container');
+            const btnWrapper = document.getElementById('istirahat-btn-wrapper');
+            const keteranganSelect = document.getElementById('istirahat-keterangan');
+
+            container.innerHTML = `<p class="text-slate-400 text-center py-3">Memuat riwayat...</p>`;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('data_istirahat')
+                    .select('*')
+                    .eq('nip', nip)
+                    .eq('tanggal', today)
+                    .order('id', { ascending: false });
+
+                if (error) throw error;
+
+                // Cek apakah ada yang belum selesai (jam_selesai kosong/null)
+                const activeRecord = data ? data.find(item => !item.jam_selesai) : null;
+
+                if (activeRecord) {
+                    activeIstirahatId = activeRecord.id;
+                    keteranganSelect.value = activeRecord.keterangan;
+                    keteranganSelect.disabled = true;
+                    btnWrapper.innerHTML = `
+                        <button onclick="handleSelesaiIstirahat()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition text-xs">
+                            Selesai Istirahat (${activeRecord.keterangan})
+                        </button>
+                    `;
+                } else {
+                    activeIstirahatId = null;
+                    keteranganSelect.disabled = false;
+                    btnWrapper.innerHTML = `
+                        <button onclick="handleMulaiIstirahat()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition text-xs">
+                            Mulai Istirahat
+                        </button>
+                    `;
+                }
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<p class="text-slate-400 text-center py-3">Belum ada riwayat istirahat hari ini.</p>`;
+                    return;
+                }
+
+                let html = '';
+                data.forEach(item => {
+                    html += `
+                        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+                            <div>
+                                <span class="font-bold text-indigo-600">${item.keterangan}</span>
+                                <p class="text-[11px] text-slate-500">Mulai: ${item.jam_mulai || '-'} | Selesai: ${item.jam_selesai || 'Berlangsung...'}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${item.jam_selesai ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                                    ${item.durasi || (item.jam_selesai ? 'Selesai' : 'Aktif')}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+
+            } catch (err) {
+                console.error("Gagal memuat riwayat istirahat:", err.message);
+                container.innerHTML = `<p class="text-rose-500 text-center py-3">Gagal memuat riwayat data.</p>`;
+            }
+        }
+
+        async function handleMulaiIstirahat() {
+            const nip = parseInt(localStorage.getItem('emp_nip'), 10);
+            const tanggal = new Date().toISOString().split('T')[0];
+            const jam_mulai = new Date().toTimeString().split(' ')[0];
+            const keterangan = document.getElementById('istirahat-keterangan').value;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('data_istirahat')
+                    .insert([{
+                        nip: nip,
+                        tanggal: tanggal,
+                        jam_mulai: jam_mulai,
+                        keterangan: keterangan
+                    }]);
+
+                if (error) throw error;
+
+                alert("Waktu istirahat dimulai.");
+                loadIstirahatHistory();
+            } catch (err) {
+                alert("Gagal memulai istirahat: " + err.message);
+            }
+        }
+
+        async function handleSelesaiIstirahat() {
+            if (!activeIstirahatId) return;
+
+            const jam_selesai = new Date().toTimeString().split(' ')[0];
+
+            try {
+                // Ambil jam_mulai terlebih dahulu untuk menghitung durasi
+                const { data: currentData } = await supabaseClient
+                    .from('data_istirahat')
+                    .select('jam_mulai')
+                    .eq('id', activeIstirahatId)
+                    .single();
+
+                let durasiStr = '-';
+                if (currentData && currentData.jam_mulai) {
+                    const [h1, m1] = currentData.jam_mulai.split(':').map(Number);
+                    const [h2, m2] = jam_selesai.split(':').map(Number);
+                    const diffMins = (h2 * 60 + m2) - (h1 * 60 + m1);
+                    durasiStr = diffMins >= 0 ? `${diffMins} Menit` : 'Selesai';
+                }
+
+                const { error } = await supabaseClient
+                    .from('data_istirahat')
+                    .update({
+                        jam_selesai: jam_selesai,
+                        durasi: durasiStr
+                    })
+                    .eq('id', activeIstirahatId);
+
+                if (error) throw error;
+
+                alert("Waktu istirahat selesai.");
+                activeIstirahatId = null;
+                loadIstirahatHistory();
+            } catch (err) {
+                alert("Gagal menyelesaikan istirahat: " + err.message);
             }
         }
 
@@ -384,6 +580,7 @@
             document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan';
 
             document.getElementById('main-menu-section').classList.remove('hidden');
+            document.getElementById('istirahat-section').classList.add('hidden');
 
             document.getElementById('user-nama').innerText = nama;
             document.getElementById('user-nip').innerText = `NIP: ${nip}`;
@@ -441,6 +638,7 @@
             localStorage.removeItem('emp_nama');
 
             document.getElementById('main-menu-section').classList.add('hidden');
+            document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('logout-btn-header').classList.add('hidden');
             
             document.getElementById('header-title').innerText = 'Portal Karyawan';

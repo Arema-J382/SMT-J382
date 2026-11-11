@@ -165,7 +165,7 @@
                 </div>
             </div>
 
-            <!-- BAGIAN 3: MENU UTAMA "ISTIRAHAT KARYAWAN" DENGAN 2 SUB-MENU TAB ("ISTIRAHAT" & "TEAM ISTIRAHAT") -->
+            <!-- BAGIAN 3: MENU UTAMA "ISTIRAHAT KARYAWAN" DENGAN 2 SUB-MENU TAB -->
             <div id="istirahat-section" class="flex-1 flex flex-col justify-between hidden fade-in">
                 <div class="space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200">
@@ -177,7 +177,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB SWITCHER: SUB-MENU "ISTIRAHAT" & "TEAM ISTIRAHAT" BERBAMBINGAN -->
+                    <!-- TAB SWITCHER -->
                     <div class="grid grid-cols-2 gap-2 bg-slate-200/70 p-1 rounded-2xl">
                         <button onclick="switchIstirahatTab('pribadi')" id="tab-btn-pribadi" 
                             class="py-2.5 px-3 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm">
@@ -208,16 +208,16 @@
                             </div>
                         </div>
 
-                        <!-- TAMPILAN TIMER BERJALAN BESAR DI ATAS TOTAL -->
+                        <!-- TAMPILAN TOTAL WAKTU ISTIRAHAT HARI INI (BERJALAN LIVE) -->
                         <div id="large-timer-card" class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 shadow-sm text-center hidden">
-                            <p class="text-[11px] text-amber-700 font-bold uppercase tracking-wider mb-1">⏱️ Waktu Istirahat Berlangsung</p>
+                            <p class="text-[11px] text-amber-700 font-bold uppercase tracking-wider mb-1">⏱️ Total Waktu Istirahat Hari Ini</p>
                             <h2 id="large-timer-display" class="text-2xl sm:text-3xl font-black text-amber-800 tracking-wider font-mono">00:00:00</h2>
                         </div>
 
-                        <!-- Informasi Total Istirahat Hari Ini -->
+                        <!-- Informasi Total Istirahat Hari Ini (Statik di bawah) -->
                         <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-3.5 shadow-sm flex justify-between items-center">
                             <div>
-                                <p class="text-[11px] text-emerald-600 font-bold uppercase tracking-wider">Total Istirahat Hari Ini</p>
+                                <p class="text-[11px] text-emerald-600 font-bold uppercase tracking-wider">Akumulasi Istirahat Selesai</p>
                                 <h3 id="total-istirahat-text" class="text-sm sm:text-base font-bold text-slate-800">0 Jam 0 Menit 0 Detik</h3>
                             </div>
                             <div class="w-9 h-9 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md shrink-0">
@@ -234,7 +234,7 @@
                         </div>
                     </div>
 
-                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT (DITAMPILKAN DI BAWAHNYA DENGAN FOTO & TIMER LIVE) -->
+                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT (DENGAN TOTAL WAKTU ISTIRAHAT HARI INI & FOTO) -->
                     <div id="tab-content-team" class="space-y-4 hidden">
                         <div class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
                             <div>
@@ -247,7 +247,7 @@
                         </div>
 
                         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
-                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Daftar Rekan Kerja Istirahat Hari Ini</p>
+                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Daftar Rekan Kerja & Total Waktu Istirahat Hari Ini</p>
                             <div id="team-istirahat-list-container" class="space-y-2.5 max-h-72 overflow-y-auto touch-scroll text-xs pr-1">
                                 <p class="text-slate-400 text-center py-4">Memuat data tim...</p>
                             </div>
@@ -413,7 +413,7 @@
             }
         }
 
-        // Navigasi ke Menu Istirahat (Default buka tab 'pribadi')
+        // Navigasi ke Menu Istirahat
         function openIstirahatMenu() {
             document.getElementById('main-menu-section').classList.add('hidden');
             document.getElementById('istirahat-section').classList.remove('hidden');
@@ -436,7 +436,7 @@
             if (nip) checkActiveBreakStatus(nip);
         }
 
-        // --- PENGALIH TAB DI DALAM MENU ISTIRAHAT KARYAWAN ---
+        // --- PENGALIH TAB ---
         function switchIstirahatTab(tabName) {
             const btnPribadi = document.getElementById('tab-btn-pribadi');
             const btnTeam = document.getElementById('tab-btn-team');
@@ -460,7 +460,7 @@
             }
         }
 
-        // --- LOGIKA DATA TEAM ISTIRAHAT DENGAN FOTO & LIVE TIMER ---
+        // --- LOGIKA DATA TEAM ISTIRAHAT (TOTAL WAKTU ISTIRAHAT HARI INI + FOTO) ---
         async function loadTeamIstirahatData() {
             const today = new Date().toISOString().split('T')[0];
             const container = document.getElementById('team-istirahat-list-container');
@@ -469,25 +469,45 @@
             container.innerHTML = `<p class="text-slate-400 text-center py-4">Memuat data tim...</p>`;
 
             try {
-                // 1. Ambil data istirahat yang aktif hari ini
-                const { data: istirahatData, error: errIstirahat } = await supabaseClient
+                // Ambil SEMUA data istirahat hari ini untuk kalkulasi total waktu istirahat setiap karyawan
+                const { data: allRecords, error: errIstirahat } = await supabaseClient
                     .from('data_istirahat')
                     .select('*')
-                    .eq('tanggal', today)
-                    .is('jam_selesai', null)
-                    .order('jam_mulai', { ascending: false });
+                    .eq('tanggal', today);
 
                 if (errIstirahat) throw errIstirahat;
 
-                countText.innerText = `${istirahatData ? istirahatData.length : 0} Orang Aktif`;
+                const activeMap = {}; // nip -> active record
+                const completedSecsMap = {}; // nip -> total completed seconds today
 
-                if (!istirahatData || istirahatData.length === 0) {
+                if (allRecords) {
+                    allRecords.forEach(item => {
+                        const nip = item.nip;
+                        if (!completedSecsMap[nip]) completedSecsMap[nip] = 0;
+
+                        if (!item.jam_selesai) {
+                            activeMap[nip] = item;
+                        } else {
+                            if (item.jam_mulai && item.jam_selesai) {
+                                const [h1, m1, s1 = 0] = item.jam_mulai.split(':').map(Number);
+                                const [h2, m2, s2 = 0] = item.jam_selesai.split(':').map(Number);
+                                let diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+                                if (diff > 0) completedSecsMap[nip] += diff;
+                            }
+                        }
+                    });
+                }
+
+                const activeNips = Object.keys(activeMap);
+                countText.innerText = `${activeNips.length} Orang Aktif`;
+
+                if (activeNips.length === 0) {
                     container.innerHTML = `<p class="text-slate-400 text-center py-4">Tidak ada karyawan yang sedang beristirahat saat ini.</p>`;
                     if (teamTimerInterval) clearInterval(teamTimerInterval);
                     return;
                 }
 
-                // 2. Ambil data nama karyawan
+                // Ambil data nama karyawan
                 const { data: karData, error: errKar } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar');
@@ -502,28 +522,31 @@
                 }
 
                 let html = '';
-                istirahatData.forEach(item => {
-                    const nama = karMap[item.nip] || `NIP: ${item.nip}`;
-                    const jamMulai = item.jam_mulai ? (item.jam_mulai.split(':').length === 2 ? item.jam_mulai + ':00' : item.jam_mulai) : '00:00:00';
+                activeNips.forEach(nipStr => {
+                    const nip = Number(nipStr);
+                    const activeRecord = activeMap[nip];
+                    const nama = karMap[nip] || `NIP: ${nip}`;
                     const initial = nama.charAt(0).toUpperCase();
+                    const baseCompletedSecs = completedSecsMap[nip] || 0;
+                    const jamMulai = activeRecord.jam_mulai ? (activeRecord.jam_mulai.split(':').length === 2 ? activeRecord.jam_mulai + ':00' : activeRecord.jam_mulai) : '00:00:00';
 
                     html += `
                         <div class="p-3 bg-rose-50/70 border border-rose-100 rounded-xl flex items-center justify-between transition hover:bg-rose-100/50 gap-2">
                             <div class="flex items-center gap-3 overflow-hidden">
                                 <div class="w-10 h-10 relative rounded-xl overflow-hidden shadow-sm flex items-center justify-center bg-rose-600 text-white font-bold text-sm shrink-0">
-                                    <img id="team-photo-${item.nip}" src="" alt="Foto" class="w-full h-full object-cover hidden">
-                                    <span id="team-initials-${item.nip}" class="flex items-center justify-center w-full h-full">${initial}</span>
+                                    <img id="team-photo-${nip}" src="" alt="Foto" class="w-full h-full object-cover hidden">
+                                    <span id="team-initials-${nip}" class="flex items-center justify-center w-full h-full">${initial}</span>
                                 </div>
                                 <div class="overflow-hidden">
                                     <h4 class="font-bold text-slate-800 text-xs truncate">${nama}</h4>
                                     <p class="text-[11px] text-slate-500 mt-0.5">
                                         Mulai: <span class="font-medium text-slate-700">${jamMulai.substring(0, 5)}</span> &bull; 
-                                        <span class="text-rose-600 font-bold uppercase">${item.keterangan}</span>
+                                        <span class="text-rose-600 font-bold uppercase">${activeRecord.keterangan}</span>
                                     </p>
                                 </div>
                             </div>
                             <div class="text-right shrink-0">
-                                <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full font-mono animate-pulse team-live-timer" data-starttime="${jamMulai}">
+                                <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full font-mono animate-pulse team-live-timer" data-basesecs="${baseCompletedSecs}" data-starttime="${jamMulai}">
                                     00:00:00
                                 </span>
                             </div>
@@ -533,12 +556,10 @@
 
                 container.innerHTML = html;
 
-                // 3. Muat foto untuk setiap anggota tim secara asinkronus
-                istirahatData.forEach(item => {
-                    loadTeamMemberPhoto(item.nip);
+                activeNips.forEach(nipStr => {
+                    loadTeamMemberPhoto(Number(nipStr));
                 });
 
-                // 4. Mulai timer berjalan untuk team
                 startTeamLiveTimers();
 
             } catch (err) {
@@ -547,7 +568,6 @@
             }
         }
 
-        // Fungsi memuat foto rekan kerja dari storage Supabase
         async function loadTeamMemberPhoto(nip) {
             const photoImg = document.getElementById(`team-photo-${nip}`);
             const userInitials = document.getElementById(`team-initials-${nip}`);
@@ -576,19 +596,18 @@
                         userInitials.classList.add('hidden');
                         break;
                     }
-                } catch (e) {
-                    // Coba path ekstensi berikutnya
-                }
+                } catch (e) {}
             }
         }
 
-        // Fungsi Timer Berjalan Jam, Menit, Detik untuk Team Istirahat
+        // Timer berjalan untuk Team Istirahat (Menampilkan Total Istirahat Hari Ini)
         function startTeamLiveTimers() {
             if (teamTimerInterval) clearInterval(teamTimerInterval);
 
             teamTimerInterval = setInterval(() => {
                 const timerElements = document.querySelectorAll('.team-live-timer');
                 timerElements.forEach(el => {
+                    const baseSecs = parseInt(el.getAttribute('data-basesecs') || '0', 10);
                     const startTimeStr = el.getAttribute('data-starttime');
                     if (!startTimeStr) return;
 
@@ -597,12 +616,14 @@
                     startDate.setHours(h, m, s, 0);
 
                     const now = new Date();
-                    let diffSec = Math.floor((now - startDate) / 1000);
-                    if (diffSec < 0) diffSec = 0;
+                    let currentSessionSecs = Math.floor((now - startDate) / 1000);
+                    if (currentSessionSecs < 0) currentSessionSecs = 0;
 
-                    const hours = Math.floor(diffSec / 3600);
-                    const minutes = Math.floor((diffSec % 3600) / 60);
-                    const seconds = diffSec % 60;
+                    const totalSecsToday = baseSecs + currentSessionSecs;
+
+                    const hours = Math.floor(totalSecsToday / 3600);
+                    const minutes = Math.floor((totalSecsToday % 3600) / 60);
+                    const seconds = totalSecsToday % 60;
 
                     el.innerText = 
                         String(hours).padStart(2, '0') + ':' + 
@@ -648,6 +669,16 @@
 
                 if (!error && data) {
                     const activeRecord = data.find(item => !item.jam_selesai);
+                    let completedSecs = 0;
+                    data.forEach(item => {
+                        if (item.jam_selesai && item.jam_mulai) {
+                            const [h1, m1, s1 = 0] = item.jam_mulai.split(':').map(Number);
+                            const [h2, m2, s2 = 0] = item.jam_selesai.split(':').map(Number);
+                            let diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+                            if (diff > 0) completedSecs += diff;
+                        }
+                    });
+
                     if (activeRecord) {
                         activeIstirahatId = activeRecord.id;
                         activeStartTime = activeRecord.jam_mulai;
@@ -658,7 +689,7 @@
                         descEl.className = "text-[11px] text-rose-100 mt-0.5 font-medium";
                         timerEl.classList.remove('hidden');
 
-                        startGlobalLiveTimer();
+                        startGlobalLiveTimer(completedSecs, activeRecord.jam_mulai);
                         return;
                     }
                 }
@@ -678,7 +709,7 @@
             }
         }
 
-        // --- MANAJEMEN DATA ISTIRAHAT PRIBADI, TIMER LIVE, & TOTAL ---
+        // --- MANAJEMEN DATA ISTIRAHAT PRIBADI ---
         async function loadIstirahatHistory() {
             const nip = localStorage.getItem('emp_nip');
             const today = new Date().toISOString().split('T')[0];
@@ -704,6 +735,19 @@
 
                 const activeRecord = data ? data.find(item => !item.jam_selesai) : null;
 
+                // Hitung total detik dari completed breaks hari ini
+                let completedSecs = 0;
+                if (data) {
+                    data.forEach(item => {
+                        if (item.jam_selesai && item.jam_mulai) {
+                            const [h1, m1, s1 = 0] = item.jam_mulai.split(':').map(Number);
+                            const [h2, m2, s2 = 0] = item.jam_selesai.split(':').map(Number);
+                            let diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+                            if (diff > 0) completedSecs += diff;
+                        }
+                    });
+                }
+
                 if (activeRecord) {
                     activeIstirahatId = activeRecord.id;
                     activeStartTime = activeRecord.jam_mulai;
@@ -715,7 +759,7 @@
                         </button>
                     `;
                     largeTimerCard.classList.remove('hidden');
-                    startLiveTimer();
+                    startLiveTimer(completedSecs);
                 } else {
                     activeIstirahatId = null;
                     activeStartTime = null;
@@ -735,8 +779,8 @@
                     return;
                 }
 
-                let totalSecsAll = 0;
                 let html = '';
+                let totalSecsAll = completedSecs;
                 
                 data.forEach(item => {
                     let durasiTampil = '-';
@@ -754,8 +798,6 @@
                             const [h2, m2, s2 = 0] = selesainya.split(':').map(Number);
                             let diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
                             if (diff < 0) diff = 0;
-                            
-                            totalSecsAll += diff;
 
                             const dh = Math.floor(diff / 3600);
                             const dm = Math.floor((diff % 3600) / 60);
@@ -796,8 +838,8 @@
             }
         }
 
-        // Fungsi Timer Berjalan di Sub-menu Istirahat Pribadi
-        function startLiveTimer() {
+        // Timer berjalan untuk Sub-menu Pribadi (Menampilkan Total Istirahat Hari Ini)
+        function startLiveTimer(baseCompletedSecs = 0) {
             if (!activeStartTime) return;
 
             const [startH, startM, startS = 0] = activeStartTime.split(':').map(Number);
@@ -806,12 +848,14 @@
 
             timerInterval = setInterval(() => {
                 const now = new Date();
-                let diffSec = Math.floor((now - startDate) / 1000);
-                if (diffSec < 0) diffSec = 0;
+                let currentSessionSecs = Math.floor((now - startDate) / 1000);
+                if (currentSessionSecs < 0) currentSessionSecs = 0;
 
-                const hours = Math.floor(diffSec / 3600);
-                const minutes = Math.floor((diffSec % 3600) / 60);
-                const seconds = diffSec % 60;
+                const totalSecsToday = baseCompletedSecs + currentSessionSecs;
+
+                const hours = Math.floor(totalSecsToday / 3600);
+                const minutes = Math.floor((totalSecsToday % 3600) / 60);
+                const seconds = totalSecsToday % 60;
 
                 const formatted = 
                     String(hours).padStart(2, '0') + ':' + 
@@ -830,23 +874,25 @@
             }, 1000);
         }
 
-        // Fungsi Global Timer untuk Card Menu Utama
-        function startGlobalLiveTimer() {
-            if (!activeStartTime) return;
+        // Global Timer untuk Card Menu Utama
+        function startGlobalLiveTimer(baseCompletedSecs = 0, startTimeStr) {
+            if (!startTimeStr) return;
             if (globalTimerInterval) clearInterval(globalTimerInterval);
 
-            const [startH, startM, startS = 0] = activeStartTime.split(':').map(Number);
+            const [startH, startM, startS = 0] = startTimeStr.split(':').map(Number);
             const startDate = new Date();
             startDate.setHours(startH, startM, startS, 0);
 
             globalTimerInterval = setInterval(() => {
                 const now = new Date();
-                let diffSec = Math.floor((now - startDate) / 1000);
-                if (diffSec < 0) diffSec = 0;
+                let currentSessionSecs = Math.floor((now - startDate) / 1000);
+                if (currentSessionSecs < 0) currentSessionSecs = 0;
 
-                const hours = Math.floor(diffSec / 3600);
-                const minutes = Math.floor((diffSec % 3600) / 60);
-                const seconds = diffSec % 60;
+                const totalSecsToday = baseCompletedSecs + currentSessionSecs;
+
+                const hours = Math.floor(totalSecsToday / 3600);
+                const minutes = Math.floor((totalSecsToday % 3600) / 60);
+                const seconds = totalSecsToday % 60;
 
                 const formatted = 
                     String(hours).padStart(2, '0') + ':' + 
@@ -1068,9 +1114,7 @@
                         photoLoaded = true;
                         break;
                     }
-                } catch (err) {
-                    // Lanjutkan mencoba ekstensi berikutnya jika gagal
-                }
+                } catch (err) {}
             }
 
             if (!photoLoaded) {

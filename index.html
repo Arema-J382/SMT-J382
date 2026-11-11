@@ -234,7 +234,7 @@
                         </div>
                     </div>
 
-                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT (DENGAN TOTAL WAKTU ISTIRAHAT HARI INI & FOTO) -->
+                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT -->
                     <div id="tab-content-team" class="space-y-4 hidden">
                         <div class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
                             <div>
@@ -279,6 +279,77 @@
         let timerInterval = null;
         let globalTimerInterval = null;
         let teamTimerInterval = null;
+
+        // =========================================================================
+        // PENGATURAN WAKTU THRESHOLD NOTIFIKASI & ALARM (DALAM MENIT)
+        // Anda dapat mengedit nilai variabel di bawah ini di kemudian hari:
+        // =========================================================================
+        const BREAK_ALERT_MINUTE_1 = 45; // Batas waktu pertama (45 Menit)
+        const BREAK_ALERT_MINUTE_2 = 60; // Batas waktu kedua (60 Menit)
+        // =========================================================================
+
+        let alertTriggered45 = false;
+        let alertTriggered60 = false;
+
+        function resetBreakAlerts() {
+            alertTriggered45 = false;
+            alertTriggered60 = false;
+        }
+
+        // Fungsi pemicu Notifikasi Web & Audio dari Supabase Storage (bucket: sound_break, file: war.mp3)
+        function triggerBreakAlert() {
+            if (!("Notification" in window)) return;
+
+            // Mengambil URL publik dari bucket Supabase 'sound_break' dengan nama file 'war.mp3'
+            const { data } = supabaseClient.storage.from('sound_break').getPublicUrl('war.mp3');
+            const audioUrl = data ? data.publicUrl : '';
+
+            if (Notification.permission === 'granted') {
+                const notification = new Notification("Portal Karyawan", {
+                    body: "WAKTUNYA KEMBALI BEKERJA",
+                    icon: "" 
+                });
+
+                const audio = new Audio(audioUrl);
+                let playCount = 0;
+                const maxLoops = 2; // Looping 2x saja
+
+                // Sinkronisasi: Saat notifikasi dihilangkan secara paksa (CLOSE), sound berhenti
+                notification.onclose = () => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                };
+
+                // Looping audio sebanyak 2x
+                audio.onended = () => {
+                    playCount++;
+                    if (playCount < maxLoops) {
+                        audio.play().catch(e => console.log("Audio play error:", e));
+                    } else {
+                        // Sinkronisasi: Jika sound berhenti, notifikasi juga otomatis hilang
+                        notification.close();
+                    }
+                };
+
+                audio.play().catch(e => {
+                    console.log("Audio playback blocked or failed:", e);
+                });
+            }
+        }
+
+        // Pengecekan batas waktu durasi istirahat saat berjalan
+        function checkBreakThresholds(totalSecsToday) {
+            const totalMinutes = totalSecsToday / 60;
+
+            if (totalMinutes >= BREAK_ALERT_MINUTE_1 && !alertTriggered45) {
+                alertTriggered45 = true;
+                triggerBreakAlert();
+            }
+            if (totalMinutes >= BREAK_ALERT_MINUTE_2 && !alertTriggered60) {
+                alertTriggered60 = true;
+                triggerBreakAlert();
+            }
+        }
 
         // Cek sesi login saat halaman dimuat
         window.addEventListener('DOMContentLoaded', async () => {
@@ -334,7 +405,7 @@
                 .subscribe();
         }
 
-        // Fungsi Membunyikan Alarm Web
+        // Fungsi Membunyikan Alarm Web (Tes Manual)
         function playAlarmSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -460,7 +531,7 @@
             }
         }
 
-        // --- LOGIKA DATA TEAM ISTIRAHAT (TOTAL WAKTU ISTIRAHAT HARI INI + FOTO) ---
+        // --- LOGIKA DATA TEAM ISTIRAHAT ---
         async function loadTeamIstirahatData() {
             const today = new Date().toISOString().split('T')[0];
             const container = document.getElementById('team-istirahat-list-container');
@@ -469,7 +540,6 @@
             container.innerHTML = `<p class="text-slate-400 text-center py-4">Memuat data tim...</p>`;
 
             try {
-                // Ambil SEMUA data istirahat hari ini untuk kalkulasi total waktu istirahat setiap karyawan
                 const { data: allRecords, error: errIstirahat } = await supabaseClient
                     .from('data_istirahat')
                     .select('*')
@@ -477,8 +547,8 @@
 
                 if (errIstirahat) throw errIstirahat;
 
-                const activeMap = {}; // nip -> active record
-                const completedSecsMap = {}; // nip -> total completed seconds today
+                const activeMap = {}; 
+                const completedSecsMap = {}; 
 
                 if (allRecords) {
                     allRecords.forEach(item => {
@@ -507,7 +577,6 @@
                     return;
                 }
 
-                // Ambil data nama karyawan
                 const { data: karData, error: errKar } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar');
@@ -600,7 +669,6 @@
             }
         }
 
-        // Timer berjalan untuk Team Istirahat (Menampilkan Total Istirahat Hari Ini)
         function startTeamLiveTimers() {
             if (teamTimerInterval) clearInterval(teamTimerInterval);
 
@@ -735,7 +803,6 @@
 
                 const activeRecord = data ? data.find(item => !item.jam_selesai) : null;
 
-                // Hitung total detik dari completed breaks hari ini
                 let completedSecs = 0;
                 if (data) {
                     data.forEach(item => {
@@ -853,6 +920,9 @@
 
                 const totalSecsToday = baseCompletedSecs + currentSessionSecs;
 
+                // Periksa apakah mencapai threshold waktu yang ditentukan (45 & 60 menit)
+                checkBreakThresholds(totalSecsToday);
+
                 const hours = Math.floor(totalSecsToday / 3600);
                 const minutes = Math.floor((totalSecsToday % 3600) / 60);
                 const seconds = totalSecsToday % 60;
@@ -890,6 +960,9 @@
 
                 const totalSecsToday = baseCompletedSecs + currentSessionSecs;
 
+                // Periksa apakah mencapai threshold waktu yang ditentukan (45 & 60 menit)
+                checkBreakThresholds(totalSecsToday);
+
                 const hours = Math.floor(totalSecsToday / 3600);
                 const minutes = Math.floor((totalSecsToday % 3600) / 60);
                 const seconds = totalSecsToday % 60;
@@ -916,6 +989,9 @@
                               String(now.getSeconds()).padStart(2, '0');
 
             const keterangan = document.getElementById('istirahat-keterangan').value;
+
+            // Reset status alarm threshold saat memulai sesi baru
+            resetBreakAlerts();
 
             try {
                 const { error } = await supabaseClient

@@ -21,6 +21,10 @@
             -webkit-overflow-scrolling: touch;
         }
     </style>
+    <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col justify-center items-center p-0 sm:p-4">
 
@@ -296,6 +300,187 @@
             alertTriggered60 = false;
         }
 
+        // =========================================================================
+        // WEB PUSH (BERJALAN WALAU TAB DITUTUP / LAYAR HP MATI)
+        // VAPID_PUBLIC_KEY harus pasangan dari VAPID_PRIVATE_KEY di Supabase Edge Function.
+        // =========================================================================
+        const VAPID_PUBLIC_KEY = 'BIPI_SPnl26l3peYek3V1SqvZVEmzrr9sg5m5sZLVWAXndXBkXNlEwktZ7pduc3lzxwx9dbeQ19UAUosJXuDIAA';
+
+        let currentBreakAudio = null;
+        let currentBreakNotification = null;
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const raw = atob(base64);
+            const out = new Uint8Array(raw.length);
+            for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+            return out;
+        }
+
+        async function registerServiceWorker() {
+            if (!('serviceWorker' in navigator)) return null;
+            try {
+                return await navigator.serviceWorker.register('/sw.js');
+            } catch (e) {
+                console.error('Gagal mendaftarkan service worker:', e);
+                return null;
+            }
+        }
+
+        // Pesan dari service worker (push diterima saat aplikasi terbuka / notifikasi ditutup)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                const msg = event.data || {};
+                if (msg.type === 'BREAK_ALERT_CLOSED') {
+                    stopBreakAlertSound();
+                } else if (msg.type === 'BREAK_ALERT_PUSH') {
+                    // Cadangan: jika timer lokal belum memicu alarm, picu sekarang
+                    if (msg.alertNo === 1 && !alertTriggered45) { alertTriggered45 = true; triggerBreakAlert(); }
+                    if (msg.alertNo === 2 && !alertTriggered60) { alertTriggered60 = true; triggerBreakAlert(); }
+                }
+            });
+        }
+
+        // Daftarkan perangkat ini ke push server (dipanggil saat login / halaman dimuat)
+        async function ensurePushSubscription(nipParam) {
+            try {
+                if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return;
+                if (Notification.permission !== 'granted') return;
+
+                const nip = Number(nipParam || localStorage.getItem('emp_nip'));
+                if (!nip) return;
+
+                await registerServiceWorker();
+                const reg = await navigator.serviceWorker.ready;
+
+                let sub = await reg.pushManager.getSubscription();
+                if (!sub) {
+                    sub = await reg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                    });
+                }
+
+                const json = sub.toJSON();
+                const { error } = await supabaseClient
+                    .from('push_subscriptions')
+                    .upsert({
+                        nip: nip,
+                        endpoint: json.endpoint,
+                        p256dh: json.keys.p256dh,
+                        auth: json.keys.auth
+                    }, { onConflict: 'endpoint' });
+
+                if (error) console.error('Gagal menyimpan push subscription:', error.message);
+            } catch (e) {
+                console.error('Gagal mengaktifkan push notifikasi:', e);
+            }
+        }
+
+        // Jadwalkan alarm di server berdasarkan sisa waktu menuju threshold
+        async function scheduleBreakPush(nipParam, baseCompletedSecs, startTimeStr) {
+            try {
+                if (!('Notification' in window) || Notification.permission !== 'granted') return;
+                const nip = Number(nipParam);
+                if (!nip || !startTimeStr) return;
+
+                const [h, m, sec = 0] = startTimeStr.split(':').map(Number);
+                const startDate = new Date();
+                startDate.setHours(h, m, sec, 0);
+
+                const nowMs = Date.now();
+                const rows = [];
+                [[1, BREAK_ALERT_MINUTE_1], [2, BREAK_ALERT_MINUTE_2]].forEach(([no, minutes]) => {
+                    const fireMs = startDate.getTime() + (minutes * 60 - baseCompletedSecs) * 1000;
+                    if (fireMs > nowMs - 2000) {
+                        rows.push({ nip: nip, alert_no: no, fire_at: new Date(fireMs).toISOString() });
+                    }
+                });
+
+                await supabaseClient.from('break_alert_schedule')
+                    .delete().eq('nip', nip).eq('sent', false);
+
+                if (rows.length > 0) {
+                    const { error } = await supabaseClient.from('break_alert_schedule')
+                        .upsert(rows, { onConflict: 'nip,alert_no,fire_at', ignoreDuplicates: true });
+                    if (error) console.error('Gagal menjadwalkan push:', error.message);
+                }
+            } catch (e) {
+                console.error('Gagal menjadwalkan push:', e);
+            }
+        }
+
+        // Batalkan jadwal alarm yang belum terkirim (istirahat selesai / logout)
+        async function cancelBreakPush(nipParam) {
+            try {
+                const nip = Number(nipParam || localStorage.getItem('emp_nip'));
+                if (!nip) return;
+                await supabaseClient.from('break_alert_schedule')
+                    .delete().eq('nip', nip).eq('sent', false);
+            } catch (e) {
+                console.error('Gagal membatalkan jadwal push:', e);
+            }
+        }
+
+        async function removePushSubscriptionRow() {
+            try {
+                if (!('serviceWorker' in navigator)) return;
+                const reg = await navigator.serviceWorker.getRegistration();
+                const sub = reg ? await reg.pushManager.getSubscription() : null;
+                if (sub) {
+                    await supabaseClient.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+                }
+            } catch (e) {}
+        }
+
+        function stopBreakAlertSound() {
+            if (currentBreakAudio) {
+                currentBreakAudio.pause();
+                currentBreakAudio.currentTime = 0;
+            }
+        }
+
+        async function closeBreakNotification() {
+            try { if (currentBreakNotification) currentBreakNotification.close(); } catch (e) {}
+            currentBreakNotification = null;
+            try {
+                if ('serviceWorker' in navigator) {
+                    const reg = await navigator.serviceWorker.getRegistration();
+                    if (reg) {
+                        const list = await reg.getNotifications({ tag: 'break-alert' });
+                        list.forEach(n => n.close());
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // Tampilkan notifikasi: constructor (desktop) -> fallback service worker (Android/Chrome mobile)
+        async function showBreakNotification() {
+            const options = {
+                body: "WAKTUNYA KEMBALI BEKERJA",
+                icon: "",
+                tag: 'break-alert',
+                renotify: true,
+                requireInteraction: true,
+                vibrate: [500, 200, 500, 200, 500]
+            };
+            try {
+                const n = new Notification("Portal Karyawan", options);
+                n.onclose = () => stopBreakAlertSound();
+                currentBreakNotification = n;
+                return;
+            } catch (e) {
+                // Android Chrome tidak mengizinkan new Notification(), pakai service worker
+            }
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                await reg.showNotification("Portal Karyawan", options);
+            } catch (e) {
+                console.log("Gagal menampilkan notifikasi:", e);
+            }
+        }
+
         // Fungsi pemicu Notifikasi Web & Audio dari Supabase Storage (bucket: sound_break, file: war.mp3)
         function triggerBreakAlert() {
             if (!("Notification" in window)) return;
@@ -305,20 +490,12 @@
             const audioUrl = data ? data.publicUrl : '';
 
             if (Notification.permission === 'granted') {
-                const notification = new Notification("Portal Karyawan", {
-                    body: "WAKTUNYA KEMBALI BEKERJA",
-                    icon: "" 
-                });
+                showBreakNotification();
 
                 const audio = new Audio(audioUrl);
+                currentBreakAudio = audio;
                 let playCount = 0;
                 const maxLoops = 2; // Looping 2x saja
-
-                // Sinkronisasi: Saat notifikasi dihilangkan secara paksa (CLOSE), sound berhenti
-                notification.onclose = () => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                };
 
                 // Looping audio sebanyak 2x
                 audio.onended = () => {
@@ -327,7 +504,7 @@
                         audio.play().catch(e => console.log("Audio play error:", e));
                     } else {
                         // Sinkronisasi: Jika sound berhenti, notifikasi juga otomatis hilang
-                        notification.close();
+                        closeBreakNotification();
                     }
                 };
 
@@ -355,10 +532,12 @@
         window.addEventListener('DOMContentLoaded', async () => {
             const savedNip = localStorage.getItem('emp_nip');
             const savedNama = localStorage.getItem('emp_nama');
+            await registerServiceWorker();
             if (savedNip && savedNama) {
                 await fetchLatestUserData(savedNip);
                 showMainMenu(localStorage.getItem('emp_nama'), savedNip);
                 setupRealtimeSync(savedNip);
+                ensurePushSubscription(savedNip);
             }
         });
 
@@ -468,6 +647,7 @@
                 updatePermissionUI();
                 if (newPermission === 'granted') {
                     alert("Perizinan berhasil diaktifkan!");
+                    ensurePushSubscription();
                 }
             }
         }
@@ -758,8 +938,11 @@
                         timerEl.classList.remove('hidden');
 
                         startGlobalLiveTimer(completedSecs, activeRecord.jam_mulai);
+                        scheduleBreakPush(nip, completedSecs, activeRecord.jam_mulai);
                         return;
                     }
+                    // Tidak ada istirahat aktif: pastikan tidak ada jadwal push tersisa
+                    cancelBreakPush(nip);
                 }
 
                 activeIstirahatId = null;
@@ -1056,6 +1239,7 @@
 
                 if (error) throw error;
 
+                cancelBreakPush(localStorage.getItem('emp_nip'));
                 alert("Waktu istirahat selesai.");
                 activeIstirahatId = null;
                 activeStartTime = null;
@@ -1128,6 +1312,8 @@
 
                 localStorage.setItem('emp_nip', data.nip_kar);
                 localStorage.setItem('emp_nama', namaKaryawan);
+
+                ensurePushSubscription(data.nip_kar);
 
                 setupRealtimeSync(data.nip_kar);
                 showMainMenu(namaKaryawan, data.nip_kar);
@@ -1213,6 +1399,9 @@
             if (globalTimerInterval) clearInterval(globalTimerInterval);
             if (teamTimerInterval) clearInterval(teamTimerInterval);
             
+            cancelBreakPush(localStorage.getItem('emp_nip'));
+            removePushSubscriptionRow();
+
             localStorage.removeItem('emp_nip');
             localStorage.removeItem('emp_nama');
 

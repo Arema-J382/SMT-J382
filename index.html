@@ -16,6 +16,10 @@
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Optimalisasi touch scrolling untuk iOS & Android */
+        .touch-scroll {
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col justify-center items-center p-0 sm:p-4">
@@ -24,13 +28,13 @@
     <div class="w-full sm:max-w-md bg-white sm:rounded-3xl shadow-none sm:shadow-xl overflow-hidden flex flex-col min-h-screen sm:min-h-[650px] border-0 sm:border border-slate-200">
         
         <!-- HEADER -->
-        <div class="bg-indigo-600 text-white p-6 pb-8 rounded-b-3xl shadow-md relative">
+        <div class="bg-indigo-600 text-white p-6 pb-8 rounded-b-3xl shadow-md relative shrink-0">
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-xl font-bold tracking-wide" id="header-title">Portal Karyawan</h1>
                     <p class="text-indigo-200 text-xs mt-0.5" id="header-subtitle">Silakan masukkan NIP Anda untuk masuk</p>
                 </div>
-                <button onclick="handleLogout()" id="logout-btn-header" class="hidden bg-indigo-500/80 hover:bg-indigo-500 text-white p-2 rounded-xl text-xs font-medium transition active:scale-95 flex items-center gap-1">
+                <button onclick="handleLogout()" id="logout-btn-header" class="hidden bg-indigo-500/80 hover:bg-indigo-500 text-white p-2 rounded-xl text-xs font-medium transition active:scale-95 flex items-center gap-1 shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     Keluar
                 </button>
@@ -38,7 +42,7 @@
         </div>
 
         <!-- KONTEN UTAMA -->
-        <div class="flex-1 flex flex-col p-5 overflow-y-auto">
+        <div class="flex-1 flex flex-col p-4 sm:p-5 overflow-y-auto touch-scroll pb-8 sm:pb-5">
 
             <!-- BAGIAN 1: FORM LOGIN -->
             <div id="login-section" class="flex-1 flex flex-col justify-center fade-in">
@@ -66,7 +70,7 @@
             </div>
 
             <!-- KARTU PROFIL PEGAWAI PERSISTEN (SELALU TAMPIL DI SEMUA MENU SETELAH LOGIN) -->
-            <div id="persistent-profile-container" class="hidden mb-4 fade-in">
+            <div id="persistent-profile-container" class="hidden mb-4 fade-in shrink-0">
                 <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-3.5">
                     <div class="w-12 h-12 relative rounded-xl overflow-hidden shadow-md flex items-center justify-center bg-indigo-600 text-white font-bold text-lg shrink-0">
                         <img id="user-photo" src="" alt="Foto Sales" class="w-full h-full object-cover hidden">
@@ -89,11 +93,11 @@
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider px-1">Status Sistem Perangkat</p>
                         <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
                             <span class="text-slate-600 flex items-center gap-2">📱 Perizinan Aplikasi</span>
-                            <span id="status-notif" onclick="handleStatusClick()" class="font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 cursor-pointer transition hover:opacity-80">Memeriksa...</span>
+                            <span id="status-notif" onclick="handleStatusClick()" class="font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 cursor-pointer transition hover:opacity-80">Memeriksa...</span>
                         </div>
                         <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
                             <span class="text-slate-600 flex items-center gap-2">⚡ Token & Supabase Sync</span>
-                            <span class="font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Tersinkronisasi</span>
+                            <span class="font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Tersinkronisasi</span>
                         </div>
                     </div>
 
@@ -145,7 +149,7 @@
 
                 </div>
 
-                <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                <div class="mt-6 pt-4 border-t border-slate-100 text-center shrink-0">
                     <p class="text-[11px] text-slate-400">Terhubung ke Supabase • Vercel Ready</p>
                 </div>
             </div>
@@ -155,7 +159,7 @@
                 <div class="space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200">
                         <div class="flex items-center gap-2">
-                            <button onclick="closeIstirahatMenu()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                            <button onclick="closeIstirahatMenu()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                             </button>
                             <h2 class="font-bold text-slate-800 text-base">Menu Istirahat</h2>
@@ -174,7 +178,7 @@
                         </div>
 
                         <div id="istirahat-btn-wrapper" class="pt-1">
-                            <button onclick="handleMulaiIstirahat()" id="btn-mulai-istirahat" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition text-xs">
+                            <button onclick="handleMulaiIstirahat()" id="btn-mulai-istirahat" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition active:scale-95 text-xs">
                                 Mulai Istirahat
                             </button>
                         </div>
@@ -183,16 +187,16 @@
                     <!-- TAMPILAN TIMER BERJALAN BESAR DI ATAS TOTAL -->
                     <div id="large-timer-card" class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 shadow-sm text-center hidden">
                         <p class="text-[11px] text-amber-700 font-bold uppercase tracking-wider mb-1">⏱️ Waktu Istirahat Berlangsung</p>
-                        <h2 id="large-timer-display" class="text-3xl font-black text-amber-800 tracking-wider font-mono">00:00:00</h2>
+                        <h2 id="large-timer-display" class="text-2xl sm:text-3xl font-black text-amber-800 tracking-wider font-mono">00:00:00</h2>
                     </div>
 
                     <!-- Informasi Total Istirahat Hari Ini -->
                     <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-3.5 shadow-sm flex justify-between items-center">
                         <div>
                             <p class="text-[11px] text-emerald-600 font-bold uppercase tracking-wider">Total Istirahat Hari Ini</p>
-                            <h3 id="total-istirahat-text" class="text-base font-bold text-slate-800">0 Jam 0 Menit 0 Detik</h3>
+                            <h3 id="total-istirahat-text" class="text-sm sm:text-base font-bold text-slate-800">0 Jam 0 Menit 0 Detik</h3>
                         </div>
-                        <div class="w-9 h-9 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md">
+                        <div class="w-9 h-9 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                     </div>
@@ -200,13 +204,13 @@
                     <!-- Riwayat & Durasi Istirahat -->
                     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5">
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Riwayat & Durasi Istirahat Hari Ini</p>
-                        <div id="istirahat-history-container" class="space-y-2 max-h-40 overflow-y-auto text-xs pr-1">
+                        <div id="istirahat-history-container" class="space-y-2 max-h-52 overflow-y-auto touch-scroll text-xs pr-1">
                             <p class="text-slate-400 text-center py-3">Memuat riwayat...</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-4 pt-3 border-t border-slate-100 text-center">
+                <div class="mt-4 pt-3 border-t border-slate-100 text-center shrink-0">
                     <p class="text-[11px] text-slate-400">Terhubung ke Supabase • Vercel Ready</p>
                 </div>
             </div>
@@ -357,10 +361,10 @@
 
             if (Notification.permission === 'granted') {
                 statusNotifEl.innerText = 'Diizinkan';
-                statusNotifEl.className = 'font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 cursor-pointer transition hover:opacity-80';
+                statusNotifEl.className = 'font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 cursor-pointer transition hover:opacity-80';
             } else {
                 statusNotifEl.innerText = 'Ditolak / Blokir';
-                statusNotifEl.className = 'font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 cursor-pointer transition hover:opacity-80';
+                statusNotifEl.className = 'font-semibold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 cursor-pointer transition hover:opacity-80';
             }
         }
 
@@ -413,7 +417,7 @@
                     keteranganSelect.value = activeRecord.keterangan;
                     keteranganSelect.disabled = true;
                     btnWrapper.innerHTML = `
-                        <button onclick="handleSelesaiIstirahat()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition text-xs">
+                        <button onclick="handleSelesaiIstirahat()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition active:scale-95 text-xs">
                             Selesai Istirahat (${activeRecord.keterangan})
                         </button>
                     `;
@@ -425,7 +429,7 @@
                     activeStartTime = null;
                     keteranganSelect.disabled = false;
                     btnWrapper.innerHTML = `
-                        <button onclick="handleMulaiIstirahat()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition text-xs">
+                        <button onclick="handleMulaiIstirahat()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition active:scale-95 text-xs">
                             Mulai Istirahat
                         </button>
                     `;
@@ -443,33 +447,42 @@
                 let html = '';
                 
                 data.forEach(item => {
-                    let durasiTampil = item.durasi || '-';
+                    let durasiTampil = '-';
                     let badgeClass = 'bg-emerald-100 text-emerald-700 font-mono';
+
+                    // Pastikan format jam mulai dan selesai selalu lengkap (HH:MM:SS)
+                    const mulainya = item.jam_mulai ? (item.jam_mulai.split(':').length === 2 ? item.jam_mulai + ':00' : item.jam_mulai) : '-';
+                    const selesainya = item.jam_selesai ? (item.jam_selesai.split(':').length === 2 ? item.jam_selesai + ':00' : item.jam_selesai) : '-';
 
                     if (!item.jam_selesai) {
                         durasiTampil = '<span class="inline-timer-badge">00:00:00</span>';
                         badgeClass = 'bg-amber-100 text-amber-700 font-mono animate-pulse';
                     } else {
-                        // Kalkulasi detik total jika format durasi teks tersedia
-                        if (item.jam_mulai && item.jam_selesai) {
-                            const [h1, m1, s1 = 0] = item.jam_mulai.split(':').map(Number);
-                            const [h2, m2, s2 = 0] = item.jam_selesai.split(':').map(Number);
-                            const diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
-                            if (diff > 0) totalSecsAll += diff;
+                        // Kalkulasi akurat jam, menit, dan detik dari jam mulai dan selesai
+                        if (mulainya !== '-' && selesainya !== '-') {
+                            const [h1, m1, s1 = 0] = mulainya.split(':').map(Number);
+                            const [h2, m2, s2 = 0] = selesainya.split(':').map(Number);
+                            let diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+                            if (diff < 0) diff = 0;
+                            
+                            totalSecsAll += diff;
+
+                            const dh = Math.floor(diff / 3600);
+                            const dm = Math.floor((diff % 3600) / 60);
+                            const ds = diff % 60;
+                            durasiTampil = `${dh} Jam ${dm} Menit ${ds} Detik`;
+                        } else if (item.durasi) {
+                            durasiTampil = item.durasi;
                         }
                     }
 
-                    // Tampilkan format lengkap jam, menit, detik untuk waktu mulai dan selesai
-                    const mulainya = item.jam_mulai ? item.jam_mulai : '-';
-                    const selesainya = item.jam_selesai ? item.jam_selesai : '-';
-
                     html += `
-                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <div>
-                                <span class="font-bold text-indigo-600 uppercase tracking-wide">${item.keterangan}</span>
-                                <p class="text-[11px] text-slate-500 mt-0.5">Mulai: ${mulainya} &bull; Selesai: ${selesainya}</p>
+                                <span class="font-bold text-indigo-600 uppercase tracking-wide text-xs">${item.keterangan}</span>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Mulai: <span class="font-medium text-slate-700">${mulainya}</span> &bull; Selesai: <span class="font-medium text-slate-700">${selesainya}</span></p>
                             </div>
-                            <div class="text-right">
+                            <div class="self-end sm:self-auto text-right">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${badgeClass}">
                                     ${durasiTampil}
                                 </span>
@@ -480,7 +493,7 @@
 
                 container.innerHTML = html;
 
-                // Format total keseluruhan hari ini ke Jam, Menit, Detik
+                // Format total keseluruhan hari ini ke Jam, Menit, Detik secara lengkap
                 const th = Math.floor(totalSecsAll / 3600);
                 const tm = Math.floor((totalSecsAll % 3600) / 60);
                 const ts = totalSecsAll % 60;
@@ -581,7 +594,9 @@
                     const m2 = now.getMinutes();
                     const s2 = now.getSeconds();
 
-                    const totalSecs = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+                    let totalSecs = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+                    if (totalSecs < 0) totalSecs = 0;
+
                     const dh = Math.floor(totalSecs / 3600);
                     const dm = Math.floor((totalSecs % 3600) / 60);
                     const ds = totalSecs % 60;

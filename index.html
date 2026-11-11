@@ -101,7 +101,7 @@
                         </div>
                     </div>
 
-                    <!-- Grid Menu Utama (Kembali 4 Menu Standar dengan Warna & Animasi Card) -->
+                    <!-- Grid Menu Utama -->
                     <div>
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 px-1">Menu Layanan</p>
                         <div id="menu-grid" class="grid grid-cols-2 gap-3">
@@ -165,7 +165,7 @@
                 </div>
             </div>
 
-            <!-- BAGIAN 3: MENU ISTIRAHAT KARYAWAN (BERISI 2 SUB-MENU TAB: "ISTIRAHAT" & "TEAM ISTIRAHAT") -->
+            <!-- BAGIAN 3: MENU UTAMA "ISTIRAHAT KARYAWAN" DENGAN 2 SUB-MENU TAB ("ISTIRAHAT" & "TEAM ISTIRAHAT") -->
             <div id="istirahat-section" class="flex-1 flex flex-col justify-between hidden fade-in">
                 <div class="space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200">
@@ -234,7 +234,7 @@
                         </div>
                     </div>
 
-                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT (TAMPIL DI BAWAHNYA) -->
+                    <!-- KONTEN SUB-MENU 2: TEAM ISTIRAHAT (DITAMPILKAN DI BAWAHNYA) -->
                     <div id="tab-content-team" class="space-y-4 hidden">
                         <div class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
                             <div>
@@ -333,7 +333,7 @@
                 .subscribe();
         }
 
-        // Fungsi Membunyikan Alarm Web (Hanya dipanggil manual via tombol tes)
+        // Fungsi Membunyikan Alarm Web
         function playAlarmSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -383,7 +383,6 @@
             return permission;
         }
 
-        // Handler saat teks status diklik
         async function handleStatusClick() {
             if (!("Notification" in window)) {
                 alert("Browser perangkat ini tidak mendukung perizinan aplikasi.");
@@ -403,7 +402,6 @@
             }
         }
 
-        // Memperbarui UI Status Perizinan
         function updatePermissionUI() {
             const statusNotifEl = document.getElementById('status-notif');
 
@@ -438,7 +436,7 @@
             if (nip) checkActiveBreakStatus(nip);
         }
 
-        // --- PENGALIH TAB DI DALAM MENU ISTIRAHAT KARYAWAN ("ISTIRAHAT" vs "TEAM ISTIRAHAT") ---
+        // --- PENGALIH TAB DI DALAM MENU ISTIRAHAT KARYAWAN ---
         function switchIstirahatTab(tabName) {
             const btnPribadi = document.getElementById('tab-btn-pribadi');
             const btnTeam = document.getElementById('tab-btn-team');
@@ -461,7 +459,7 @@
             }
         }
 
-        // --- LOGIKA DATA TEAM ISTIRAHAT ---
+        // --- LOGIKA DATA TEAM ISTIRAHAT (MENGGUNAKAN SAFE SEPARATE FETCH) ---
         async function loadTeamIstirahatData() {
             const today = new Date().toISOString().split('T')[0];
             const container = document.getElementById('team-istirahat-list-container');
@@ -470,31 +468,40 @@
             container.innerHTML = `<p class="text-slate-400 text-center py-4">Memuat data tim...</p>`;
 
             try {
-                const { data, error } = await supabaseClient
+                // 1. Ambil data istirahat yang sedang aktif hari ini
+                const { data: istirahatData, error: errIstirahat } = await supabaseClient
                     .from('data_istirahat')
-                    .select(`
-                        id,
-                        nip,
-                        jam_mulai,
-                        keterangan,
-                        data_karyawan (nama_kar)
-                    `)
+                    .select('*')
                     .eq('tanggal', today)
                     .is('jam_selesai', null)
                     .order('jam_mulai', { ascending: false });
 
-                if (error) throw error;
+                if (errIstirahat) throw errIstirahat;
 
-                countText.innerText = `${data ? data.length : 0} Orang Aktif`;
+                countText.innerText = `${istirahatData ? istirahatData.length : 0} Orang Aktif`;
 
-                if (!data || data.length === 0) {
+                if (!istirahatData || istirahatData.length === 0) {
                     container.innerHTML = `<p class="text-slate-400 text-center py-4">Tidak ada karyawan yang sedang beristirahat saat ini.</p>`;
                     return;
                 }
 
+                // 2. Ambil data nama karyawan untuk dicocokkan
+                const { data: karData, error: errKar } = await supabaseClient
+                    .from('data_karyawan')
+                    .select('nip_kar, nama_kar');
+
+                if (errKar) throw errKar;
+
+                const karMap = {};
+                if (karData) {
+                    karData.forEach(k => {
+                        karMap[k.nip_kar] = k.nama_kar;
+                    });
+                }
+
                 let html = '';
-                data.forEach(item => {
-                    const nama = item.data_karyawan?.nama_kar || `NIP: ${item.nip}`;
+                istirahatData.forEach(item => {
+                    const nama = karMap[item.nip] || `NIP: ${item.nip}`;
                     const jamMulai = item.jam_mulai ? (item.jam_mulai.split(':').length === 3 ? item.jam_mulai.substring(0, 5) : item.jam_mulai) : '-';
                     const initial = nama.charAt(0).toUpperCase();
 
@@ -522,7 +529,7 @@
                 container.innerHTML = html;
             } catch (err) {
                 console.error("Gagal memuat team istirahat:", err.message);
-                container.innerHTML = `<p class="text-rose-500 text-center py-4">Gagal memuat data team istirahat.</p>`;
+                container.innerHTML = `<p class="text-rose-500 text-center py-4">Gagal memuat team istirahat.</p>`;
             }
         }
 

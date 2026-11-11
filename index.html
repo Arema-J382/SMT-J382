@@ -86,11 +86,11 @@
                     <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm space-y-2.5">
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider px-1">Status Sistem Perangkat</p>
                         <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
-                            <span class="text-slate-600 flex items-center gap-2">粕 Perizinan Aplikasi</span>
+                            <span class="text-slate-600 flex items-center gap-2">📱 Perizinan Aplikasi</span>
                             <span id="status-notif" class="font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Memeriksa...</span>
                         </div>
                         <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
-                            <span class="text-slate-600 flex items-center gap-2">導 Token & Supabase Sync</span>
+                            <span class="text-slate-600 flex items-center gap-2">⚡ Token & Supabase Sync</span>
                             <span class="font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Tersinkronisasi</span>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-                    <p class="text-[11px] text-slate-400">Terhubung ke Supabase 窶｢ Vercel Ready</p>
+                    <p class="text-[11px] text-slate-400">Terhubung ke Supabase • Vercel Ready</p>
                 </div>
             </div>
 
@@ -154,23 +154,69 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI SUPABASE ---
-        // Ganti URL dan Anon Key dengan kredensial dari project Supabase Anda
         const SUPABASE_URL = 'https://vxsopsnopeurnxdkfsbe.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4c29wc25vcGV1cm54ZGtmc2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NzM4MjgsImV4cCI6MjEwOTE0OTgyOH0.53GRhBd5Pvjjcqbh4M9ok7HKfqJs7klyxPqomXMEzus'; 
 
-        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        let realtimeChannel = null;
+
         // Cek sesi login saat halaman dimuat
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             const savedNip = localStorage.getItem('emp_nip');
             const savedNama = localStorage.getItem('emp_nama');
             if (savedNip && savedNama) {
-                showMainMenu(savedNama, savedNip);
+                // Ambil data terbaru secara real-time saat halaman dimuat ulang
+                await fetchLatestUserData(savedNip);
+                showMainMenu(localStorage.getItem('emp_nama'), savedNip);
+                setupRealtimeSync(savedNip);
             }
         });
 
-        // Fungsi Membunyikan Alarm Web (Web Audio API)
+        // Ambil data terbaru dari database
+        async function fetchLatestUserData(nip) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('data_karyawan')
+                    .select('nip_kar, nama_kar')
+                    .eq('nip_kar', nip)
+                    .maybeSingle();
+
+                if (!error && data) {
+                    localStorage.setItem('emp_nama', data.nama_kar);
+                    document.getElementById('user-nama').innerText = data.nama_kar;
+                    document.getElementById('user-initials').innerText = data.nama_kar.charAt(0).toUpperCase();
+                }
+            } catch (e) {
+                console.error("Gagal memperbarui data:", e);
+            }
+        }
+
+        // Sinkronisasi Realtime Supabase
+        function setupRealtimeSync(nip) {
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+            }
+
+            realtimeChannel = supabaseClient
+                .channel('public:data_karyawan:' + nip)
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'data_karyawan',
+                    filter: `nip_kar=eq.${nip}`
+                }, payload => {
+                    if (payload.new && payload.new.nama_kar) {
+                        const updatedNama = payload.new.nama_kar;
+                        localStorage.setItem('emp_nama', updatedNama);
+                        document.getElementById('user-nama').innerText = updatedNama;
+                        document.getElementById('user-initials').innerText = updatedNama.charAt(0).toUpperCase();
+                    }
+                })
+                .subscribe();
+        }
+
+        // Fungsi Membunyikan Alarm Web (Web Audio API) - Hanya berjalan manual saat tombol tes diklik
         function playAlarmSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -200,7 +246,7 @@
             alert(`Fitur "${menuName}" sedang dipilih.`);
         }
 
-        // Meminta Izin Notifikasi Browser
+        // Meminta Izin Notifikasi Browser (Tanpa memicu bunyi alarm)
         async function requestNotificationPermission() {
             if (!("Notification" in window)) return "Not Supported";
             let permission = Notification.permission;
@@ -224,7 +270,6 @@
                 return;
             }
 
-            // Karena data NIP di database bertipe integer (int8), konversi input ke integer
             const nipInput = parseInt(nipRaw, 10);
             if (isNaN(nipInput)) {
                 errorMsg.innerText = 'NIP harus berupa angka.';
@@ -236,7 +281,7 @@
             loginBtn.innerText = 'Memverifikasi NIP...';
 
             try {
-                // 1. Mencocokkan NIP dengan tabel "data_karyawan" (kolom "nip_kar")
+                // 1. Mencocokkan NIP dengan tabel "data_karyawan"
                 const { data, error } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar')
@@ -253,24 +298,23 @@
 
                 const namaKaryawan = data.nama_kar;
 
-                // 2. Tombol ditekan = Menyetujui izin notifikasi & alarm web
-                const notifPermission = await requestNotificationPermission();
-                playAlarmSound();
+                // 2. Meminta izin notifikasi browser (Tanpa memutar suara alarm/sound apapun)
+                await requestNotificationPermission();
 
-                // 3. Generate Token Perangkat (Berupa angka/integer agar sesuai tipe int8 kolom token di data_employee)
+                // 3. Generate Token Perangkat
                 let deviceToken = localStorage.getItem('device_token_int');
                 if (!deviceToken) {
-                    deviceToken = Math.floor(Math.random() * 900000000) + 100000000; // Angka acak 9 digit
+                    deviceToken = Math.floor(Math.random() * 900000000) + 100000000;
                     localStorage.setItem('device_token_int', deviceToken);
                 }
 
-                // 4. Kirim data ke tabel "data_employee" (kolom: nip, nama, token)
+                // 4. Kirim data ke tabel "data_employee"
                 const { error: insertError } = await supabaseClient
                     .from('data_employee')
                     .upsert({
-                        nip: data.nip_kar,         // Integer
-                        nama: namaKaryawan,        // Text
-                        token: Number(deviceToken) // Integer (int8) sesuai struktur tabel Anda
+                        nip: data.nip_kar,
+                        nama: namaKaryawan,
+                        token: Number(deviceToken)
                     }, { onConflict: 'nip' });
 
                 if (insertError) {
@@ -280,6 +324,9 @@
                 // Simpan sesi login di localStorage HP
                 localStorage.setItem('emp_nip', data.nip_kar);
                 localStorage.setItem('emp_nama', namaKaryawan);
+
+                // Setup Realtime & Masuk ke Menu Utama
+                setupRealtimeSync(data.nip_kar);
 
                 // 5. Masuk ke Menu Utama
                 showMainMenu(namaKaryawan, data.nip_kar);
@@ -293,7 +340,7 @@
             }
         }
 
-        // Tampilkan Tampilan Menu Utama
+        // Tampilkan Tampilan Menu Utama & Muat Foto Otomatis
         function showMainMenu(nama, nip) {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('logout-btn-header').classList.remove('hidden');
@@ -307,7 +354,7 @@
             document.getElementById('user-nip').innerText = `NIP: ${nip}`;
             document.getElementById('user-initials').innerText = nama.charAt(0).toUpperCase();
 
-            // Memuat foto berdasarkan NIP dari bucket Supabase "FOTO SALES"
+            // Memuat Foto secara otomatis dari Bucket "FOTO SALES" dengan fallback ekstensi
             const photoImg = document.getElementById('user-photo');
             const userInitials = document.getElementById('user-initials');
             const photoResult = supabaseClient.storage.from('FOTO SALES').getPublicUrl(nip.toString());
@@ -318,6 +365,10 @@
                         this.dataset.triedJpg = 'true';
                         const jpgResult = supabaseClient.storage.from('FOTO SALES').getPublicUrl(`${nip}.jpg`);
                         this.src = jpgResult.data.publicUrl;
+                    } else if (!this.dataset.triedPng) {
+                        this.dataset.triedPng = 'true';
+                        const pngResult = supabaseClient.storage.from('FOTO SALES').getPublicUrl(`${nip}.png`);
+                        this.src = pngResult.data.publicUrl;
                     } else {
                         this.classList.add('hidden');
                         userInitials.classList.remove('hidden');
@@ -340,6 +391,9 @@
 
         // Fungsi Keluar / Logout
         function handleLogout() {
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+            }
             localStorage.removeItem('emp_nip');
             localStorage.removeItem('emp_nama');
 

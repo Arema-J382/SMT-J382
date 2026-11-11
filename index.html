@@ -11,9 +11,9 @@
     <style>
         /* Mencegah auto-zoom di iOS saat fokus input */
         input, select { font-size: 16px !important; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+        .fade-in { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
         /* Optimalisasi touch scrolling untuk iOS & Android */
@@ -25,10 +25,10 @@
 <body class="bg-slate-100 min-h-screen flex flex-col justify-center items-center p-0 sm:p-4">
 
     <!-- Container Utama Mobile Frame -->
-    <div class="w-full sm:max-w-md bg-white sm:rounded-3xl shadow-none sm:shadow-xl overflow-hidden flex flex-col min-h-screen sm:min-h-[650px] border-0 sm:border border-slate-200">
+    <div class="w-full sm:max-w-md bg-white sm:rounded-3xl shadow-none sm:shadow-2xl overflow-hidden flex flex-col min-h-screen sm:min-h-[650px] border-0 sm:border border-slate-200">
         
         <!-- HEADER -->
-        <div class="bg-indigo-600 text-white p-6 pb-8 rounded-b-3xl shadow-md relative shrink-0">
+        <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-6 pb-8 rounded-b-3xl shadow-lg relative shrink-0">
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-xl font-bold tracking-wide" id="header-title">Portal Karyawan</h1>
@@ -62,7 +62,7 @@
                     </div>
                     
                     <button onclick="handleLogin()" id="login-btn"
-                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-200 transition active:scale-95 text-sm">
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-95 text-sm">
                         Masuk ke Menu Utama
                     </button>
                 </div>
@@ -101,49 +101,60 @@
                         </div>
                     </div>
 
-                    <!-- Grid Menu Utama -->
+                    <!-- Grid Menu Utama dengan Warna & Animasi Card -->
                     <div>
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 px-1">Menu Layanan</p>
                         <div id="menu-grid" class="grid grid-cols-2 gap-3">
-                            <button onclick="handleMenuClick('Istirahat', () => openIstirahatMenu())" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
-                                <div class="w-10 h-10 bg-indigo-50 group-hover:bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-3 transition">
+                            
+                            <!-- Card 1: Istirahat Karyawan (Dinamis Berubah Merah Saat Aktif Istirahat) -->
+                            <button onclick="handleMenuClick('Istirahat', () => openIstirahatMenu())" id="main-menu-istirahat-card" 
+                                class="p-4 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 hover:from-indigo-100 hover:to-blue-100 border border-indigo-100 rounded-2xl text-left flex flex-col justify-between shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 group">
+                                <div id="main-menu-istirahat-icon" class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center mb-3 transition-transform shadow-md group-hover:scale-110">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-slate-800 text-sm">ISTIRAHAT KARYAWAN</h3>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">Catat istirahat</p>
+                                    <h3 id="main-menu-istirahat-title" class="font-bold text-slate-800 text-sm">ISTIRAHAT KARYAWAN</h3>
+                                    <p id="main-menu-istirahat-desc" class="text-[11px] text-indigo-600 font-medium mt-0.5">Catat istirahat</p>
+                                    <p id="main-menu-timer" class="text-[11px] font-mono font-bold text-white mt-1 hidden"></p>
                                 </div>
                             </button>
 
-                            <button onclick="handleMenuClick('Tes Alarm', () => testWebAlarm())" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
-                                <div class="w-10 h-10 bg-amber-50 group-hover:bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-3 transition">
+                            <!-- Card 2: Tes Alarm -->
+                            <button onclick="handleMenuClick('Tes Alarm', () => testWebAlarm())" 
+                                class="p-4 bg-gradient-to-br from-amber-50/80 to-orange-50/80 hover:from-amber-100 hover:to-orange-100 border border-amber-100 rounded-2xl text-left flex flex-col justify-between shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 group">
+                                <div class="w-10 h-10 bg-amber-600 text-white rounded-xl flex items-center justify-center mb-3 transition-transform shadow-md group-hover:scale-110">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                                 </div>
                                 <div>
                                     <h3 class="font-bold text-slate-800 text-sm">Tes Alarm</h3>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">Bunyikan suara</p>
+                                    <p class="text-[11px] text-amber-600 font-medium mt-0.5">Bunyikan suara</p>
                                 </div>
                             </button>
 
-                            <button onclick="handleMenuClick('Informasi & Pengumuman', () => showAlertFeature('Informasi & Pengumuman'))" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
-                                <div class="w-10 h-10 bg-emerald-50 group-hover:bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-3 transition">
+                            <!-- Card 3: Pengumuman -->
+                            <button onclick="handleMenuClick('Informasi & Pengumuman', () => showAlertFeature('Informasi & Pengumuman'))" 
+                                class="p-4 bg-gradient-to-br from-emerald-50/80 to-teal-50/80 hover:from-emerald-100 hover:to-teal-100 border border-emerald-100 rounded-2xl text-left flex flex-col justify-between shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 group">
+                                <div class="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center mb-3 transition-transform shadow-md group-hover:scale-110">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                                 </div>
                                 <div>
                                     <h3 class="font-bold text-slate-800 text-sm">Pengumuman</h3>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">Info perusahaan</p>
+                                    <p class="text-[11px] text-emerald-600 font-medium mt-0.5">Info perusahaan</p>
                                 </div>
                             </button>
 
-                            <button onclick="handleMenuClick('Profil & Pengaturan', () => showAlertFeature('Profil & Pengaturan'))" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
-                                <div class="w-10 h-10 bg-purple-50 group-hover:bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-3 transition">
+                            <!-- Card 4: Pengaturan -->
+                            <button onclick="handleMenuClick('Profil & Pengaturan', () => showAlertFeature('Profil & Pengaturan'))" 
+                                class="p-4 bg-gradient-to-br from-purple-50/80 to-indigo-50/80 hover:from-purple-100 hover:to-indigo-100 border border-purple-100 rounded-2xl text-left flex flex-col justify-between shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 group">
+                                <div class="w-10 h-10 bg-purple-600 text-white rounded-xl flex items-center justify-center mb-3 transition-transform shadow-md group-hover:scale-110">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
                                 <div>
                                     <h3 class="font-bold text-slate-800 text-sm">Pengaturan</h3>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">Akun & Perangkat</p>
+                                    <p class="text-[11px] text-purple-600 font-medium mt-0.5">Akun & Perangkat</p>
                                 </div>
                             </button>
+
                         </div>
                     </div>
 
@@ -177,7 +188,7 @@
                         </div>
 
                         <div id="istirahat-btn-wrapper" class="pt-1">
-                            <button onclick="handleMulaiIstirahat()" id="btn-mulai-istirahat" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition active:scale-95 text-xs">
+                            <button onclick="handleMulaiIstirahat()" id="btn-mulai-istirahat" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition-all active:scale-95 text-xs">
                                 MULAI
                             </button>
                         </div>
@@ -229,6 +240,7 @@
         let activeIstirahatId = null;
         let activeStartTime = null;
         let timerInterval = null;
+        let globalTimerInterval = null;
 
         // Cek sesi login saat halaman dimuat
         window.addEventListener('DOMContentLoaded', async () => {
@@ -382,6 +394,59 @@
             document.getElementById('main-menu-section').classList.remove('hidden');
             document.getElementById('header-title').innerText = 'Menu Utama';
             document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan';
+            const nip = localStorage.getItem('emp_nip');
+            if (nip) checkActiveBreakStatus(nip);
+        }
+
+        // --- CEK STATUS ISTIRAHAT AKTIF UNTUK CARD MENU UTAMA ---
+        async function checkActiveBreakStatus(nip) {
+            const today = new Date().toISOString().split('T')[0];
+            try {
+                const { data, error } = await supabaseClient
+                    .from('data_istirahat')
+                    .select('*')
+                    .eq('nip', nip)
+                    .eq('tanggal', today)
+                    .order('id', { ascending: false });
+
+                const card = document.getElementById('main-menu-istirahat-card');
+                const iconContainer = document.getElementById('main-menu-istirahat-icon');
+                const titleEl = document.getElementById('main-menu-istirahat-title');
+                const descEl = document.getElementById('main-menu-istirahat-desc');
+                const timerEl = document.getElementById('main-menu-timer');
+
+                if (!error && data) {
+                    const activeRecord = data.find(item => !item.jam_selesai);
+                    if (activeRecord) {
+                        activeIstirahatId = activeRecord.id;
+                        activeStartTime = activeRecord.jam_mulai;
+
+                        // Ubah card utama menjadi merah menyala dengan animasi berdenyut (pulse)
+                        card.className = "p-4 bg-gradient-to-br from-rose-600 to-red-700 text-white border border-rose-500 rounded-2xl text-left flex flex-col justify-between shadow-lg shadow-rose-300 transition-all duration-300 hover:scale-[1.02] active:scale-95 group animate-pulse";
+                        iconContainer.className = "w-10 h-10 bg-white/20 text-white rounded-xl flex items-center justify-center mb-3 transition shadow-sm";
+                        titleEl.className = "font-bold text-white text-sm tracking-wide";
+                        descEl.className = "text-[11px] text-rose-100 mt-0.5 font-medium";
+                        timerEl.classList.remove('hidden');
+
+                        startGlobalLiveTimer();
+                        return;
+                    }
+                }
+
+                // Kembalikan ke warna normal tema Indah/Indigo jika tidak ada istirahat aktif
+                activeIstirahatId = null;
+                activeStartTime = null;
+                if (globalTimerInterval) clearInterval(globalTimerInterval);
+
+                card.className = "p-4 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 hover:from-indigo-100 hover:to-blue-100 border border-indigo-100 rounded-2xl text-left flex flex-col justify-between shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 group";
+                iconContainer.className = "w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center mb-3 transition-transform shadow-md group-hover:scale-110";
+                titleEl.className = "font-bold text-slate-800 text-sm";
+                descEl.className = "text-[11px] text-indigo-600 font-medium mt-0.5";
+                timerEl.classList.add('hidden');
+
+            } catch (e) {
+                console.error("Gagal memeriksa status istirahat aktif:", e);
+            }
         }
 
         // --- MANAJEMEN DATA ISTIRAHAT, TIMER LIVE, & TOTAL ---
@@ -416,7 +481,7 @@
                     keteranganSelect.value = activeRecord.keterangan;
                     keteranganSelect.disabled = true;
                     btnWrapper.innerHTML = `
-                        <button onclick="handleSelesaiIstirahat()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition active:scale-95 text-xs">
+                        <button onclick="handleSelesaiIstirahat()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition-all active:scale-95 text-xs">
                             Selesai Istirahat (${activeRecord.keterangan})
                         </button>
                     `;
@@ -428,7 +493,7 @@
                     activeStartTime = null;
                     keteranganSelect.disabled = false;
                     btnWrapper.innerHTML = `
-                        <button onclick="handleMulaiIstirahat()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition active:scale-95 text-xs">
+                        <button onclick="handleMulaiIstirahat()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition-all active:scale-95 text-xs">
                             Mulai Istirahat
                         </button>
                     `;
@@ -439,6 +504,7 @@
                 if (!data || data.length === 0) {
                     container.innerHTML = `<p class="text-slate-400 text-center py-3">Belum ada riwayat istirahat hari ini.</p>`;
                     totalTextEl.innerText = '0 Jam 0 Menit 0 Detik';
+                    await checkActiveBreakStatus(nip);
                     return;
                 }
 
@@ -449,7 +515,6 @@
                     let durasiTampil = '-';
                     let badgeClass = 'bg-emerald-100 text-emerald-700 font-mono';
 
-                    // Pastikan format jam mulai dan selesai selalu lengkap (HH:MM:SS)
                     const mulainya = item.jam_mulai ? (item.jam_mulai.split(':').length === 2 ? item.jam_mulai + ':00' : item.jam_mulai) : '-';
                     const selesainya = item.jam_selesai ? (item.jam_selesai.split(':').length === 2 ? item.jam_selesai + ':00' : item.jam_selesai) : '-';
 
@@ -457,7 +522,6 @@
                         durasiTampil = '<span class="inline-timer-badge">00:00:00</span>';
                         badgeClass = 'bg-amber-100 text-amber-700 font-mono animate-pulse';
                     } else {
-                        // Kalkulasi akurat jam, menit, dan detik dari jam mulai dan selesai
                         if (mulainya !== '-' && selesainya !== '-') {
                             const [h1, m1, s1 = 0] = mulainya.split(':').map(Number);
                             const [h2, m2, s2 = 0] = selesainya.split(':').map(Number);
@@ -492,11 +556,12 @@
 
                 container.innerHTML = html;
 
-                // Format total keseluruhan hari ini ke Jam, Menit, Detik secara lengkap
                 const th = Math.floor(totalSecsAll / 3600);
                 const tm = Math.floor((totalSecsAll % 3600) / 60);
                 const ts = totalSecsAll % 60;
                 totalTextEl.innerText = `${th} Jam ${tm} Menit ${ts} Detik`;
+
+                await checkActiveBreakStatus(nip);
 
             } catch (err) {
                 console.error("Gagal memuat riwayat istirahat:", err.message);
@@ -504,7 +569,7 @@
             }
         }
 
-        // Fungsi Timer Berjalan Jam, Menit, Detik secara Besar & Lengkap
+        // Fungsi Timer Berjalan di Sub-menu Istirahat
         function startLiveTimer() {
             if (!activeStartTime) return;
 
@@ -526,17 +591,45 @@
                     String(minutes).padStart(2, '0') + ':' + 
                     String(seconds).padStart(2, '0');
 
-                // Update tampilan besar di atas
                 const largeDisplay = document.getElementById('large-timer-display');
                 if (largeDisplay) {
                     largeDisplay.innerText = formatted;
                 }
 
-                // Update badge kecil di list riwayat jika ada yang aktif
                 const inlineBadges = document.querySelectorAll('.inline-timer-badge');
                 inlineBadges.forEach(badge => {
                     badge.innerText = formatted;
                 });
+            }, 1000);
+        }
+
+        // Fungsi Global Timer untuk Card Menu Utama
+        function startGlobalLiveTimer() {
+            if (!activeStartTime) return;
+            if (globalTimerInterval) clearInterval(globalTimerInterval);
+
+            const [startH, startM, startS = 0] = activeStartTime.split(':').map(Number);
+            const startDate = new Date();
+            startDate.setHours(startH, startM, startS, 0);
+
+            globalTimerInterval = setInterval(() => {
+                const now = new Date();
+                let diffSec = Math.floor((now - startDate) / 1000);
+                if (diffSec < 0) diffSec = 0;
+
+                const hours = Math.floor(diffSec / 3600);
+                const minutes = Math.floor((diffSec % 3600) / 60);
+                const seconds = diffSec % 60;
+
+                const formatted = 
+                    String(hours).padStart(2, '0') + ':' + 
+                    String(minutes).padStart(2, '0') + ':' + 
+                    String(seconds).padStart(2, '0');
+
+                const mainMenuTimer = document.getElementById('main-menu-timer');
+                if (mainMenuTimer) {
+                    mainMenuTimer.innerText = `⏱️ ${formatted}`;
+                }
             }, 1000);
         }
 
@@ -573,6 +666,7 @@
         async function handleSelesaiIstirahat() {
             if (!activeIstirahatId) return;
             if (timerInterval) clearInterval(timerInterval);
+            if (globalTimerInterval) clearInterval(globalTimerInterval);
 
             const now = new Date();
             const jam_selesai = String(now.getHours()).padStart(2, '0') + ':' + 
@@ -709,12 +803,14 @@
             document.getElementById('main-menu-section').classList.remove('hidden');
             document.getElementById('istirahat-section').classList.add('hidden');
             
-            // Tampilkan kartu profil persisten di semua menu
             document.getElementById('persistent-profile-container').classList.remove('hidden');
 
             document.getElementById('user-nama').innerText = nama;
             document.getElementById('user-nip').innerText = `NIP: ${nip}`;
             document.getElementById('user-initials').innerText = nama.charAt(0).toUpperCase();
+
+            // Cek status istirahat aktif untuk styling card utama
+            await checkActiveBreakStatus(nip);
 
             // Memuat foto otomatis dari Bucket "FOTO SALES"
             const photoImg = document.getElementById('user-photo');
@@ -764,6 +860,7 @@
                 supabaseClient.removeChannel(realtimeChannel);
             }
             if (timerInterval) clearInterval(timerInterval);
+            if (globalTimerInterval) clearInterval(globalTimerInterval);
             
             localStorage.removeItem('emp_nip');
             localStorage.removeItem('emp_nama');

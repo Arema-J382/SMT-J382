@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aplikasi Karyawan Mobile</title>
+    <!-- Tailwind CSS untuk Desain Mobile-Friendly -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Mencegah zoom berlebih pada iOS saat input */
+        input { font-size: 16px !important; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col justify-center items-center p-4">
+
+    <!-- Container Utama Mobile Frame -->
+    <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[550px] border border-slate-200">
+        
+        <!-- Header -->
+        <div class="bg-indigo-600 text-white p-6 text-center rounded-b-3xl shadow-md">
+            <h1 class="text-2xl font-bold tracking-wide">Portal Karyawan</h1>
+            <p class="text-indigo-200 text-sm mt-1">Silakan masuk menggunakan NIP Anda</p>
+        </div>
+
+        <!-- Bagian Form Login -->
+        <div id="login-section" class="p-6 flex-1 flex flex-col justify-center">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nomor Induk Pegawai (NIP)</label>
+                    <input type="text" id="nip-input" placeholder="Masukkan NIP Anda..." 
+                        class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-800 transition">
+                </div>
+                
+                <button onclick="handleLogin()" id="login-btn"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition active:scale-95">
+                    Masuk / Login
+                </button>
+            </div>
+            <p id="error-msg" class="text-red-500 text-xs text-center mt-4 hidden"></p>
+        </div>
+
+        <!-- Bagian Dashboard (Setelah Login) -->
+        <div id="dashboard-section" class="p-6 flex-1 flex flex-col justify-between hidden">
+            <div>
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 mb-4 text-center">
+                    <p class="text-xs text-indigo-500 font-semibold uppercase tracking-wider">Selamat Datang,</p>
+                    <h2 id="user-nama" class="text-xl font-bold text-slate-800 mt-1">-</h2>
+                    <p id="user-nip" class="text-sm text-slate-500 mt-0.5">-</p>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <span class="text-sm text-slate-600">Izin Notifikasi</span>
+                        <span id="status-notif" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">Memeriksa...</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <span class="text-sm text-slate-600">Token Perangkat</span>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Terkirim</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="handleLogout()" 
+                class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-4 rounded-xl transition mt-4">
+                Keluar (Logout)
+            </button>
+        </div>
+
+        <!-- Footer Kecil -->
+        <div class="p-4 text-center text-xs text-slate-400 border-t border-slate-100">
+            Secure Web Push & Alarm System
+        </div>
+    </div>
+
+    <!-- Script Integrasi Supabase, Notifikasi, & Alarm -->
+    <script>
+        // --- KONFIGURASI SUPABASE ---
+        // Ganti dengan URL dan Anon Key dari Project Supabase Anda
+        const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_URL.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Cek sesi tersimpan saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedNip = localStorage.getItem('emp_nip');
+            const savedNama = localStorage.getItem('emp_nama');
+            if (savedNip && savedNama) {
+                showDashboard(savedNama, savedNip);
+            }
+        });
+
+        // Fungsi Membunyikan Alarm Berbasis Web (Web Audio API)
+        function playAlarmSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Nada A5
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3); // Bunyi singkat 300ms sebagai konfirmasi alarm aktif
+            } catch (e) {
+                console.log("Audio Context dibatasi browser sebelum interaksi user.");
+            }
+        }
+
+        // Fungsi Meminta Izin Notifikasi Browser
+        async function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                console.log("Browser ini tidak mendukung notifikasi.");
+                return "Not Supported";
+            }
+            let permission = Notification.permission;
+            if (permission !== "granted") {
+                permission = await Notification.requestPermission();
+            }
+            return permission;
+        }
+
+        // Fungsi Login Utama
+        async function handleLogin() {
+            const nipInput = document.getElementById('nip-input').value.trim();
+            const errorMsg = document.getElementById('error-msg');
+            const loginBtn = document.getElementById('login-btn');
+
+            errorMsg.classList.add('hidden');
+
+            if (!nipInput) {
+                errorMsg.innerText = 'Mohon masukkan NIP Anda terlebih dahulu.';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerText = 'Memproses...';
+
+            try {
+                // 1. Cek NIP ke tabel "data_karyawan" pada kolom "nip_kar"
+                const { data, error } = await supabaseClient
+                    .from('data_karyawan')
+                    .select('nip_kar, nama_kar')
+                    .eq('nip_kar', nipInput)
+                    .single();
+
+                if (error || !data) {
+                    throw new Error('NIP tidak ditemukan dalam database karyawan.');
+                }
+
+                const namaKaryawan = data.nama_kar;
+
+                // 2. Meminta izin izin notifikasi & membunyikan alarm (persetujuan user saat tombol ditekan)
+                const notifPermission = await requestNotificationPermission();
+                playAlarmSound();
+
+                if (notifPermission === 'granted') {
+                    document.getElementById('status-notif').innerText = 'Diizinkan';
+                    document.getElementById('status-notif').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700';
+                } else {
+                    document.getElementById('status-notif').innerText = 'Ditolak';
+                    document.getElementById('status-notif').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700';
+                }
+
+                // 3. Buat / Generate Device Token sederhana (bisa diganti token FCM/Web Push jika menggunakan Firebase)
+                // Menggunakan kombinasi random unik perangkat tersimpan
+                let deviceToken = localStorage.getItem('device_token');
+                if (!deviceToken) {
+                    deviceToken = 'token_' + Math.random().toString(36.substring(2)) + Date.now().toString(36);
+                    localStorage.setItem('device_token', deviceToken);
+                }
+
+                // 4. Kirim data token ke tabel "data_employee" (kolom: nip, nama, token)
+                // Menggunakan upsert agar jika NIP sudah ada, data diperbarui
+                const { error: insertError } = await supabaseClient
+                    .from('data_employee')
+                    .upsert({
+                        nip: data.nip_kar,
+                        nama: namaKaryawan,
+                        token: deviceToken
+                    }, { onConflict: 'nip' });
+
+                if (insertError) {
+                    console.error('Gagal menyimpan token:', insertError.message);
+                }
+
+                // Simpan sesi ke localStorage
+                localStorage.setItem('emp_nip', data.nip_kar);
+                localStorage.setItem('emp_nama', namaKaryawan);
+
+                // Tampilkan Dashboard
+                showDashboard(namaKaryawan, data.nip_kar);
+
+            } catch (err) {
+                errorMsg.innerText = err.message || 'Terjadi kesalahan saat login.';
+                errorMsg.classList.remove('hidden');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = 'Masuk / Login';
+            }
+        }
+
+        function showDashboard(nama, nip) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('user-nama').innerText = nama;
+            document.getElementById('user-nip').innerText = `NIP: ${nip}`;
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('emp_nip');
+            localStorage.removeItem('emp_nama');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('nip-input').value = '';
+        }
+    </script>
+</body>
+</html>

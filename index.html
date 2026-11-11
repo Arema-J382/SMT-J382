@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Karyawan - Menu Utama</title>
+    <title>Portal Karyawan - Mobile Web</title>
     <!-- Tailwind CSS untuk Desain Mobile-Friendly -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* Mencegah auto-zoom di iOS saat fokus input */
         input { font-size: 16px !important; }
         .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
         @keyframes fadeIn {
@@ -88,7 +89,7 @@
                             <span id="status-notif" class="font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Memeriksa...</span>
                         </div>
                         <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
-                            <span class="text-slate-600 flex items-center gap-2">📱 Token & Sesi Supabase</span>
+                            <span class="text-slate-600 flex items-center gap-2">📱 Token & Supabase Sync</span>
                             <span class="font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Tersinkronisasi</span>
                         </div>
                     </div>
@@ -149,14 +150,17 @@
         </div>
     </div>
 
-    <!-- SCRIPT INTEGRASI -->
+    <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI SUPABASE ---
+        // Ganti URL dan Anon Key dengan kredensial dari project Supabase Anda
         const SUPABASE_URL = 'https://vxsopsnopeurnxdkfsbe.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4c29wc25vcGV1cm54ZGtmc2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NzM4MjgsImV4cCI6MjEwOTE0OTgyOH0.53GRhBd5Pvjjcqbh4M9ok7HKfqJs7klyxPqomXMEzus'; 
+
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // Cek sesi login saat halaman dimuat
         window.addEventListener('DOMContentLoaded', () => {
             const savedNip = localStorage.getItem('emp_nip');
             const savedNama = localStorage.getItem('emp_nama');
@@ -165,6 +169,7 @@
             }
         });
 
+        // Fungsi Membunyikan Alarm Web (Web Audio API)
         function playAlarmSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -194,6 +199,7 @@
             alert(`Fitur "${menuName}" sedang dipilih.`);
         }
 
+        // Meminta Izin Notifikasi Browser
         async function requestNotificationPermission() {
             if (!("Notification" in window)) return "Not Supported";
             let permission = Notification.permission;
@@ -203,7 +209,7 @@
             return permission;
         }
 
-        // Fungsi Login Utama (Disesuaikan untuk Tipe Data Integer)
+        // Fungsi Login & Sinkronisasi ke Supabase
         async function handleLogin() {
             const nipRaw = document.getElementById('nip-input').value.trim();
             const errorMsg = document.getElementById('error-msg');
@@ -217,10 +223,10 @@
                 return;
             }
 
-            // Konversi input NIP menjadi Integer (Angka)
+            // Karena data NIP di database bertipe integer (int8), konversi input ke integer
             const nipInput = parseInt(nipRaw, 10);
             if (isNaN(nipInput)) {
-                errorMsg.innerText = 'NIP harus berupa angka (integer).';
+                errorMsg.innerText = 'NIP harus berupa angka.';
                 errorMsg.classList.remove('hidden');
                 return;
             }
@@ -229,7 +235,7 @@
             loginBtn.innerText = 'Memverifikasi NIP...';
 
             try {
-                // 1. Mencocokkan NIP (Integer) ke tabel "data_karyawan" kolom "nip_kar"
+                // 1. Mencocokkan NIP dengan tabel "data_karyawan" (kolom "nip_kar")
                 const { data, error } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar')
@@ -246,32 +252,31 @@
 
                 const namaKaryawan = data.nama_kar;
 
-                // 2. Meminta izin notifikasi & membunyikan alarm
+                // 2. Tombol ditekan = Menyetujui izin notifikasi & alarm web
                 const notifPermission = await requestNotificationPermission();
                 playAlarmSound();
 
-                // 3. Generate Token Perangkat Unik
-                let deviceToken = localStorage.getItem('device_token');
+                // 3. Generate Token Perangkat (Berupa angka/integer agar sesuai tipe int8 kolom token di data_employee)
+                let deviceToken = localStorage.getItem('device_token_int');
                 if (!deviceToken) {
-                    deviceToken = 'token_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
-                    localStorage.setItem('device_token', deviceToken);
+                    deviceToken = Math.floor(Math.random() * 900000000) + 100000000; // Angka acak 9 digit
+                    localStorage.setItem('device_token_int', deviceToken);
                 }
 
-                // 4. Kirim data token ke tabel "data_employee" 
-                // Kolom nip disesuaikan menjadi integer atau string sesuai kebutuhan tabel data_employee Anda
+                // 4. Kirim data ke tabel "data_employee" (kolom: nip, nama, token)
                 const { error: insertError } = await supabaseClient
                     .from('data_employee')
                     .upsert({
-                        nip: data.nip_kar, 
-                        nama: namaKaryawan,
-                        token: deviceToken
+                        nip: data.nip_kar,         // Integer
+                        nama: namaKaryawan,        // Text
+                        token: Number(deviceToken) // Integer (int8) sesuai struktur tabel Anda
                     }, { onConflict: 'nip' });
 
                 if (insertError) {
                     console.error('Gagal menyimpan token ke data_employee:', insertError.message);
                 }
 
-                // Simpan sesi lokal
+                // Simpan sesi login di localStorage HP
                 localStorage.setItem('emp_nip', data.nip_kar);
                 localStorage.setItem('emp_nama', namaKaryawan);
 
@@ -287,6 +292,7 @@
             }
         }
 
+        // Tampilkan Tampilan Menu Utama
         function showMainMenu(nama, nip) {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('logout-btn-header').classList.remove('hidden');
@@ -310,6 +316,7 @@
             }
         }
 
+        // Fungsi Keluar / Logout
         function handleLogout() {
             localStorage.removeItem('emp_nip');
             localStorage.removeItem('emp_nama');

@@ -65,23 +65,25 @@
                 <p id="error-msg" class="text-rose-600 bg-rose-50 border border-rose-100 p-3 rounded-xl text-xs text-center mt-4 hidden font-medium"></p>
             </div>
 
+            <!-- KARTU PROFIL PEGAWAI PERSISTEN (SELALU TAMPIL DI SEMUA MENU SETELAH LOGIN) -->
+            <div id="persistent-profile-container" class="hidden mb-4 fade-in">
+                <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-3.5">
+                    <div class="w-12 h-12 relative rounded-xl overflow-hidden shadow-md flex items-center justify-center bg-indigo-600 text-white font-bold text-lg shrink-0">
+                        <img id="user-photo" src="" alt="Foto Sales" class="w-full h-full object-cover hidden">
+                        <span id="user-initials" class="flex items-center justify-center w-full h-full">U</span>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-[11px] text-indigo-500 font-bold uppercase tracking-wider">Pegawai Aktif</p>
+                        <h2 id="user-nama" class="text-base font-bold text-slate-800 truncate">-</h2>
+                        <p id="user-nip" class="text-xs text-slate-500 font-medium">-</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- BAGIAN 2: MENU UTAMA -->
             <div id="main-menu-section" class="flex-1 flex flex-col justify-between hidden fade-in">
-                <div class="space-y-5">
+                <div class="space-y-4">
                     
-                    <!-- Kartu Profil Singkat -->
-                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-3.5">
-                        <div class="w-12 h-12 relative rounded-xl overflow-hidden shadow-md flex items-center justify-center bg-indigo-600 text-white font-bold text-lg shrink-0">
-                            <img id="user-photo" src="" alt="Foto Sales" class="w-full h-full object-cover hidden">
-                            <span id="user-initials" class="flex items-center justify-center w-full h-full">U</span>
-                        </div>
-                        <div class="overflow-hidden">
-                            <p class="text-[11px] text-indigo-500 font-bold uppercase tracking-wider">Pegawai Aktif</p>
-                            <h2 id="user-nama" class="text-base font-bold text-slate-800 truncate">-</h2>
-                            <p id="user-nip" class="text-xs text-slate-500 font-medium">-</p>
-                        </div>
-                    </div>
-
                     <!-- Status Perizinan Sistem -->
                     <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm space-y-2.5">
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider px-1">Status Sistem Perangkat</p>
@@ -178,10 +180,10 @@
                         </div>
                     </div>
 
-                    <!-- Riwayat Istirahat -->
+                    <!-- Riwayat & Durasi Istirahat -->
                     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5">
-                        <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Riwayat Istirahat Hari Ini</p>
-                        <div id="istirahat-history-container" class="space-y-2 max-h-44 overflow-y-auto text-xs pr-1">
+                        <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Riwayat & Durasi Istirahat Hari Ini</p>
+                        <div id="istirahat-history-container" class="space-y-2 max-h-48 overflow-y-auto text-xs pr-1">
                             <p class="text-slate-400 text-center py-3">Memuat riwayat...</p>
                         </div>
                     </div>
@@ -204,7 +206,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let realtimeChannel = null;
-        let activeIstirahatId = null; // Menyimpan ID jika sedang aktif istirahat
+        let activeIstirahatId = null;
 
         // Cek sesi login saat halaman dimuat
         window.addEventListener('DOMContentLoaded', async () => {
@@ -348,7 +350,7 @@
             document.getElementById('main-menu-section').classList.add('hidden');
             document.getElementById('istirahat-section').classList.remove('hidden');
             document.getElementById('header-title').innerText = 'Istirahat';
-            document.getElementById('header-subtitle').innerText = 'Pencatatan Waktu Istirahat';
+            document.getElementById('header-subtitle').innerText = 'Pencatatan Waktu & Durasi Istirahat';
             loadIstirahatHistory();
         }
 
@@ -359,7 +361,7 @@
             document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan';
         }
 
-        // --- MANAJEMEN DATA ISTIRAHAT KE SUPABASE ---
+        // --- MANAJEMEN DATA ISTIRAHAT & DURASI ---
         async function loadIstirahatHistory() {
             const nip = localStorage.getItem('emp_nip');
             const today = new Date().toISOString().split('T')[0];
@@ -379,7 +381,6 @@
 
                 if (error) throw error;
 
-                // Cek apakah ada yang belum selesai (jam_selesai kosong/null)
                 const activeRecord = data ? data.find(item => !item.jam_selesai) : null;
 
                 if (activeRecord) {
@@ -408,15 +409,23 @@
 
                 let html = '';
                 data.forEach(item => {
+                    let durasiTampil = item.durasi || '-';
+                    let badgeClass = 'bg-emerald-100 text-emerald-700';
+
+                    if (!item.jam_selesai) {
+                        durasiTampil = 'Sedang Berlangsung';
+                        badgeClass = 'bg-amber-100 text-amber-700 animate-pulse';
+                    }
+
                     html += `
-                        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                             <div>
-                                <span class="font-bold text-indigo-600">${item.keterangan}</span>
-                                <p class="text-[11px] text-slate-500">Mulai: ${item.jam_mulai || '-'} | Selesai: ${item.jam_selesai || 'Berlangsung...'}</p>
+                                <span class="font-bold text-indigo-600 uppercase tracking-wide">${item.keterangan}</span>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Mulai: ${item.jam_mulai || '-'} &bull; Selesai: ${item.jam_selesai || '-'}</p>
                             </div>
                             <div class="text-right">
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${item.jam_selesai ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                    ${item.durasi || (item.jam_selesai ? 'Selesai' : 'Aktif')}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${badgeClass}">
+                                    ${durasiTampil}
                                 </span>
                             </div>
                         </div>
@@ -461,7 +470,6 @@
             const jam_selesai = new Date().toTimeString().split(' ')[0];
 
             try {
-                // Ambil jam_mulai terlebih dahulu untuk menghitung durasi
                 const { data: currentData } = await supabaseClient
                     .from('data_istirahat')
                     .select('jam_mulai')
@@ -535,7 +543,6 @@
 
                 const namaKaryawan = data.nama_kar;
 
-                // Meminta izin notifikasi browser tanpa bunyi alarm
                 await requestNotificationPermission();
 
                 let deviceToken = localStorage.getItem('device_token_int');
@@ -571,7 +578,7 @@
             }
         }
 
-        // Tampilkan Tampilan Menu Utama & Muat Foto Otomatis Menggunakan Storage Download
+        // Tampilkan Tampilan Menu Utama & Muat Foto Otomatis Serta Profil Persisten
         async function showMainMenu(nama, nip) {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('logout-btn-header').classList.remove('hidden');
@@ -581,6 +588,9 @@
 
             document.getElementById('main-menu-section').classList.remove('hidden');
             document.getElementById('istirahat-section').classList.add('hidden');
+            
+            // Tampilkan kartu profil persisten di semua menu
+            document.getElementById('persistent-profile-container').classList.remove('hidden');
 
             document.getElementById('user-nama').innerText = nama;
             document.getElementById('user-nip').innerText = `NIP: ${nip}`;
@@ -625,7 +635,6 @@
                 userInitials.classList.remove('hidden');
             }
 
-            // Perbarui UI status perizinan
             updatePermissionUI();
         }
 
@@ -639,6 +648,7 @@
 
             document.getElementById('main-menu-section').classList.add('hidden');
             document.getElementById('istirahat-section').classList.add('hidden');
+            document.getElementById('persistent-profile-container').classList.add('hidden');
             document.getElementById('logout-btn-header').classList.add('hidden');
             
             document.getElementById('header-title').innerText = 'Portal Karyawan';

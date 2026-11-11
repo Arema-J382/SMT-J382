@@ -71,8 +71,9 @@
                     
                     <!-- Kartu Profil Singkat -->
                     <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-3.5">
-                        <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-md" id="user-initials">
-                            U
+                        <div class="w-12 h-12 relative rounded-xl overflow-hidden shadow-md flex items-center justify-center bg-indigo-600 text-white font-bold text-lg shrink-0">
+                            <img id="user-photo" src="" alt="Foto Sales" class="w-full h-full object-cover hidden">
+                            <span id="user-initials" class="flex items-center justify-center w-full h-full">U</span>
                         </div>
                         <div class="overflow-hidden">
                             <p class="text-[11px] text-indigo-500 font-bold uppercase tracking-wider">Pegawai Aktif</p>
@@ -85,11 +86,11 @@
                     <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm space-y-2.5">
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider px-1">Status Sistem Perangkat</p>
                         <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
-                            <span class="text-slate-600 flex items-center gap-2">🔔 Izin Notifikasi Web</span>
+                            <span class="text-slate-600 flex items-center gap-2">粕 Perizinan Aplikasi</span>
                             <span id="status-notif" class="font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Memeriksa...</span>
                         </div>
                         <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
-                            <span class="text-slate-600 flex items-center gap-2">📱 Token & Supabase Sync</span>
+                            <span class="text-slate-600 flex items-center gap-2">導 Token & Supabase Sync</span>
                             <span class="font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Tersinkronisasi</span>
                         </div>
                     </div>
@@ -143,7 +144,7 @@
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-                    <p class="text-[11px] text-slate-400">Terhubung ke Supabase • Vercel Ready</p>
+                    <p class="text-[11px] text-slate-400">Terhubung ke Supabase 窶｢ Vercel Ready</p>
                 </div>
             </div>
 
@@ -305,6 +306,27 @@
             document.getElementById('user-nama').innerText = nama;
             document.getElementById('user-nip').innerText = `NIP: ${nip}`;
             document.getElementById('user-initials').innerText = nama.charAt(0).toUpperCase();
+
+            // Memuat foto berdasarkan NIP dari bucket Supabase "FOTO SALES"
+            const photoImg = document.getElementById('user-photo');
+            const userInitials = document.getElementById('user-initials');
+            const photoResult = supabaseClient.storage.from('FOTO SALES').getPublicUrl(nip.toString());
+
+            if (photoResult && photoResult.data && photoResult.data.publicUrl) {
+                photoImg.onerror = function() {
+                    if (!this.dataset.triedJpg) {
+                        this.dataset.triedJpg = 'true';
+                        const jpgResult = supabaseClient.storage.from('FOTO SALES').getPublicUrl(`${nip}.jpg`);
+                        this.src = jpgResult.data.publicUrl;
+                    } else {
+                        this.classList.add('hidden');
+                        userInitials.classList.remove('hidden');
+                    }
+                };
+                photoImg.src = photoResult.data.publicUrl;
+                photoImg.classList.remove('hidden');
+                userInitials.classList.add('hidden');
+            }
 
             const statusNotifEl = document.getElementById('status-notif');
             if (Notification.permission === 'granted') {

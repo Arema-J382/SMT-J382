@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aplikasi Karyawan Mobile</title>
+    <title>Portal Karyawan - Menu Utama</title>
     <!-- Tailwind CSS untuk Desain Mobile-Friendly -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
@@ -11,84 +11,166 @@
     <style>
         /* Mencegah zoom berlebih pada iOS saat input */
         input { font-size: 16px !important; }
+        /* Smooth transition antar section */
+        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col justify-center items-center p-4">
+<body class="bg-slate-100 min-h-screen flex flex-col justify-center items-center p-0 sm:p-4">
 
-    <!-- Container Utama Mobile Frame -->
-    <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[550px] border border-slate-200">
+    <!-- Container Utama Mobile Frame (Optimal di HP & Tablet) -->
+    <div class="w-full sm:max-w-md bg-white sm:rounded-3xl shadow-none sm:shadow-xl overflow-hidden flex flex-col min-h-screen sm:min-h-[650px] border-0 sm:border border-slate-200">
         
-        <!-- Header -->
-        <div class="bg-indigo-600 text-white p-6 text-center rounded-b-3xl shadow-md">
-            <h1 class="text-2xl font-bold tracking-wide">Portal Karyawan</h1>
-            <p class="text-indigo-200 text-sm mt-1">Silakan masuk menggunakan NIP Anda</p>
-        </div>
-
-        <!-- Bagian Form Login -->
-        <div id="login-section" class="p-6 flex-1 flex flex-col justify-center">
-            <div class="space-y-4">
+        <!-- HEADER (Digunakan di Login & Menu Utama) -->
+        <div class="bg-indigo-600 text-white p-6 pb-8 rounded-b-3xl shadow-md relative">
+            <div class="flex justify-between items-center">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Nomor Induk Pegawai (NIP)</label>
-                    <input type="text" id="nip-input" placeholder="Masukkan NIP Anda..." 
-                        class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-800 transition">
+                    <h1 class="text-xl font-bold tracking-wide" id="header-title">Portal Karyawan</h1>
+                    <p class="text-indigo-200 text-xs mt-0.5" id="header-subtitle">Silakan masukkan NIP Anda untuk masuk</p>
                 </div>
-                
-                <button onclick="handleLogin()" id="login-btn"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition active:scale-95">
-                    Masuk / Login
+                <!-- Tombol Logout di Menu Utama -->
+                <button onclick="handleLogout()" id="logout-btn-header" class="hidden bg-indigo-500/80 hover:bg-indigo-500 text-white p-2 rounded-xl text-xs font-medium transition active:scale-95 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Keluar
                 </button>
             </div>
-            <p id="error-msg" class="text-red-500 text-xs text-center mt-4 hidden"></p>
         </div>
 
-        <!-- Bagian Dashboard (Setelah Login) -->
-        <div id="dashboard-section" class="p-6 flex-1 flex flex-col justify-between hidden">
-            <div>
-                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 mb-4 text-center">
-                    <p class="text-xs text-indigo-500 font-semibold uppercase tracking-wider">Selamat Datang,</p>
-                    <h2 id="user-nama" class="text-xl font-bold text-slate-800 mt-1">-</h2>
-                    <p id="user-nip" class="text-sm text-slate-500 mt-0.5">-</p>
+        <!-- KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col p-5 overflow-y-auto">
+
+            <!-- BAGIAN 1: FORM LOGIN -->
+            <div id="login-section" class="flex-1 flex flex-col justify-center fade-in">
+                <div class="bg-white p-2 rounded-2xl space-y-4">
+                    <div class="text-center mb-2">
+                        <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-800">Autentikasi Karyawan</h2>
+                        <p class="text-xs text-slate-500">Masukkan NIP terdaftar di database</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Nomor Induk Pegawai (NIP)</label>
+                        <input type="text" id="nip-input" placeholder="Contoh: 199801..." 
+                            class="w-full px-4 py-3.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-800 bg-slate-50 transition">
+                    </div>
+                    
+                    <button onclick="handleLogin()" id="login-btn"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-200 transition active:scale-95 text-sm">
+                        Masuk ke Menu Utama
+                    </button>
                 </div>
-                
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-sm text-slate-600">Izin Notifikasi</span>
-                        <span id="status-notif" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">Memeriksa...</span>
+                <p id="error-msg" class="text-rose-600 bg-rose-50 border border-rose-100 p-3 rounded-xl text-xs text-center mt-4 hidden font-medium"></p>
+            </div>
+
+            <!-- BAGIAN 2: MENU UTAMA (Tampil Setelah Login Berhasil) -->
+            <div id="main-menu-section" class="flex-1 flex flex-col justify-between hidden fade-in">
+                <div class="space-y-5">
+                    
+                    <!-- Kartu Profil Singkat -->
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-3.5">
+                        <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-md" id="user-initials">
+                            U
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-[11px] text-indigo-500 font-bold uppercase tracking-wider">Pegawai Aktif</p>
+                            <h2 id="user-nama" class="text-base font-bold text-slate-800 truncate">-</h2>
+                            <p id="user-nip" class="text-xs text-slate-500 font-medium">-</p>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-sm text-slate-600">Token Perangkat</span>
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Terkirim</span>
+
+                    <!-- Status Perizinan Sistem (Notifikasi & Token) -->
+                    <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm space-y-2.5">
+                        <p class="text-xs font-bold text-slate-700 uppercase tracking-wider px-1">Status Sistem Perangkat</p>
+                        <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
+                            <span class="text-slate-600 flex items-center gap-2">🔔 Izin Notifikasi Web</span>
+                            <span id="status-notif" class="font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Memeriksa...</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
+                            <span class="text-slate-600 flex items-center gap-2">📱 Token & Sesi Supabase</span>
+                            <span class="font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Tersinkronisasi</span>
+                        </div>
                     </div>
+
+                    <!-- Grid Menu Utama -->
+                    <div>
+                        <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 px-1">Menu Layanan</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Menu 1 -->
+                            <button onclick="showAlertFeature('Presensi / Absensi')" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
+                                <div class="w-10 h-10 bg-indigo-50 group-hover:bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-3 transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm">Absensi</h3>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Catat kehadiran</p>
+                                </div>
+                            </button>
+
+                            <!-- Menu 2: Tes Alarm Web -->
+                            <button onclick="testWebAlarm()" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
+                                <div class="w-10 h-10 bg-amber-50 group-hover:bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-3 transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm">Tes Alarm</h3>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Bunyikan suara</p>
+                                </div>
+                            </button>
+
+                            <!-- Menu 3 -->
+                            <button onclick="showAlertFeature('Informasi & Pengumuman')" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
+                                <div class="w-10 h-10 bg-emerald-50 group-hover:bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-3 transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm">Pengumuman</h3>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Info perusahaan</p>
+                                </div>
+                            </button>
+
+                            <!-- Menu 4 -->
+                            <button onclick="showAlertFeature('Profil & Pengaturan')" class="p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-left flex flex-col justify-between shadow-sm transition active:scale-95 group">
+                                <div class="w-10 h-10 bg-purple-50 group-hover:bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-3 transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm">Pengaturan</h3>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Akun & Perangkat</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer di dalam Menu Utama -->
+                <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                    <p class="text-[11px] text-slate-400">Terhubung ke Supabase • Vercel Ready</p>
                 </div>
             </div>
 
-            <button onclick="handleLogout()" 
-                class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-4 rounded-xl transition mt-4">
-                Keluar (Logout)
-            </button>
-        </div>
-
-        <!-- Footer Kecil -->
-        <div class="p-4 text-center text-xs text-slate-400 border-t border-slate-100">
-            Secure Web Push & Alarm System
         </div>
     </div>
 
-    <!-- Script Integrasi Supabase, Notifikasi, & Alarm -->
+    <!-- SCRIPT INTEGRASI -->
     <script>
         // --- KONFIGURASI SUPABASE ---
-        // Ganti dengan URL dan Anon Key dari Project Supabase Anda
-        const SUPABASE_URL = 'https://vxsopsnopeurnxdkfsbe.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4c29wc25vcGV1cm54ZGtmc2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NzM4MjgsImV4cCI6MjEwOTE0OTgyOH0.53GRhBd5Pvjjcqbh4M9ok7HKfqJs7klyxPqomXMEzus'; 
-
+        const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_URL.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Cek sesi tersimpan saat halaman dimuat
+        // Cek sesi tersimpan saat halaman dimuat (Auto-login jika belum logout)
         window.addEventListener('DOMContentLoaded', () => {
             const savedNip = localStorage.getItem('emp_nip');
             const savedNama = localStorage.getItem('emp_nama');
             if (savedNip && savedNama) {
-                showDashboard(savedNama, savedNip);
+                showMainMenu(savedNama, savedNip);
             }
         });
 
@@ -101,22 +183,31 @@
 
                 oscillator.type = 'sine';
                 oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Nada A5
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
 
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
 
                 oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.3); // Bunyi singkat 300ms sebagai konfirmasi alarm aktif
+                oscillator.stop(audioCtx.currentTime + 0.4); // Bunyi 400ms
             } catch (e) {
                 console.log("Audio Context dibatasi browser sebelum interaksi user.");
             }
         }
 
+        // Fungsi Tombol Uji Alarm dari Menu Utama
+        function testWebAlarm() {
+            playAlarmSound();
+            alert("Suara alarm web berhasil dibunyikan!");
+        }
+
+        function showAlertFeature(menuName) {
+            alert(`Fitur "${menuName}" sedang dipilih. Anda dapat mengembangkan halaman ini lebih lanjut.`);
+        }
+
         // Fungsi Meminta Izin Notifikasi Browser
         async function requestNotificationPermission() {
             if (!("Notification" in window)) {
-                console.log("Browser ini tidak mendukung notifikasi.");
                 return "Not Supported";
             }
             let permission = Notification.permission;
@@ -141,10 +232,10 @@
             }
 
             loginBtn.disabled = true;
-            loginBtn.innerText = 'Memproses...';
+            loginBtn.innerText = 'Memverifikasi NIP...';
 
             try {
-                // 1. Cek NIP ke tabel "data_karyawan" pada kolom "nip_kar"
+                // 1. Mencocokkan NIP ke tabel "data_karyawan" kolom "nip_kar"
                 const { data, error } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar')
@@ -152,33 +243,23 @@
                     .single();
 
                 if (error || !data) {
-                    throw new Error('NIP tidak ditemukan dalam database karyawan.');
+                    throw new Error('NIP tidak ditemukan dalam tabel "data_karyawan". Pastikan NIP sudah benar.');
                 }
 
                 const namaKaryawan = data.nama_kar;
 
-                // 2. Meminta izin izin notifikasi & membunyikan alarm (persetujuan user saat tombol ditekan)
+                // 2. Meminta persetujuan izin notifikasi & membunyikan alarm saat tombol login ditekan
                 const notifPermission = await requestNotificationPermission();
                 playAlarmSound();
 
-                if (notifPermission === 'granted') {
-                    document.getElementById('status-notif').innerText = 'Diizinkan';
-                    document.getElementById('status-notif').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700';
-                } else {
-                    document.getElementById('status-notif').innerText = 'Ditolak';
-                    document.getElementById('status-notif').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700';
-                }
-
-                // 3. Buat / Generate Device Token sederhana (bisa diganti token FCM/Web Push jika menggunakan Firebase)
-                // Menggunakan kombinasi random unik perangkat tersimpan
+                // 3. Generate Token Perangkat Unik
                 let deviceToken = localStorage.getItem('device_token');
                 if (!deviceToken) {
-                    deviceToken = 'token_' + Math.random().toString(36.substring(2)) + Date.now().toString(36);
+                    deviceToken = 'token_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
                     localStorage.setItem('device_token', deviceToken);
                 }
 
                 // 4. Kirim data token ke tabel "data_employee" (kolom: nip, nama, token)
-                // Menggunakan upsert agar jika NIP sudah ada, data diperbarui
                 const { error: insertError } = await supabaseClient
                     .from('data_employee')
                     .upsert({
@@ -188,36 +269,65 @@
                     }, { onConflict: 'nip' });
 
                 if (insertError) {
-                    console.error('Gagal menyimpan token:', insertError.message);
+                    console.error('Gagal menyimpan token ke data_employee:', insertError.message);
                 }
 
-                // Simpan sesi ke localStorage
+                // Simpan sesi lokal
                 localStorage.setItem('emp_nip', data.nip_kar);
                 localStorage.setItem('emp_nama', namaKaryawan);
 
-                // Tampilkan Dashboard
-                showDashboard(namaKaryawan, data.nip_kar);
+                // 5. Masuk ke Menu Utama
+                showMainMenu(namaKaryawan, data.nip_kar);
 
             } catch (err) {
-                errorMsg.innerText = err.message || 'Terjadi kesalahan saat login.';
+                errorMsg.innerText = err.message || 'Terjadi kesalahan pada sistem.';
                 errorMsg.classList.remove('hidden');
             } finally {
                 loginBtn.disabled = false;
-                loginBtn.innerText = 'Masuk / Login';
+                loginBtn.innerText = 'Masuk ke Menu Utama';
             }
         }
 
-        function showDashboard(nama, nip) {
+        // Tampilkan Tampilan Menu Utama
+        function showMainMenu(nama, nip) {
+            // Sembunyikan form login & ubah header
             document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('logout-btn-header').classList.remove('hidden');
+            
+            document.getElementById('header-title').innerText = 'Menu Utama';
+            document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan';
+
+            // Tampilkan menu utama
+            document.getElementById('main-menu-section').classList.remove('hidden');
+
+            // Isi data profil di menu utama
             document.getElementById('user-nama').innerText = nama;
             document.getElementById('user-nip').innerText = `NIP: ${nip}`;
+            document.getElementById('user-initials').innerText = nama.charAt(0).toUpperCase();
+
+            // Status Notifikasi
+            const statusNotifEl = document.getElementById('status-notif');
+            if (Notification.permission === 'granted') {
+                statusNotifEl.innerText = 'Diizinkan';
+                statusNotifEl.className = 'font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700';
+            } else {
+                statusNotifEl.innerText = 'Ditolak / Blokir';
+                statusNotifEl.className = 'font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700';
+            }
         }
 
+        // Fungsi Logout
         function handleLogout() {
             localStorage.removeItem('emp_nip');
             localStorage.removeItem('emp_nama');
-            document.getElementById('dashboard-section').classList.add('hidden');
+
+            // Kembalikan ke Tampilan Login
+            document.getElementById('main-menu-section').classList.add('hidden');
+            document.getElementById('logout-btn-header').classList.add('hidden');
+            
+            document.getElementById('header-title').innerText = 'Portal Karyawan';
+            document.getElementById('header-subtitle').innerText = 'Silakan masukkan NIP Anda untuk masuk';
+
             document.getElementById('login-section').classList.remove('hidden');
             document.getElementById('nip-input').value = '';
         }

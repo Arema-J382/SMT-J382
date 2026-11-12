@@ -16,10 +16,10 @@ self.addEventListener('push', (event) => {
     const title = data.title || 'Portal Karyawan';
     const options = {
         body: data.body || 'WAKTUNYA KEMBALI BEKERJA',
-        tag: data.tag || 'break-alert',
-        renotify: true,
+        tag: 'break-alert-' + (data.alertNo || 0),
+        renotify: false,
         requireInteraction: true,
-        silent: false,
+        silent: false, // false = bunyi mengikuti nada notifikasi bawaan HP
         vibrate: [500, 200, 500, 200, 500],
         timestamp: Date.now(),
         data: { url: data.url || '/', alertNo: data.alertNo || 0 }
@@ -29,7 +29,7 @@ self.addEventListener('push', (event) => {
         const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
         const visible = wins.filter(c => c.visibilityState === 'visible');
 
-        // Jika aplikasi sedang terbuka di layar, biarkan halaman yang membunyikan alarm (suara war.mp3)
+        // Jika aplikasi sedang terbuka di layar, halaman yang menampilkan notifikasi (hindari bunyi ganda)
         if (visible.length > 0) {
             visible.forEach(c => c.postMessage({ type: 'BREAK_ALERT_PUSH', alertNo: options.data.alertNo }));
             return;
@@ -48,12 +48,5 @@ self.addEventListener('notificationclick', (event) => {
             if ('focus' in c) return c.focus();
         }
         if (self.clients.openWindow) return self.clients.openWindow(targetUrl);
-    })());
-});
-
-self.addEventListener('notificationclose', (event) => {
-    event.waitUntil((async () => {
-        const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-        wins.forEach(c => c.postMessage({ type: 'BREAK_ALERT_CLOSED' }));
     })());
 });

@@ -103,6 +103,10 @@
                             <span class="text-slate-600 flex items-center gap-2">⚡ Database Sync</span>
                             <span class="font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Tersinkronisasi</span>
                         </div>
+                        <div class="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-50 rounded-lg">
+                            <span class="text-slate-600 flex items-center gap-2">🔔 Tes Notifikasi & Bunyi</span>
+                            <span id="test-push-btn" onclick="testBreakPush()" class="font-semibold px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 cursor-pointer transition hover:opacity-80">Tes 15 Detik</span>
+                        </div>
                     </div>
 
                     <!-- Grid Menu Utama -->
@@ -406,6 +410,27 @@
             }
         }
 
+        // TES: jadwalkan 1 push sungguhan ~15 detik lagi lewat server (jalur sama dengan alarm asli)
+        async function testBreakPush() {
+            const nip = Number(localStorage.getItem('emp_nip'));
+            if (!nip) return;
+            if (!('Notification' in window) || Notification.permission !== 'granted') {
+                alert("Izinkan notifikasi dulu (ketuk status Perizinan Aplikasi).");
+                return;
+            }
+            await ensurePushSubscription(nip);
+            const { error } = await supabaseClient.from('break_alert_schedule').insert({
+                nip: nip,
+                alert_no: 3,
+                fire_at: new Date(Date.now() + 15000).toISOString()
+            });
+            if (error) {
+                alert("Gagal menjadwalkan tes: " + error.message);
+                return;
+            }
+            alert("Tes dijadwalkan. SEKARANG tutup tab Chrome dan matikan layar HP. Notifikasi akan muncul dalam sekitar 15 sampai 45 detik.");
+        }
+
         // Batalkan jadwal alarm yang belum terkirim (istirahat selesai / logout)
         async function cancelBreakPush(nipParam) {
             try {
@@ -436,7 +461,7 @@
                 body: "WAKTUNYA KEMBALI BEKERJA",
                 icon: "",
                 tag: 'break-alert-' + (alertNo || 0),
-                renotify: false,
+                renotify: true, // selalu bunyi walau menggantikan notifikasi lama dengan penanda sama
                 silent: false,
                 requireInteraction: true,
                 vibrate: [500, 200, 500, 200, 500]

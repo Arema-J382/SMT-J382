@@ -306,9 +306,6 @@
         // =========================================================================
         const VAPID_PUBLIC_KEY = 'BIPI_SPnl26l3peYek3V1SqvZVEmzrr9sg5m5sZLVWAXndXBkXNlEwktZ7pduc3lzxwx9dbeQ19UAUosJXuDIAA';
 
-        let currentBreakAudio = null;
-        let currentBreakNotification = null;
-
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
             const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -332,12 +329,10 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
                 const msg = event.data || {};
-                if (msg.type === 'BREAK_ALERT_CLOSED') {
-                    stopBreakAlertSound();
-                } else if (msg.type === 'BREAK_ALERT_PUSH') {
+                if (msg.type === 'BREAK_ALERT_PUSH') {
                     // Cadangan: jika timer lokal belum memicu alarm, picu sekarang
-                    if (msg.alertNo === 1 && !alertTriggered45) { alertTriggered45 = true; triggerBreakAlert(); }
-                    if (msg.alertNo === 2 && !alertTriggered60) { alertTriggered60 = true; triggerBreakAlert(); }
+                    if (msg.alertNo === 1 && !alertTriggered45) { alertTriggered45 = true; triggerBreakAlert(1); }
+                    if (msg.alertNo === 2 && !alertTriggered60) { alertTriggered60 = true; triggerBreakAlert(2); }
                 }
             });
         }
@@ -434,41 +429,20 @@
             } catch (e) {}
         }
 
-        function stopBreakAlertSound() {
-            if (currentBreakAudio) {
-                currentBreakAudio.pause();
-                currentBreakAudio.currentTime = 0;
-            }
-        }
-
-        async function closeBreakNotification() {
-            try { if (currentBreakNotification) currentBreakNotification.close(); } catch (e) {}
-            currentBreakNotification = null;
-            try {
-                if ('serviceWorker' in navigator) {
-                    const reg = await navigator.serviceWorker.getRegistration();
-                    if (reg) {
-                        const list = await reg.getNotifications({ tag: 'break-alert' });
-                        list.forEach(n => n.close());
-                    }
-                }
-            } catch (e) {}
-        }
-
-        // Tampilkan notifikasi: constructor (desktop) -> fallback service worker (Android/Chrome mobile)
-        async function showBreakNotification() {
+        // Tampilkan notifikasi dengan NADA BAWAAN HP (silent:false = pakai suara notifikasi perangkat)
+        // constructor (desktop) -> fallback service worker (Android/Chrome mobile)
+        async function showBreakNotification(alertNo) {
             const options = {
                 body: "WAKTUNYA KEMBALI BEKERJA",
                 icon: "",
-                tag: 'break-alert',
-                renotify: true,
+                tag: 'break-alert-' + (alertNo || 0),
+                renotify: false,
+                silent: false,
                 requireInteraction: true,
                 vibrate: [500, 200, 500, 200, 500]
             };
             try {
-                const n = new Notification("Portal Karyawan", options);
-                n.onclose = () => stopBreakAlertSound();
-                currentBreakNotification = n;
+                new Notification("Portal Karyawan", options);
                 return;
             } catch (e) {
                 // Android Chrome tidak mengizinkan new Notification(), pakai service worker
@@ -481,36 +455,11 @@
             }
         }
 
-        // Fungsi pemicu Notifikasi Web & Audio dari Supabase Storage (bucket: sound_break, file: war.mp3)
-        function triggerBreakAlert() {
+        // Fungsi pemicu Notifikasi Web (bunyi mengikuti nada notifikasi bawaan HP masing-masing)
+        function triggerBreakAlert(alertNo) {
             if (!("Notification" in window)) return;
-
-            // Mengambil URL publik dari bucket Supabase 'sound_break' dengan nama file 'war.mp3'
-            const { data } = supabaseClient.storage.from('sound_break').getPublicUrl('war.mp3');
-            const audioUrl = data ? data.publicUrl : '';
-
             if (Notification.permission === 'granted') {
-                showBreakNotification();
-
-                const audio = new Audio(audioUrl);
-                currentBreakAudio = audio;
-                let playCount = 0;
-                const maxLoops = 2; // Looping 2x saja
-
-                // Looping audio sebanyak 2x
-                audio.onended = () => {
-                    playCount++;
-                    if (playCount < maxLoops) {
-                        audio.play().catch(e => console.log("Audio play error:", e));
-                    } else {
-                        // Sinkronisasi: Jika sound berhenti, notifikasi juga otomatis hilang
-                        closeBreakNotification();
-                    }
-                };
-
-                audio.play().catch(e => {
-                    console.log("Audio playback blocked or failed:", e);
-                });
+                showBreakNotification(alertNo);
             }
         }
 
@@ -520,11 +469,11 @@
 
             if (totalMinutes >= BREAK_ALERT_MINUTE_1 && !alertTriggered45) {
                 alertTriggered45 = true;
-                triggerBreakAlert();
+                triggerBreakAlert(1);
             }
             if (totalMinutes >= BREAK_ALERT_MINUTE_2 && !alertTriggered60) {
                 alertTriggered60 = true;
-                triggerBreakAlert();
+                triggerBreakAlert(2);
             }
         }
 

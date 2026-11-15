@@ -333,7 +333,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                         <label class="field-label" for="nip-input">Nomor Induk Pegawai (NIP)</label>
                         <input type="number" id="nip-input" placeholder="Contoh: 168587" class="field">
                     </div>
-                    <button onclick="handleLogin()" id="login-btn" class="btn-primary">Masuk ke Menu Utama</button>
+                    <button onclick="handleLogin()" id="login-btn" class="btn-primary">Login Portal Karyawan</button>
                     <p id="error-msg" class="error-box hidden"></p>
                 </div>
             </div>
@@ -381,7 +381,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                                 </div>
                                 <div class="menu-hero-body">
                                     <h3 id="main-menu-istirahat-title" class="menu-hero-title">ISTIRAHAT KARYAWAN</h3>
-                                    <p id="main-menu-istirahat-desc" class="menu-hero-desc">Catat istirahat &amp; team</p>
+                                    <p id="main-menu-istirahat-desc" class="menu-hero-desc">Laporan Istirahat</p>
                                     <p id="main-menu-timer" class="menu-hero-timer hidden"></p>
                                 </div>
                                 <svg class="ico-sm chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
@@ -941,8 +941,8 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
             }
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('main-menu-section').classList.remove('hidden');
-            document.getElementById('header-title').innerText = 'Menu Utama';
-            document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan';
+            document.getElementById('header-title').innerText = 'Portal Karyawan';
+            document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan Informa MOG';
             const nip = localStorage.getItem('emp_nip');
             if (nip) checkActiveBreakStatus(nip);
         }
@@ -1760,7 +1760,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                     keteranganSelect.disabled = false;
                     btnWrapper.innerHTML = `
                         <button onclick="handleMulaiIstirahat()" class="btn-primary">
-                            Mulai Istirahat
+                            MULAI
                         </button>
                     `;
                     largeTimerCard.classList.add('hidden');

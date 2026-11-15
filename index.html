@@ -7,6 +7,9 @@
     <!-- Tailwind CSS untuk Desain Mobile-Friendly -->
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Library PDF (untuk tombol Download Riwayat Istirahat) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -185,10 +188,11 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .tile-desc{font-size:11px;color:var(--muted);margin-top:1px;line-height:1.3}
 
 /* ====== TAB ====== */
-.tab-switch{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:16px;background:#e6e8f8}
-.tab-pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:12px;background:#fff;box-shadow:0 3px 10px rgba(40,40,120,.16);transition:transform .38s var(--ease)}
+.tab-switch{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;padding:4px;border-radius:16px;background:#e6e8f8}
+.tab-pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:12px;background:#fff;box-shadow:0 3px 10px rgba(40,40,120,.16);transition:transform .38s var(--ease)}
 .tab-switch[data-tab="team"] .tab-pill{transform:translateX(100%)}
-.tab-btn{position:relative;z-index:1;padding:10px 12px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:color .25s}
+.tab-switch[data-tab="riwayat"] .tab-pill{transform:translateX(200%)}
+.tab-btn{position:relative;z-index:1;padding:10px 4px;font-size:12px;line-height:1.25;font-weight:600;color:var(--ink-2);cursor:pointer;transition:color .25s}
 .tab-btn.is-on{color:var(--brand)}
 .tab-pane{display:flex;flex-direction:column;gap:14px}
 
@@ -224,6 +228,40 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .badge-rose{background:#ffe3e8;color:#be123c;display:inline-flex;align-items:center;gap:6px}
 .badge-rose::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.4s ease-in-out infinite}
 .team-count{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+
+/* ====== RIWAYAT ISTIRAHAT ====== */
+.field[type="date"]{min-width:0;height:50px;-webkit-appearance:none;appearance:none;padding:0 12px;font-size:14px !important}
+.rh-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rh-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.rh-actions button{display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-download{position:relative;overflow:hidden;width:100%;padding:14px 16px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer;color:#047857;
+  background:linear-gradient(135deg,#e9fbf3,#d3f5e6);border:1px solid #b4ebd3;box-shadow:0 12px 22px -14px rgba(4,120,87,.7);
+  transition:transform .15s var(--ease),box-shadow .25s,filter .2s}
+.btn-download:hover{filter:brightness(.98);transform:translateY(-1px)}
+.btn-download:active{transform:scale(.98)}
+.btn-download:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-primary:disabled .ico-sm,.btn-download.is-busy .ico-sm{animation:spin 1s linear infinite}
+.rh-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px}
+.rh-sum-box{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:#f6f7fe;border:1px solid var(--line)}
+.rh-sum-box .stat-chip{width:36px;height:36px;border-radius:12px}
+.rh-sum-num{font-size:18px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.rh-sum-lbl{font-size:11px;font-weight:600;color:var(--muted);margin-top:1px}
+.rh-scroll{max-height:32rem;gap:4px}
+.rh-group + .rh-group{margin-top:10px}
+.rh-date-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 2px 8px;background:#fff;font-size:12px;font-weight:700;color:var(--brand)}
+.rh-date-head span:first-child{display:flex;align-items:center;gap:6px}
+.rh-date-count{font-size:10.5px;font-weight:700;color:var(--ink-2);background:#eef0ff;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.rh-group-body{display:flex;flex-direction:column;gap:8px}
+.rh-item{padding:12px;border-radius:16px;background:#f6f7fe;border:1px solid var(--line);
+  animation:rise .42s var(--ease) backwards;animation-delay:calc(var(--i,0) * 40ms)}
+.rh-top{display:flex;align-items:center;gap:12px}
+.rh-info{min-width:0;flex:1}
+.rh-name{font-size:13px;font-weight:700;color:var(--ink)}
+.rh-date-chip{flex-shrink:0;align-self:flex-start;font-size:10.5px;font-weight:700;color:var(--brand);background:#eceaff;padding:4px 9px;border-radius:999px;white-space:nowrap}
+.rh-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed #d9dcf2}
+.rh-bottom-label{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--ink-2)}
+.rh-warn{color:#b45309;font-weight:600}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ====== TOAST ====== */
 #toast-root{position:fixed;left:0;right:0;bottom:max(20px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;z-index:60;pointer-events:none;padding:0 16px}
@@ -401,6 +439,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                         <div class="tab-pill"></div>
                         <button onclick="switchIstirahatTab('pribadi')" id="tab-btn-pribadi" class="tab-btn is-on">Istirahat</button>
                         <button onclick="switchIstirahatTab('team')" id="tab-btn-team" class="tab-btn">Team Istirahat</button>
+                        <button onclick="switchIstirahatTab('riwayat')" id="tab-btn-riwayat" class="tab-btn">Riwayat Istirahat</button>
                     </div>
 
                     <!-- SUB-MENU 1: ISTIRAHAT PRIBADI -->
@@ -456,6 +495,57 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                             <p class="panel-title">Daftar rekan kerja &amp; total waktu istirahat hari ini</p>
                             <div id="team-istirahat-list-container" class="list-scroll team-scroll touch-scroll">
                                 <p class="empty">Memuat data tim...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-MENU 3: RIWAYAT ISTIRAHAT -->
+                    <div id="tab-content-riwayat" class="tab-pane hidden">
+                        <div class="panel">
+                            <p class="panel-title">Filter tanggal riwayat istirahat team</p>
+                            <div class="rh-dates">
+                                <div>
+                                    <label class="field-label" for="riwayat-tgl-mulai">Tanggal Mulai</label>
+                                    <input type="date" id="riwayat-tgl-mulai" class="field">
+                                </div>
+                                <div>
+                                    <label class="field-label" for="riwayat-tgl-akhir">Tanggal Akhir</label>
+                                    <input type="date" id="riwayat-tgl-akhir" class="field">
+                                </div>
+                            </div>
+                            <div class="rh-actions">
+                                <button onclick="loadRiwayatIstirahat()" id="btn-riwayat-filter" class="btn-primary">
+                                    <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18l-7 8.5V19l-4 2v-8.5L3 4z"/></svg>
+                                    <span>Filter</span>
+                                </button>
+                                <button onclick="downloadRiwayatPDF()" id="btn-riwayat-download" class="btn-download" disabled>
+                                    <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3M12 3v13m0 0l-4-4m4 4l4-4"/></svg>
+                                    <span>Download</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="panel rh-summary">
+                            <div class="rh-sum-box">
+                                <div class="stat-chip tint-violet"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+                                <div>
+                                    <p id="riwayat-sum-karyawan" class="rh-sum-num">0</p>
+                                    <p class="rh-sum-lbl">Karyawan</p>
+                                </div>
+                            </div>
+                            <div class="rh-sum-box">
+                                <div class="stat-chip tint-amber"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>
+                                <div>
+                                    <p id="riwayat-sum-data" class="rh-sum-num">0</p>
+                                    <p class="rh-sum-lbl">Total Data</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <p id="riwayat-periode-text" class="panel-title">Riwayat istirahat team</p>
+                            <div id="riwayat-list-container" class="list-scroll rh-scroll touch-scroll">
+                                <p class="empty">Memuat riwayat...</p>
                             </div>
                         </div>
                     </div>
@@ -861,8 +951,10 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
         function switchIstirahatTab(tabName) {
             const btnPribadi = document.getElementById('tab-btn-pribadi');
             const btnTeam = document.getElementById('tab-btn-team');
+            const btnRiwayat = document.getElementById('tab-btn-riwayat');
             const contentPribadi = document.getElementById('tab-content-pribadi');
             const contentTeam = document.getElementById('tab-content-team');
+            const contentRiwayat = document.getElementById('tab-content-riwayat');
 
             const tabSwitcher = document.getElementById('tab-switcher');
             if (tabSwitcher) tabSwitcher.dataset.tab = tabName;
@@ -871,16 +963,29 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 if (teamTimerInterval) clearInterval(teamTimerInterval);
                 btnPribadi.className = "tab-btn is-on";
                 btnTeam.className = "tab-btn";
+                btnRiwayat.className = "tab-btn";
                 contentPribadi.classList.remove('hidden');
                 contentTeam.classList.add('hidden');
+                contentRiwayat.classList.add('hidden');
                 loadIstirahatHistory();
             } else if (tabName === 'team') {
                 btnPribadi.className = "tab-btn";
                 btnTeam.className = "tab-btn is-on";
+                btnRiwayat.className = "tab-btn";
                 contentTeam.classList.remove('hidden');
                 contentPribadi.classList.add('hidden');
+                contentRiwayat.classList.add('hidden');
                 loadTeamIstirahatData();
                 setupTeamIstirahatRealtime();
+            } else if (tabName === 'riwayat') {
+                if (teamTimerInterval) clearInterval(teamTimerInterval);
+                btnPribadi.className = "tab-btn";
+                btnTeam.className = "tab-btn";
+                btnRiwayat.className = "tab-btn is-on";
+                contentRiwayat.classList.remove('hidden');
+                contentPribadi.classList.add('hidden');
+                contentTeam.classList.add('hidden');
+                initRiwayatIstirahat();
             }
         }
 
@@ -1062,6 +1167,479 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                     loadTeamIstirahatData();
                 })
                 .subscribe();
+        }
+
+        // =========================================================================
+        // --- RIWAYAT ISTIRAHAT (FILTER TANGGAL + DOWNLOAD PDF) ---
+        // =========================================================================
+        let riwayatData = [];                 // hasil filter terakhir (dipakai untuk PDF)
+        let riwayatPeriode = { start: '', end: '' };
+        const riwayatPhotoBlobs = {};         // cache foto: nip -> Blob | null
+        const riwayatPhotoUrls = {};          // cache object URL: nip -> string
+        const riwayatPdfPhotos = {};          // cache foto PDF: nip -> dataURL | null
+        let riwayatPhotoQueue = null;         // promise pemuatan foto yang sedang berjalan
+        let riwayatRequestId = 0;             // mencegah hasil lama menimpa hasil baru
+
+        function riwayatEscape(str) {
+            return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function riwayatLocalISO(d = new Date()) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function riwayatParseDate(iso) {
+            const [y, m, d] = String(iso).substring(0, 10).split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
+        function riwayatFormatPanjang(iso) {
+            return riwayatParseDate(iso).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function riwayatFormatPendek(iso) {
+            return riwayatParseDate(iso).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function riwayatHitungDetik(mulai, selesai) {
+            if (!mulai || !selesai) return 0;
+            const [h1, m1, s1 = 0] = String(mulai).split(':').map(Number);
+            const [h2, m2, s2 = 0] = String(selesai).split(':').map(Number);
+            const diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+            return diff > 0 ? diff : 0;
+        }
+
+        function riwayatFormatDurasi(totalSecs) {
+            const h = Math.floor(totalSecs / 3600);
+            const m = Math.floor((totalSecs % 3600) / 60);
+            const s = totalSecs % 60;
+            return `${h} Jam ${m} Menit ${s} Detik`;
+        }
+
+        // Dipanggil setiap kali sub-menu "Riwayat Istirahat" dibuka
+        function initRiwayatIstirahat() {
+            const startEl = document.getElementById('riwayat-tgl-mulai');
+            const endEl = document.getElementById('riwayat-tgl-akhir');
+            const today = riwayatLocalISO();
+            if (!startEl.value) startEl.value = today;
+            if (!endEl.value) endEl.value = today;
+            loadRiwayatIstirahat();
+        }
+
+        async function loadRiwayatIstirahat() {
+            const startEl = document.getElementById('riwayat-tgl-mulai');
+            const endEl = document.getElementById('riwayat-tgl-akhir');
+            const container = document.getElementById('riwayat-list-container');
+            const periodeText = document.getElementById('riwayat-periode-text');
+            const btnFilter = document.getElementById('btn-riwayat-filter');
+            const btnDownload = document.getElementById('btn-riwayat-download');
+
+            const start = startEl.value;
+            const end = endEl.value;
+
+            if (!start || !end) {
+                alert('Gagal memfilter: Tanggal Mulai dan Tanggal Akhir wajib diisi.');
+                return;
+            }
+            if (start > end) {
+                alert('Gagal memfilter: Tanggal Mulai tidak boleh lebih besar dari Tanggal Akhir.');
+                return;
+            }
+
+            const requestId = ++riwayatRequestId;
+            btnFilter.disabled = true;
+            btnFilter.querySelector('span').innerText = 'Memuat...';
+            btnDownload.disabled = true;
+            container.innerHTML = `<p class="empty">Memuat riwayat istirahat...</p>`;
+
+            try {
+                // Ambil seluruh data pada rentang tanggal (per halaman 1000 baris agar tidak terpotong)
+                let rows = [];
+                const PAGE = 1000;
+                let from = 0;
+                while (true) {
+                    const { data, error } = await supabaseClient
+                        .from('data_istirahat')
+                        .select('*')
+                        .gte('tanggal', start)
+                        .lte('tanggal', end)
+                        .order('tanggal', { ascending: false })
+                        .order('id', { ascending: true })
+                        .range(from, from + PAGE - 1);
+                    if (error) throw error;
+                    rows = rows.concat(data || []);
+                    if (!data || data.length < PAGE) break;
+                    from += PAGE;
+                }
+
+                if (requestId !== riwayatRequestId) return;
+
+                // Nama karyawan
+                const karMap = {};
+                if (rows.length > 0) {
+                    const { data: karData, error: errKar } = await supabaseClient
+                        .from('data_karyawan')
+                        .select('nip_kar, nama_kar');
+                    if (errKar) throw errKar;
+                    if (karData) karData.forEach(k => { karMap[String(k.nip_kar)] = k.nama_kar; });
+                }
+
+                if (requestId !== riwayatRequestId) return;
+
+                // Akumulasi istirahat per karyawan per tanggal
+                const grouped = {};
+                rows.forEach(item => {
+                    const tgl = String(item.tanggal).substring(0, 10);
+                    const key = `${tgl}|${item.nip}`;
+                    if (!grouped[key]) {
+                        grouped[key] = {
+                            tanggal: tgl,
+                            nip: String(item.nip),
+                            nama: karMap[String(item.nip)] || `NIP: ${item.nip}`,
+                            detik: 0,
+                            sesi: 0,
+                            belumSelesai: 0
+                        };
+                    }
+                    grouped[key].sesi += 1;
+                    if (item.jam_selesai) {
+                        grouped[key].detik += riwayatHitungDetik(item.jam_mulai, item.jam_selesai);
+                    } else {
+                        grouped[key].belumSelesai += 1;
+                    }
+                });
+
+                riwayatData = Object.values(grouped).sort((a, b) => {
+                    if (a.tanggal !== b.tanggal) return a.tanggal < b.tanggal ? 1 : -1;
+                    return a.nama.localeCompare(b.nama, 'id');
+                });
+                riwayatPeriode = { start, end };
+
+                periodeText.innerText = start === end
+                    ? `Riwayat istirahat • ${riwayatFormatPendek(start)}`
+                    : `Riwayat istirahat • ${riwayatFormatPendek(start)} s/d ${riwayatFormatPendek(end)}`;
+
+                renderRiwayatIstirahat();
+                btnDownload.disabled = riwayatData.length === 0;
+
+            } catch (err) {
+                if (requestId !== riwayatRequestId) return;
+                console.error("Gagal memuat riwayat istirahat team:", err.message);
+                riwayatData = [];
+                document.getElementById('riwayat-sum-karyawan').innerText = '0';
+                document.getElementById('riwayat-sum-data').innerText = '0';
+                container.innerHTML = `<p class="empty empty-err">Gagal memuat riwayat istirahat team.</p>`;
+            } finally {
+                if (requestId === riwayatRequestId) {
+                    btnFilter.disabled = false;
+                    btnFilter.querySelector('span').innerText = 'Filter';
+                }
+            }
+        }
+
+        function renderRiwayatIstirahat() {
+            const container = document.getElementById('riwayat-list-container');
+            const uniqueNips = [...new Set(riwayatData.map(r => r.nip))];
+
+            document.getElementById('riwayat-sum-karyawan').innerText = uniqueNips.length;
+            document.getElementById('riwayat-sum-data').innerText = riwayatData.length;
+
+            if (riwayatData.length === 0) {
+                container.innerHTML = `<p class="empty">Tidak ada riwayat istirahat pada rentang tanggal ini.</p>`;
+                return;
+            }
+
+            // Kelompokkan per tanggal agar mudah dibaca
+            const byDate = {};
+            const dateOrder = [];
+            riwayatData.forEach(r => {
+                if (!byDate[r.tanggal]) { byDate[r.tanggal] = []; dateOrder.push(r.tanggal); }
+                byDate[r.tanggal].push(r);
+            });
+
+            let html = '';
+            let idx = 0;
+            dateOrder.forEach(tgl => {
+                html += `
+                    <div class="rh-group">
+                        <div class="rh-date-head">
+                            <span>
+                                <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>
+                                ${riwayatEscape(riwayatFormatPanjang(tgl))}
+                            </span>
+                            <span class="rh-date-count">${byDate[tgl].length} Karyawan</span>
+                        </div>
+                        <div class="rh-group-body">`;
+
+                byDate[tgl].forEach(r => {
+                    const initial = riwayatEscape((r.nama || '?').charAt(0).toUpperCase());
+                    const warn = r.belumSelesai > 0
+                        ? ` &bull; <span class="rh-warn">${r.belumSelesai} belum selesai</span>`
+                        : '';
+                    html += `
+                            <div class="rh-item" style="--i:${Math.min(idx, 12)}">
+                                <div class="rh-top">
+                                    <div class="avatar avatar-sm">
+                                        <img class="img-fill hidden rh-photo" data-nip="${riwayatEscape(r.nip)}" alt="Foto">
+                                        <span class="center-fill rh-initial" data-nip="${riwayatEscape(r.nip)}">${initial}</span>
+                                    </div>
+                                    <div class="rh-info">
+                                        <h4 class="rh-name truncate">${riwayatEscape(r.nama)}</h4>
+                                        <p class="row-meta">NIP <b>${riwayatEscape(r.nip)}</b> &bull; <b>${r.sesi}</b> sesi${warn}</p>
+                                    </div>
+                                    <span class="rh-date-chip">${riwayatEscape(riwayatFormatPendek(r.tanggal))}</span>
+                                </div>
+                                <div class="rh-bottom">
+                                    <span class="rh-bottom-label">
+                                        <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        Akumulasi istirahat
+                                    </span>
+                                    <span class="badge badge-ok">${riwayatFormatDurasi(r.detik)}</span>
+                                </div>
+                            </div>`;
+                    idx++;
+                });
+
+                html += `
+                        </div>
+                    </div>`;
+            });
+
+            container.innerHTML = html;
+            container.scrollTop = 0;
+
+            // Pasang foto dari cache lalu muat sisanya
+            uniqueNips.forEach(nip => applyRiwayatPhoto(nip));
+            riwayatPhotoQueue = loadRiwayatPhotos(uniqueNips);
+        }
+
+        function applyRiwayatPhoto(nip) {
+            const url = riwayatPhotoUrls[nip];
+            if (!url) return;
+            document.querySelectorAll(`img.rh-photo[data-nip="${nip}"]`).forEach(img => {
+                img.src = url;
+                img.classList.remove('hidden');
+            });
+            document.querySelectorAll(`span.rh-initial[data-nip="${nip}"]`).forEach(sp => sp.classList.add('hidden'));
+        }
+
+        async function fetchRiwayatPhoto(nip) {
+            if (nip in riwayatPhotoBlobs) return riwayatPhotoBlobs[nip];
+
+            const possiblePaths = [
+                nip.toString(),
+                `${nip}.jpg`,
+                `${nip}.jpeg`,
+                `${nip}.png`,
+                `${nip}.JPG`,
+                `${nip}.JPEG`,
+                `${nip}.PNG`
+            ];
+
+            let found = null;
+            for (const path of possiblePaths) {
+                try {
+                    const { data, error } = await supabaseClient.storage
+                        .from('FOTO SALES')
+                        .download(path);
+                    if (!error && data) { found = data; break; }
+                } catch (e) {}
+            }
+            riwayatPhotoBlobs[nip] = found;
+            if (found) riwayatPhotoUrls[nip] = URL.createObjectURL(found);
+            return found;
+        }
+
+        // Muat foto beberapa karyawan sekaligus (maks. 4 paralel)
+        async function loadRiwayatPhotos(nips) {
+            const queue = nips.filter(n => !(n in riwayatPhotoBlobs));
+            const worker = async () => {
+                while (queue.length) {
+                    const nip = queue.shift();
+                    await fetchRiwayatPhoto(nip);
+                    applyRiwayatPhoto(nip);
+                }
+            };
+            await Promise.all([worker(), worker(), worker(), worker()]);
+        }
+
+        function riwayatBlobToSquareDataURL(blob, size = 120) {
+            return new Promise(resolve => {
+                const url = URL.createObjectURL(blob);
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = size;
+                        canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, size, size);
+                        const side = Math.min(img.width, img.height);
+                        const sx = (img.width - side) / 2;
+                        const sy = (img.height - side) / 2;
+                        ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+                        resolve(canvas.toDataURL('image/jpeg', 0.82));
+                    } catch (e) {
+                        resolve(null);
+                    } finally {
+                        URL.revokeObjectURL(url);
+                    }
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+                img.src = url;
+            });
+        }
+
+        // --- DOWNLOAD LAPORAN PDF ---
+        async function downloadRiwayatPDF() {
+            if (!riwayatData || riwayatData.length === 0) {
+                alert('Gagal mengunduh: tidak ada data riwayat untuk diunduh. Silakan filter tanggal terlebih dahulu.');
+                return;
+            }
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                alert('Gagal mengunduh: pustaka PDF belum termuat. Periksa koneksi internet lalu coba lagi.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-riwayat-download');
+            const btnLabel = btn.querySelector('span');
+            btn.disabled = true;
+            btn.classList.add('is-busy');
+            btnLabel.innerText = 'Menyiapkan...';
+
+            try {
+                // Pastikan semua foto sudah dimuat
+                const uniqueNips = [...new Set(riwayatData.map(r => r.nip))];
+                if (riwayatPhotoQueue) await riwayatPhotoQueue;
+                await loadRiwayatPhotos(uniqueNips);
+                for (const nip of uniqueNips) {
+                    if (!(nip in riwayatPdfPhotos)) {
+                        const blob = riwayatPhotoBlobs[nip];
+                        riwayatPdfPhotos[nip] = blob ? await riwayatBlobToSquareDataURL(blob) : null;
+                    }
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const pageW = doc.internal.pageSize.getWidth();
+                const pageH = doc.internal.pageSize.getHeight();
+
+                const { start, end } = riwayatPeriode;
+                const periodeStr = start === end
+                    ? riwayatFormatPendek(start)
+                    : `${riwayatFormatPendek(start)} s/d ${riwayatFormatPendek(end)}`;
+                const uniqueCount = uniqueNips.length;
+                const dicetakOleh = localStorage.getItem('emp_nama');
+                const dicetakStr = new Date().toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                // Kop laporan
+                doc.setFillColor(67, 56, 202);
+                doc.rect(0, 0, pageW, 36, 'F');
+                doc.setFillColor(124, 92, 245);
+                doc.rect(0, 36, pageW, 1.2, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.text('LAPORAN RIWAYAT ISTIRAHAT TEAM', 12, 14);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9.5);
+                doc.text(`Periode        : ${periodeStr}`, 12, 21.5);
+                doc.text(`Total Data   : ${riwayatData.length} baris  |  Karyawan : ${uniqueCount} orang`, 12, 27);
+                doc.text(`Dicetak       : ${dicetakStr}${dicetakOleh ? '  |  Oleh : ' + dicetakOleh : ''}`, 12, 32.5);
+
+                const body = riwayatData.map((r, i) => [
+                    String(i + 1),
+                    '',
+                    r.nama,
+                    r.nip,
+                    riwayatFormatPendek(r.tanggal),
+                    String(r.sesi),
+                    riwayatFormatDurasi(r.detik)
+                ]);
+
+                doc.autoTable({
+                    startY: 43,
+                    margin: { top: 14, left: 12, right: 12, bottom: 16 },
+                    head: [['No', 'Foto', 'Nama', 'NIP', 'Tanggal', 'Sesi', 'Akumulasi Istirahat']],
+                    body: body,
+                    theme: 'grid',
+                    rowPageBreak: 'avoid',
+                    styles: {
+                        font: 'helvetica',
+                        fontSize: 9,
+                        cellPadding: 2,
+                        valign: 'middle',
+                        minCellHeight: 14,
+                        textColor: [21, 21, 58],
+                        lineColor: [230, 232, 246],
+                        lineWidth: 0.1
+                    },
+                    headStyles: {
+                        fillColor: [67, 56, 202],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'center',
+                        minCellHeight: 10
+                    },
+                    alternateRowStyles: { fillColor: [246, 247, 254] },
+                    columnStyles: {
+                        0: { cellWidth: 10, halign: 'center' },
+                        1: { cellWidth: 16 },
+                        2: { cellWidth: 'auto', fontStyle: 'bold' },
+                        3: { cellWidth: 22, halign: 'center' },
+                        4: { cellWidth: 28, halign: 'center' },
+                        5: { cellWidth: 14, halign: 'center' },
+                        6: { cellWidth: 40, halign: 'center', fontStyle: 'bold', textColor: [4, 120, 87] }
+                    },
+                    didDrawCell: (d) => {
+                        if (d.section !== 'body' || d.column.index !== 1) return;
+                        const rec = riwayatData[d.row.index];
+                        if (!rec) return;
+                        const size = 11;
+                        const x = d.cell.x + (d.cell.width - size) / 2;
+                        const y = d.cell.y + (d.cell.height - size) / 2;
+                        const img = riwayatPdfPhotos[rec.nip];
+                        if (img) {
+                            try { doc.addImage(img, 'JPEG', x, y, size, size); return; } catch (e) {}
+                        }
+                        doc.setFillColor(124, 92, 245);
+                        doc.roundedRect(x, y, size, size, 2, 2, 'F');
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(10);
+                        doc.text((rec.nama || '?').charAt(0).toUpperCase(), x + size / 2, y + size / 2 + 1.3, { align: 'center' });
+                    }
+                });
+
+                // Footer: nomor halaman
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let p = 1; p <= totalPages; p++) {
+                    doc.setPage(p);
+                    doc.setDrawColor(230, 232, 246);
+                    doc.setLineWidth(0.2);
+                    doc.line(12, pageH - 11, pageW - 12, pageH - 11);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(8);
+                    doc.setTextColor(132, 134, 173);
+                    doc.text('Portal Karyawan - Riwayat Istirahat Team', 12, pageH - 6.5);
+                    doc.text(`Halaman ${p} dari ${totalPages}`, pageW - 12, pageH - 6.5, { align: 'right' });
+                }
+
+                doc.save(`Riwayat_Istirahat_${start}_sd_${end}.pdf`);
+                alert('Laporan riwayat istirahat berhasil diunduh.');
+
+            } catch (err) {
+                console.error("Gagal membuat PDF:", err);
+                alert('Gagal membuat PDF: ' + (err.message || err));
+            } finally {
+                btn.classList.remove('is-busy');
+                btnLabel.innerText = 'Download';
+                btn.disabled = !(riwayatData && riwayatData.length > 0);
+            }
         }
 
         // --- CEK STATUS ISTIRAHAT AKTIF UNTUK CARD MENU UTAMA ---

@@ -314,6 +314,27 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .exit-btn-no{background:linear-gradient(135deg,#4f46e5,#6d4df0);color:#fff;box-shadow:0 12px 22px -12px rgba(79,70,229,.75)}
 .exit-btn-yes{background:var(--rose-soft);color:#be123c;box-shadow:inset 0 0 0 1.5px #ffd3da}
 @keyframes exitPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+
+/* ====== PANDUAN KELUAR (muncul setelah memilih "Iya") ====== */
+.guide-dialog{width:100%;max-width:340px;background:#fff;border-radius:26px;padding:24px 20px 18px;text-align:center;
+  box-shadow:0 30px 60px -20px rgba(40,40,130,.55),0 0 0 1px rgba(60,60,140,.06);
+  transform:translateY(24px) scale(.92);opacity:0;transition:transform .35s var(--ease),opacity .25s var(--ease)}
+.exit-overlay.is-open .guide-dialog{transform:none;opacity:1}
+.guide-icon{width:64px;height:64px;margin:0 auto 12px;border-radius:20px;display:flex;align-items:center;justify-content:center;
+  background:#eef0ff;color:var(--brand)}
+.guide-icon svg{width:30px;height:30px;animation:guideNudge 1.3s ease-in-out infinite}
+.guide-title{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.guide-text{font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px}
+.guide-steps{list-style:none;margin:0 0 12px;padding:0;text-align:left;display:flex;flex-direction:column;gap:8px}
+.guide-steps li{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:14px;background:#f5f6ff;
+  font-size:13px;line-height:1.45;color:var(--ink);animation:fadeIn .45s var(--ease) both}
+.guide-steps li:nth-child(2){animation-delay:.12s}
+.guide-steps li:nth-child(3){animation-delay:.24s}
+.guide-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:#fff;background:linear-gradient(135deg,#4f46e5,#6d4df0)}
+.guide-num.ok{background:linear-gradient(135deg,#10b981,#34d399)}
+.guide-hint{font-size:11.5px;line-height:1.5;color:var(--muted);margin-bottom:16px}
+@keyframes guideNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-6px)}}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -589,6 +610,27 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
             <div class="exit-actions">
                 <button type="button" id="exit-btn-yes" class="exit-btn exit-btn-yes">Iya</button>
                 <button type="button" id="exit-btn-no" class="exit-btn exit-btn-no">Tidak</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANDUAN KELUAR APLIKASI (setelah memilih "Iya") -->
+    <div id="exit-guide" class="exit-overlay" aria-hidden="true">
+        <div class="guide-dialog" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+            <div class="guide-icon">
+                <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            </div>
+            <h3 id="guide-title" class="guide-title">Satu langkah lagi untuk keluar</h3>
+            <p class="guide-text">Android tidak mengizinkan aplikasi menutup dirinya sendiri. Ikuti langkah singkat ini:</p>
+            <ol class="guide-steps">
+                <li><span class="guide-num">1</span><span>Tekan tombol <b>Back</b> (&#9664; atau geser dari tepi layar) di HP Anda.</span></li>
+                <li><span class="guide-num">2</span><span>Jika aplikasi belum tertutup, tekan <b>Back sekali lagi</b>.</span></li>
+                <li><span class="guide-num ok">&#10003;</span><span>Aplikasi tersembunyi dan Anda kembali ke layar HP.</span></li>
+            </ol>
+            <p class="guide-hint">Tidak jadi keluar? Ketuk &ldquo;Batal&rdquo; untuk tetap memakai aplikasi.</p>
+            <div class="exit-actions">
+                <button type="button" id="guide-btn-cancel" class="exit-btn exit-btn-yes">Batal</button>
+                <button type="button" id="guide-btn-ok" class="exit-btn exit-btn-no">Mengerti</button>
             </div>
         </div>
     </div>
@@ -2224,8 +2266,15 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
         overlay.classList.remove('is-open');
         overlay.setAttribute('aria-hidden', 'true');
     }
-    function toast(msg) {
-        if (typeof showToast === 'function') showToast(msg);
+    var guide = document.getElementById('exit-guide');
+    function showGuide() {
+        guide.classList.add('is-open');
+        guide.setAttribute('aria-hidden', 'false');
+        try { if (navigator.vibrate) navigator.vibrate(60); } catch (err) {}
+    }
+    function hideGuide() {
+        guide.classList.remove('is-open');
+        guide.setAttribute('aria-hidden', 'true');
     }
 
     // ---- Susun riwayat: [guard] -> [main]. Back dari [main] jatuh ke [guard] ----
@@ -2235,6 +2284,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
     }
     // Pasang penjaga Back lagi (dipakai jika karyawan batal keluar / kembali ke aplikasi)
     function rearm() {
+        hideGuide();
         if (!exiting) return;
         exiting = false;
         exitReload = false;
@@ -2257,10 +2307,9 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
         try { window.close(); } catch (err) {}
         // Jika masih terbuka: biarkan TANPA penjaga, agar satu tekanan Back
         // berikutnya langsung menyembunyikan/menutup aplikasi (bawaan Android)
-        setTimeout(function () {
-            toast('Tekan tombol Back sekali lagi untuk keluar dari aplikasi.');
-        }, 600);
-        setTimeout(rearm, 6000);   // jika tidak jadi keluar, kembali normal
+        // Tampilkan panduan; penjaga Back baru dipasang lagi jika karyawan
+        // mengetuk "Batal" atau kembali membuka aplikasi
+        setTimeout(showGuide, 500);
     } else {
         var cur = history.state && history.state.portal;
         if (cur === STATE_MAIN || cur === STATE_SUB) {
@@ -2329,6 +2378,9 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
         if (ev.target === overlay) closeExitDialog();
     });
 
+    document.getElementById('guide-btn-ok').addEventListener('click', hideGuide);
+    document.getElementById('guide-btn-cancel').addEventListener('click', rearm);
+
     document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'visible') rearm();
     });
@@ -2344,7 +2396,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
             if (startLen > 1) {
                 // 2. Ada halaman sebelumnya: keluar dari aplikasi ke halaman itu
                 try { history.go(-2); } catch (err) {}
-                setTimeout(rearm, 1200);
+                setTimeout(showGuide, 1200);   // jika masih di sini, tampilkan panduan
             } else {
                 // 3. Mundur ke entri awal lalu muat ulang -> riwayat jadi 1 entri,
                 //    kemudian window.close() dipanggil dari awal halaman
@@ -2359,7 +2411,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 
     // Jika halaman dipulihkan dari cache browser, siapkan ulang kondisi normal
     window.addEventListener('pageshow', function (ev) {
-        if (ev.persisted) { exiting = false; exitReload = false; closeExitDialog(); }
+        if (ev.persisted) { exiting = false; exitReload = false; closeExitDialog(); hideGuide(); }
     });
 })();
 </script>

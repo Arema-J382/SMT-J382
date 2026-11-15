@@ -1,40 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#4f46e5">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/icon-192.png">
-<title>Koneksi Tablet</title>
-<style>
-:root{--bg1:#eef2ff;--bg2:#e0e7ff;--card:rgba(255,255,255,.85);--txt:#1e1b4b;--mut:#6b7280;--pri:#4f46e5;--pri2:#7c3aed;--ok:#16a34a;--okbg:#dcfce7;--bad:#dc2626;--badbg:#fee2e2;--bd:#e5e7eb}
-@media(prefers-color-scheme:dark){:root{--bg1:#0f1024;--bg2:#1b1b3a;--card:rgba(30,30,60,.85);--txt:#eef2ff;--mut:#9ca3af;--okbg:#14532d;--badbg:#7f1d1d;--bd:#33335c}}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%}
-body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--txt);background:linear-gradient(135deg,var(--bg1),var(--bg2));background-size:200% 200%;animation:bgmove 18s ease-in-out infinite alternate;padding:calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 20px);display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
-@keyframes bgmove{from{background-position:0% 0%}to{background-position:100% 100%}}
-.wrap{width:100%;max-width:440px;display:grid;gap:14px}
-.card{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(79,70,229,.12);animation:up .6s cubic-bezier(.2,.8,.2,1) both;transition:transform .3s,box-shadow .3s}
-.card:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(79,70,229,.18)}
-.card:nth-child(2){animation-delay:.1s}.card:nth-child(3){animation-delay:.2s}
-@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-h1{margin:0 0 2px;font-size:22px;background:linear-gradient(90deg,var(--pri),var(--pri2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{margin:0 0 18px;color:var(--mut);font-size:13px}
-label{font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
-.row{display:flex;gap:10px;align-items:center;margin-top:8px}
-select{flex:1;min-width:0;padding:13px 12px;border-radius:14px;border:1.5px solid var(--bd);background:transparent;color:var(--txt);font-size:15px;outline:none;transition:.2s}
-select:hover{border-color:var(--pri)}
-select:focus{border-color:var(--pri);box-shadow:0 0 0 4px rgba(79,70,229,.15)}
-select option{color:#111}
-.badge{display:inline-flex;align-items:center;gap:7px;padding:10px 12px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap;transition:.35s;background:var(--bd);color:var(--mut)}
-.badge i{width:8px;height:8px;border-radius:50%;background:currentColor}
-.badge.ok{background:var(--okbg);color:var(--ok)}.badge.bad{background:var(--badbg);color:var(--bad)}
-.badge.ok i,.badge.bad i{animation:pulse 1.6s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
-.badge.load i{animation:spin .8s linear infinite;border-radius:50%;background:none;border:2px solid currentColor;border-top-color:transparent;width:11px;height:11px}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Karyawan - Mobile Web</title>
@@ -56,6 +22,7 @@ h1,h2,h3,h4,p{margin:0}
 button{border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer}
 input,select{font-family:inherit;margin:0}
 svg{display:block}
+
 /* ====== DESIGN TOKENS ====== */
 :root{
   --ink:#15153a; --ink-2:#4b4d7a; --muted:#8486ad;
@@ -78,6 +45,7 @@ input,select{font-size:16px !important}
 .ico-lg{width:32px;height:32px}
 .img-fill{width:100%;height:100%;object-fit:cover}
 .center-fill{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+
 /* ====== BASE ====== */
 body.app-body{
   font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
@@ -94,6 +62,7 @@ body.app-body{
   .app-frame{max-width:28rem;min-height:650px;border-radius:32px;
     box-shadow:0 36px 70px -24px rgba(40,40,130,.4),0 0 0 1px rgba(60,60,140,.06)}
 }
+
 /* ====== HEADER ====== */
 .app-header{position:relative;overflow:hidden;flex-shrink:0;color:#fff;padding:26px 24px 34px;
   border-radius:0 0 30px 30px;background:linear-gradient(135deg,#2b2a86 0%,#4338ca 45%,#6d4df0 100%);
@@ -109,6 +78,7 @@ body.app-body{
   transition:transform .15s var(--ease),background .2s}
 .logout-btn:hover{background:rgba(255,255,255,.24)}
 .logout-btn:active{transform:scale(.95)}
+
 /* ====== LAYOUT ====== */
 .app-content{flex:1;display:flex;flex-direction:column;padding:18px 18px 28px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .section-fill{flex:1;display:flex;flex-direction:column}
@@ -126,6 +96,7 @@ body.app-body{
 .list-scroll::-webkit-scrollbar-thumb{background:#d6d8ee;border-radius:4px}
 .hist-scroll{max-height:15rem}
 .team-scroll{max-height:20rem}
+
 /* ====== LOGIN ====== */
 .login-card{display:flex;flex-direction:column;gap:18px;padding:26px 20px;background:#fff;border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow)}
 .login-mark{width:64px;height:64px;border-radius:22px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;color:var(--brand);
@@ -133,6 +104,7 @@ body.app-body{
 .login-title{font-size:18px;font-weight:700;text-align:center}
 .login-desc{font-size:12.5px;color:var(--muted);margin-top:3px;text-align:center}
 .error-box{padding:11px 14px;border-radius:14px;background:var(--rose-soft);border:1px solid #ffd5dc;color:#be123c;font-size:12.5px;font-weight:600;text-align:center}
+
 /* ====== FORM ====== */
 .field-label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
 .field{width:100%;padding:14px 16px;border-radius:14px;background:#f4f5fd;border:1px solid var(--line);color:var(--ink);font-weight:500;outline:none;
@@ -141,6 +113,7 @@ body.app-body{
 .field:disabled{opacity:.7}
 select.field{appearance:none;-webkit-appearance:none;padding-right:42px;background-repeat:no-repeat;background-position:right 14px center;background-size:16px;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%234b4d7a' stroke-width='2.2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")}
+
 /* ====== BUTTONS ====== */
 .btn-primary,.btn-danger{position:relative;overflow:hidden;width:100%;padding:14px 16px;border-radius:16px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;
   transition:transform .15s var(--ease),box-shadow .25s,filter .2s}
@@ -158,6 +131,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .icon-btn:active{transform:scale(.9)}
 .page-head{display:flex;align-items:center;gap:10px}
 .page-title{font-size:17px;font-weight:700;letter-spacing:-.01em}
+
 /* ====== PROFIL ====== */
 .profile-wrap{margin-bottom:16px;flex-shrink:0;animation:rise .55s var(--ease) backwards}
 .profile-card{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:22px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}
@@ -168,6 +142,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
   background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;font-weight:700;font-size:18px;box-shadow:0 10px 18px -8px rgba(79,70,229,.65)}
 .avatar-sm{width:40px;height:40px;border-radius:13px;font-size:14px}
 .avatar-rose{background:linear-gradient(135deg,#e11d48,#fb7185);box-shadow:0 10px 18px -8px rgba(225,29,72,.6)}
+
 /* ====== STATUS ====== */
 .status-panel{padding:4px 16px}
 .status-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:13px;color:var(--ink-2)}
@@ -179,6 +154,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .status-pill.ok::before{animation:blink 2.4s ease-in-out infinite}
 .status-pill.bad{background:var(--rose-soft);color:#be123c}
 .status-pill.warn{background:var(--amber-soft);color:#b45309}
+
 /* ====== MENU ====== */
 .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .menu-hero{position:relative;overflow:hidden;grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:18px;border-radius:24px;text-align:left;cursor:pointer;color:var(--ink);
@@ -210,6 +186,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .tint-violet{background:#ebe5ff;color:#6d28d9}
 .tile-title{font-size:13px;font-weight:700;letter-spacing:-.005em}
 .tile-desc{font-size:11px;color:var(--muted);margin-top:1px;line-height:1.3}
+
 /* ====== TAB ====== */
 .tab-switch{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;padding:4px;border-radius:16px;background:#e6e8f8}
 .tab-pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:12px;background:#fff;box-shadow:0 3px 10px rgba(40,40,120,.16);transition:transform .38s var(--ease)}
@@ -218,6 +195,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .tab-btn{position:relative;z-index:1;padding:10px 4px;font-size:12px;line-height:1.25;font-weight:600;color:var(--ink-2);cursor:pointer;transition:color .25s}
 .tab-btn.is-on{color:var(--brand)}
 .tab-pane{display:flex;flex-direction:column;gap:14px}
+
 /* ====== TIMER ====== */
 .timer-card{position:relative;overflow:hidden;text-align:center;padding:22px 16px;border-radius:24px;color:#fff;
   background:linear-gradient(135deg,#1e1b4b,#3730a3 60%,#5b3fd9);box-shadow:0 20px 32px -18px rgba(55,48,163,.8)}
@@ -230,6 +208,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .stat-label{font-size:12px;font-weight:600;color:var(--muted)}
 .stat-value{font-size:15px;font-weight:700;margin-top:2px;letter-spacing:-.01em}
 .stat-chip{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
 /* ====== BARIS RIWAYAT / TIM ====== */
 .row-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:14px;background:#f6f7fe;border:1px solid var(--line);
   animation:rise .42s var(--ease) backwards;animation-delay:calc(var(--i,0) * 45ms)}
@@ -249,6 +228,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .badge-rose{background:#ffe3e8;color:#be123c;display:inline-flex;align-items:center;gap:6px}
 .badge-rose::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.4s ease-in-out infinite}
 .team-count{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+
 /* ====== RIWAYAT ISTIRAHAT ====== */
 .field[type="date"]{min-width:0;height:50px;-webkit-appearance:none;appearance:none;padding:0 12px;font-size:14px !important}
 .rh-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -282,49 +262,14 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .rh-bottom-label{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--ink-2)}
 .rh-warn{color:#b45309;font-weight:600}
 @keyframes spin{to{transform:rotate(360deg)}}
-.btn{position:relative;overflow:hidden;width:100%;margin-top:16px;padding:15px;border:0;border-radius:16px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(90deg,var(--pri),var(--pri2));cursor:pointer;box-shadow:0 8px 20px rgba(79,70,229,.35);transition:transform .15s,box-shadow .2s,opacity .2s}
-.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 26px rgba(79,70,229,.42)}
-.btn:not(.ghost):not(:disabled)::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:shine 3.2s ease-in-out infinite}
-@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
-.btn:active{transform:scale(.97)}.btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
-.btn.ghost{background:transparent;color:var(--pri);border:1.5px solid var(--pri);box-shadow:none;margin-top:0;padding:11px;font-size:14px}
-.btn.ghost:hover:not(:disabled){background:rgba(79,70,229,.08);box-shadow:none}
-.btn:focus-visible,select:focus-visible{outline:3px solid rgba(124,58,237,.45);outline-offset:2px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.mini{border:1px solid var(--bd);border-radius:16px;padding:14px;transition:.3s}
-.mini:hover{border-color:var(--pri)}
-.mini small{color:var(--mut);font-size:12px}.mini b{display:block;font-size:20px;margin-top:4px}
-.mini .nm{display:block;margin-top:4px;font-size:11.5px;color:var(--mut);min-height:14px;word-break:break-word}
-.bat{height:8px;border-radius:9px;background:var(--bd);overflow:hidden;margin-top:8px}
-.bat div{height:100%;width:0;border-radius:9px;background:var(--ok);transition:width .6s,background .3s}
-.code{font:12px ui-monospace,monospace;color:var(--mut);text-align:center;margin-top:12px;word-break:break-all}
-/* indikator sinkron 10 detik */
-.sync{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;color:var(--mut);justify-content:center;text-align:center}
-.sync i{width:8px;height:8px;border-radius:50%;background:var(--mut);flex:none;transition:background .3s}
-.sync.ok i{background:var(--ok);animation:pulse 1.6s infinite;color:var(--ok)}
-.sync.bad i{background:var(--bad)}
-.sync.send i{background:var(--pri);animation:blink .5s infinite alternate}
-@keyframes blink{from{opacity:.3}to{opacity:1}}
-.cd{height:3px;border-radius:9px;background:var(--bd);overflow:hidden;margin-top:8px}
-.cd div{height:100%;width:0;background:linear-gradient(90deg,var(--pri),var(--pri2));border-radius:9px}
-.cd.run div{animation:cdown 10s linear infinite}
-@keyframes cdown{from{width:0}to{width:100%}}
-.ov{position:fixed;inset:0;background:rgba(15,16,36,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:.25s;z-index:10}
-.ov.show{opacity:1;pointer-events:auto}
-.modal{background:var(--bg1);color:var(--txt);border-radius:22px;padding:24px;max-width:340px;width:100%;text-align:center;transform:scale(.88);transition:.3s cubic-bezier(.2,1.3,.4,1)}
-.ov.show .modal{transform:scale(1)}
-.modal h3{margin:0 0 8px}.modal p{margin:0 0 18px;color:var(--mut);font-size:14px}
-.modal .acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.modal .btn{margin:0;padding:12px;font-size:15px}
-.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 14px);transform:translate(-50%,-120px);background:var(--txt);color:var(--bg1);padding:12px 18px;border-radius:14px;font-size:14px;font-weight:600;transition:.4s cubic-bezier(.2,1.2,.4,1);z-index:20;max-width:90%;text-align:center;box-shadow:0 10px 26px rgba(0,0,0,.25)}
-.toast.show{transform:translate(-50%,0)}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-</style>
+
 /* ====== TOAST ====== */
 #toast-root{position:fixed;left:0;right:0;bottom:max(20px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;z-index:60;pointer-events:none;padding:0 16px}
 .toast{pointer-events:auto;cursor:pointer;width:100%;max-width:420px;padding:13px 16px;border-radius:16px;font-size:13px;font-weight:500;line-height:1.5;white-space:pre-line;color:#fff;
   background:rgba(21,21,58,.95);backdrop-filter:blur(10px);box-shadow:0 16px 32px -12px rgba(21,21,58,.55);animation:toastIn .45s var(--ease) both}
 .toast-err{background:rgba(159,18,57,.96)}
 .toast-out{animation:toastOut .3s ease forwards}
+
 /* ====== ANIMASI ====== */
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -346,6 +291,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
 }
+
     
 /* ====== DIALOG KONFIRMASI KELUAR (tombol Back HP di Menu Utama) ====== */
 .exit-overlay{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:20px;
@@ -368,6 +314,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .exit-btn-no{background:linear-gradient(135deg,#4f46e5,#6d4df0);color:#fff;box-shadow:0 12px 22px -12px rgba(79,70,229,.75)}
 .exit-btn-yes{background:var(--rose-soft);color:#be123c;box-shadow:inset 0 0 0 1.5px #ffd3da}
 @keyframes exitPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+
 /* ====== PANDUAN KELUAR (muncul setelah memilih "Iya") ====== */
 .guide-dialog{width:100%;max-width:340px;background:#fff;border-radius:26px;padding:24px 20px 18px;text-align:center;
   box-shadow:0 30px 60px -20px rgba(40,40,130,.55),0 0 0 1px rgba(60,60,140,.06);
@@ -388,12 +335,14 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .guide-num.ok{background:linear-gradient(135deg,#10b981,#34d399)}
 .guide-hint{font-size:11.5px;line-height:1.5;color:var(--muted);margin-bottom:16px}
 @keyframes guideNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-6px)}}
+
 /* =====================================================================
    TABLET STORE (menu baru) - memakai design token yang sudah ada
    ===================================================================== */
 .tab-switch.tab-one{grid-template-columns:1fr}
 .tab-switch.tab-one .tab-pill{width:calc(100% - 8px)}
 .tb-menu-hero .menu-hero-icon{background:linear-gradient(135deg,#0ea5e9,#6366f1);box-shadow:0 12px 20px -8px rgba(14,165,233,.55)}
+
 /* --- Foto --- */
 .tb-photo-row{display:flex;align-items:center;gap:14px}
 .tb-cam-btn{position:relative;flex-shrink:0;width:68px;height:68px;border-radius:22px;display:flex;align-items:center;justify-content:center;
@@ -414,6 +363,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
   font-size:15px;line-height:1;color:#fff;background:rgba(21,21,58,.72);backdrop-filter:blur(4px);transition:transform .15s var(--ease)}
 .tb-thumb-x:active{transform:scale(.85)}
 .tb-field-note{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+
 /* --- Timer durasi pinjam --- */
 .tb-timer-card{animation:rise .5s var(--ease) backwards}
 .tb-timer-name{position:relative;z-index:1;margin-top:6px;font-size:13px;font-weight:700;color:#fff;line-height:1.35;word-break:break-word}
@@ -426,6 +376,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .tb-pill-pinjam{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;font-size:11.5px;font-weight:700;
   color:#fde68a;background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.38)}
 .tb-pill-pinjam::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.4s ease-in-out infinite}
+
 /* --- Daftar kartu status tablet --- */
 .tb-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
 .tb-title-row .panel-title{margin-bottom:0}
@@ -456,153 +407,16 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 @keyframes bellShake{0%,100%{transform:rotate(0)}15%{transform:rotate(18deg)}30%{transform:rotate(-16deg)}45%{transform:rotate(12deg)}60%{transform:rotate(-9deg)}75%{transform:rotate(4deg)}}
 @keyframes tbRing{0%{box-shadow:0 0 0 0 rgba(99,91,240,.35)}100%{box-shadow:0 0 0 14px rgba(99,91,240,0)}}
 @keyframes tbPulse{0%,100%{transform:scale(1)}50%{transform:scale(.92)}}
-/* ===== Dropdown tablet kustom (status DIPINJAM hijau + nama peminjam) ===== */
-.tb-native-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;clip:rect(0,0,0,0)}
-.tb-dd{position:relative}
-.tb-dd-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer;min-height:50px}
-.tb-dd-trigger:disabled{opacity:.7;cursor:default}
-.tb-dd.is-open .tb-dd-trigger{background:#fff;border-color:#8b83f5;box-shadow:0 0 0 4px rgba(99,91,240,.16)}
-.tb-dd-label{min-width:0;flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:14px;font-weight:600;color:var(--ink);word-break:break-word}
-.tb-dd-label.is-placeholder{color:var(--muted);font-weight:500}
-.tb-dd-chev{width:18px;height:18px;flex-shrink:0;color:var(--ink-2);transition:transform .3s var(--ease)}
-.tb-dd.is-open .tb-dd-chev{transform:rotate(180deg)}
-.tb-dd-panel{display:grid;grid-template-rows:0fr;opacity:0;margin-top:0;transition:grid-template-rows .35s var(--ease),opacity .25s,margin-top .3s var(--ease)}
-.tb-dd.is-open .tb-dd-panel{grid-template-rows:1fr;opacity:1;margin-top:8px}
-.tb-dd-scroll{min-height:0;overflow:hidden}
-.tb-dd.is-open .tb-dd-scroll{overflow-y:auto;max-height:17rem;-webkit-overflow-scrolling:touch}
-.tb-dd-list{display:flex;flex-direction:column;gap:6px;padding:6px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}
-.tb-dd-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 11px;border-radius:12px;text-align:left;background:#f6f7fe;border:1px solid transparent;cursor:pointer;
-  transition:transform .15s var(--ease),background .2s,border-color .2s;animation:rise .35s var(--ease) backwards;animation-delay:calc(var(--i,0) * 35ms)}
-.tb-dd-item:hover{background:#eceefb}
-.tb-dd-item:active{transform:scale(.98)}
-.tb-dd-item.is-selected{background:#eef0ff;border-color:#b9b4ff}
-.tb-dd-item.is-borrowed{background:#f0fdf6;border-color:#bbf0d6}
-.tb-dd-item.is-borrowed.is-selected{background:#e3faee;border-color:#6ee7a8}
-.tb-dd-ico{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#e3e1ff;color:var(--brand)}
-.tb-dd-ico svg{width:18px;height:18px}
-.tb-dd-item.is-borrowed .tb-dd-ico{background:#d1f7e4;color:#047857}
-.tb-dd-txt{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
-.tb-dd-name{font-size:13px;font-weight:700;line-height:1.3;color:var(--ink);word-break:break-word}
-.tb-dd-free{font-size:11px;font-weight:600;color:var(--muted)}
-.tb-dd-pill{display:inline-flex;align-items:center;align-self:flex-start;gap:6px;max-width:100%;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.3;
-  color:#047857;background:#d1f7e4;border:1px solid #86e3b6;word-break:break-word}
-.tb-dd-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;animation:blink 1.4s ease-in-out infinite}
-.tb-dd-check{width:18px;height:18px;flex-shrink:0;color:var(--brand);opacity:0;transform:scale(.6);transition:opacity .2s,transform .25s var(--ease)}
-.tb-dd-item.is-selected .tb-dd-check{opacity:1;transform:none}
-.tb-dd-item.is-borrowed .tb-dd-check{color:#047857}
-.tb-dd-empty{padding:14px;text-align:center;font-size:12.5px;color:var(--muted)}
-/* --- Tombol terkunci (tablet dipinjam orang lain) --- */
-.btn-primary.is-locked{background:linear-gradient(135deg,#94a3b8,#a8b3c4);box-shadow:none;cursor:not-allowed;filter:none}
-.btn-primary.is-locked:hover{filter:none}
-.btn-primary.is-locked::after{display:none}
-.btn-primary.is-locked.tb-shake{animation:tbShake .45s ease}
-@keyframes tbShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
-/* --- Catatan tablet --- */
-.tb-note-wrap{animation:rise .4s var(--ease) backwards}
-.tb-opt{font-weight:500;color:var(--muted)}
-textarea.tb-note{display:block;resize:none;min-height:84px;line-height:1.5;font-size:14px;font-family:inherit}
-textarea.tb-note::placeholder{color:#a9abc9;font-weight:400}
-textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
-.tb-note-meta{display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-size:11.5px;line-height:1.4;color:var(--muted)}
-.tb-note-meta span:last-child{flex-shrink:0;font-variant-numeric:tabular-nums}
-/* ===== Informasi koneksi internet & baterai (di card durasi pinjam) ===== */
-.tb-device{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px;text-align:left}
-.tb-dev-box{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:background .4s,border-color .4s}
-.tb-dev-ico{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.16);color:#fff;transition:background .4s,color .4s}
-.tb-dev-ico svg{width:18px;height:18px}
-.tb-dev-info{min-width:0;flex:1}
-.tb-dev-lbl{font-size:10.5px;font-weight:600;color:rgba(255,255,255,.72)}
-.tb-dev-val{font-size:13.5px;font-weight:800;line-height:1.25;margin-top:1px;word-break:break-word;color:#fff}
-.tb-dev-sub{font-size:10.5px;line-height:1.35;color:rgba(255,255,255,.64);margin-top:2px;word-break:break-word}
-.tb-dev-box.is-on{border-color:rgba(52,211,153,.42)}
-.tb-dev-box.is-on .tb-dev-ico{background:rgba(52,211,153,.26);color:#6ee7b7}
-.tb-dev-box.is-on .tb-dev-ico svg{animation:tbWifi 2s ease-in-out infinite}
-.tb-dev-box.is-on .tb-dev-val{color:#a7f3d0}
-.tb-dev-box.is-off{border-color:rgba(251,113,133,.5)}
-.tb-dev-box.is-off .tb-dev-ico{background:rgba(251,113,133,.26);color:#fda4af}
-.tb-dev-box.is-off .tb-dev-val{color:#fecdd3}
-.tb-dev-box.is-na .tb-dev-val{color:rgba(255,255,255,.82);font-weight:700}
-.tb-bat-bar{height:6px;border-radius:999px;background:rgba(255,255,255,.22);overflow:hidden;margin-top:7px}
-.tb-bat-bar i{display:block;height:100%;width:0;border-radius:inherit;background:#34d399;transition:width .9s var(--ease),background .4s}
-.tb-dev-box.bat-ok .tb-dev-ico{background:rgba(52,211,153,.26);color:#6ee7b7}
-.tb-dev-box.bat-ok .tb-dev-val{color:#a7f3d0}
-.tb-dev-box.bat-mid .tb-dev-ico{background:rgba(251,191,36,.26);color:#fde68a}
-.tb-dev-box.bat-mid .tb-dev-val{color:#fde68a}
-.tb-dev-box.bat-mid .tb-bat-bar i{background:#fbbf24}
-.tb-dev-box.bat-low .tb-dev-ico{background:rgba(251,113,133,.28);color:#fda4af}
-.tb-dev-box.bat-low .tb-dev-val{color:#fecdd3}
-.tb-dev-box.bat-low .tb-bat-bar i{background:#fb7185}
-.tb-dev-box.is-charging .tb-bat-bar i{animation:tbCharge 1.5s ease-in-out infinite}
-@keyframes tbCharge{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes tbWifi{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
-@media (max-width:359px){.tb-device{grid-template-columns:1fr}}
-/* ===== Foto peminjam pada kartu status ===== */
-.tb-who{display:flex;align-items:center;gap:9px;margin-top:6px}
-.tb-avatar{width:34px;height:34px;border-radius:11px;font-size:13px;box-shadow:none}
-.tb-who-txt{min-width:0}
-.tb-who-lbl{font-size:10.5px;font-weight:600;color:var(--muted);line-height:1.2}
-.tb-who-name{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.3;word-break:break-word}
-/* ===== Tab dua sub-menu ===== */
-.tab-switch.tab-two{grid-template-columns:1fr 1fr}
-.tab-switch.tab-two .tab-pill{width:calc((100% - 8px) / 2)}
-.tab-switch.tab-two[data-tab="pinjam"] .tab-pill{transform:translateX(0)}
-.tab-switch.tab-two[data-tab="riwayat"] .tab-pill{transform:translateX(100%)}
-.tab-pane.tb-pane-in{animation:rise .45s var(--ease) backwards}
-/* ===== Riwayat Peminjaman Tablet ===== */
-.tbr-tablet{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--ink);line-height:1.3;word-break:break-word}
-.tbr-tablet svg{width:16px;height:16px;flex-shrink:0;color:var(--brand)}
-.tbr-times{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-top:10px}
-.tbr-time{padding:8px 10px;border-radius:12px;background:#fff;border:1px solid var(--line);min-width:0}
-.tbr-time-lbl{display:block;font-size:10.5px;font-weight:600;color:var(--muted)}
-.tbr-time b{display:block;margin-top:1px;font-size:13px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;word-break:break-word}
-.tbr-time.is-out b{color:#047857}
-.tbr-time.is-pending b{color:#b45309}
-.tbr-arrow{color:var(--muted);display:flex;align-items:center}
-.tbr-arrow svg{width:18px;height:18px}
-.tbr-flags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.tbr-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:10.5px;font-weight:700;line-height:1.3}
-.tbr-chip.warn{background:var(--amber-soft);color:#b45309}
-.tbr-chip.bad{background:#ffe3e8;color:#be123c}
-.tbr-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
-.tbr-ph{position:relative;margin:0;border-radius:14px;overflow:hidden;aspect-ratio:4/3;background:linear-gradient(145deg,#eef0ff,#e2dfff);border:1px solid var(--line);cursor:zoom-in;
-  transition:transform .2s var(--ease),box-shadow .2s}
-.tbr-ph:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
-.tbr-ph:active{transform:scale(.98)}
-.tbr-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
-.tbr-ph img.is-ready{opacity:1}
-.tbr-ph figcaption{position:absolute;left:6px;bottom:6px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700;color:#fff;background:rgba(21,21,58,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-.tbr-ph.is-missing{cursor:default}
-.tbr-ph.is-missing img{display:none}
-.tbr-ph.is-missing::after{content:"Tidak ada foto";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-bottom:16px;font-size:11px;font-weight:600;color:var(--muted)}
-.tbr-note{display:flex;gap:8px;margin-top:10px;padding:9px 11px;border-radius:12px;background:#fffaf0;border:1px solid #fde7b0;font-size:12px;line-height:1.45;color:#92400e;word-break:break-word}
-.tbr-note svg{width:16px;height:16px;flex-shrink:0;margin-top:1px}
-.tbr-note b{display:block;font-size:10.5px;font-weight:700;color:#b45309}
-/* ===== Lightbox foto ===== */
-.tbr-lightbox{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;
-  background:rgba(14,14,44,.86);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
-.tbr-lightbox.is-open{opacity:1;pointer-events:auto}
-.tbr-lightbox img{max-width:100%;max-height:78vh;border-radius:18px;box-shadow:0 24px 48px -16px rgba(0,0,0,.6);transform:scale(.92);transition:transform .35s var(--ease)}
-.tbr-lightbox.is-open img{transform:none}
-.tbr-lightbox p{font-size:12.5px;font-weight:600;color:#fff;text-align:center}
-.tbr-lb-x{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:38px;height:38px;border-radius:50%;font-size:24px;line-height:1;color:#fff;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
-<body>
-<div class="wrap">
-  <div class="card">
-    <h1>Koneksi Tablet</h1>
-    <p class="sub">Pilih tablet lalu hubungkan perangkat ini.</p>
-    <label for="tab">Nama Tablet</label>
-    <div class="row">
-      <select id="tab"><option value="">Memuat data…</option></select>
-      <span id="badge" class="badge"><i></i><span>-</span></span>
 <body class="app-body">
+
     <div class="app-frame">
+
         <!-- HEADER -->
         <div class="app-header">
             <div class="aurora a1"></div>
@@ -618,8 +432,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 </button>
             </div>
         </div>
+
         <!-- KONTEN UTAMA -->
         <div class="app-content touch-scroll">
+
             <!-- BAGIAN 1: FORM LOGIN -->
             <div id="login-section" class="section-fill" style="justify-content:center">
                 <div class="login-card stagger">
@@ -636,6 +452,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     <p id="error-msg" class="error-box hidden"></p>
                 </div>
             </div>
+
             <!-- KARTU PROFIL PEGAWAI PERSISTEN -->
             <div id="persistent-profile-container" class="hidden profile-wrap">
                 <div class="profile-card">
@@ -650,9 +467,11 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     </div>
                 </div>
             </div>
+
             <!-- BAGIAN 2: MENU UTAMA -->
             <div id="main-menu-section" class="section-split hidden">
                 <div class="stack stagger">
+
                     <!-- Status Perizinan Sistem -->
                     <div class="panel status-panel">
                         <div class="status-row">
@@ -664,10 +483,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             <span class="status-pill ok">Tersinkronisasi</span>
                         </div>
                     </div>
+
                     <!-- Menu Layanan -->
                     <div>
                         <p class="section-label">Menu Utama</p>
                         <div id="menu-grid" class="menu-grid">
+
                             <!-- Istirahat Karyawan (berubah merah saat istirahat aktif) -->
                             <button onclick="handleMenuClick('Istirahat', () => openIstirahatMenu())" id="main-menu-istirahat-card" class="menu-hero">
                                 <div id="main-menu-istirahat-icon" class="menu-hero-icon">
@@ -680,6 +501,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                 </div>
                                 <svg class="ico-sm chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                             </button>
+
                             <!-- Tablet Store -->
                             <button onclick="handleMenuClick('Tablet Store', () => openTabletStore())" id="main-menu-tablet-card" class="menu-hero tb-menu-hero">
                                 <div class="menu-hero-icon">
@@ -691,6 +513,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                 </div>
                                 <svg class="ico-sm chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                             </button>
+
                             <!-- Tes Alarm -->
                             <button onclick="handleMenuClick('Tes Alarm', () => testWebAlarm())" class="menu-tile">
                                 <div class="tile-icon tint-amber"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></div>
@@ -699,6 +522,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                     <p class="tile-desc">Bunyikan suara</p>
                                 </div>
                             </button>
+
                             <!-- Pengumuman -->
                             <button onclick="handleMenuClick('Informasi & Pengumuman', () => showAlertFeature('Informasi & Pengumuman'))" class="menu-tile">
                                 <div class="tile-icon tint-emerald"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg></div>
@@ -707,6 +531,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                     <p class="tile-desc">Info perusahaan</p>
                                 </div>
                             </button>
+
                             <!-- Pengaturan -->
                             <button onclick="handleMenuClick('Profil & Pengaturan', () => showAlertFeature('Profil & Pengaturan'))" class="menu-tile">
                                 <div class="tile-icon tint-violet"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
@@ -715,13 +540,17 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                     <p class="tile-desc">Akun &amp; perangkat</p>
                                 </div>
                             </button>
+
                         </div>
                     </div>
+
                 </div>
+
                 <div class="page-footer">
                     <p>Terhubung ke Supabase &bull; Vercel Ready</p>
                 </div>
             </div>
+
             <!-- BAGIAN 3: MENU "ISTIRAHAT KARYAWAN" DENGAN 2 SUB-MENU TAB -->
             <div id="istirahat-section" class="section-split hidden">
                 <div class="stack stagger">
@@ -731,6 +560,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         </button>
                         <h2 class="page-title">ISTIRAHAT KARYAWAN</h2>
                     </div>
+
                     <!-- TAB SWITCHER -->
                     <div id="tab-switcher" class="tab-switch" data-tab="pribadi">
                         <div class="tab-pill"></div>
@@ -738,6 +568,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         <button onclick="switchIstirahatTab('team')" id="tab-btn-team" class="tab-btn">Team Istirahat</button>
                         <button onclick="switchIstirahatTab('riwayat')" id="tab-btn-riwayat" class="tab-btn">Riwayat Istirahat</button>
                     </div>
+
                     <!-- SUB-MENU 1: ISTIRAHAT PRIBADI -->
                     <div id="tab-content-pribadi" class="tab-pane">
                         <div class="panel stack">
@@ -752,11 +583,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                 <button onclick="handleMulaiIstirahat()" id="btn-mulai-istirahat" class="btn-primary">MULAI</button>
                             </div>
                         </div>
+
                         <!-- TOTAL WAKTU ISTIRAHAT HARI INI (LIVE) -->
                         <div id="large-timer-card" class="timer-card hidden">
                             <p class="timer-label"><span class="live-dot"></span>Total waktu istirahat hari ini</p>
                             <h2 id="large-timer-display" class="timer-digits">00:00:00</h2>
                         </div>
+
                         <!-- Akumulasi istirahat selesai -->
                         <div class="panel stat">
                             <div>
@@ -765,6 +598,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             </div>
                             <div class="stat-chip tint-emerald"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
                         </div>
+
                         <!-- Riwayat -->
                         <div class="panel">
                             <p class="panel-title">Riwayat &amp; durasi istirahat hari ini</p>
@@ -773,6 +607,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             </div>
                         </div>
                     </div>
+
                     <!-- SUB-MENU 2: TEAM ISTIRAHAT -->
                     <div id="tab-content-team" class="tab-pane hidden">
                         <div class="panel stat">
@@ -782,6 +617,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             </div>
                             <div class="stat-chip" style="background:#ffe3e8;color:#be123c"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
                         </div>
+
                         <div class="panel">
                             <p class="panel-title">Daftar rekan kerja &amp; total waktu istirahat hari ini</p>
                             <div id="team-istirahat-list-container" class="list-scroll team-scroll touch-scroll">
@@ -789,6 +625,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             </div>
                         </div>
                     </div>
+
                     <!-- SUB-MENU 3: RIWAYAT ISTIRAHAT -->
                     <div id="tab-content-riwayat" class="tab-pane hidden">
                         <div class="panel">
@@ -814,6 +651,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                 </button>
                             </div>
                         </div>
+
                         <div class="panel rh-summary">
                             <div class="rh-sum-box">
                                 <div class="stat-chip tint-violet"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
@@ -830,6 +668,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                 </div>
                             </div>
                         </div>
+
                         <div class="panel">
                             <p id="riwayat-periode-text" class="panel-title">Riwayat istirahat team</p>
                             <div id="riwayat-list-container" class="list-scroll rh-scroll touch-scroll">
@@ -837,8 +676,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
+
             <!-- BAGIAN 4: MENU "TABLET STORE" DENGAN SUB-MENU "PINJAM TABLET" -->
             <div id="tablet-section" class="section-split hidden">
                 <div class="stack stagger">
@@ -848,32 +689,24 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         </button>
                         <h2 class="page-title">TABLET STORE</h2>
                     </div>
+
                     <!-- TAB SWITCHER (satu sub-menu) -->
-                    <div id="tb-tab-switcher" class="tab-switch tab-two" data-tab="pinjam">
+                    <div class="tab-switch tab-one" data-tab="pinjam">
                         <div class="tab-pill"></div>
-                        <button type="button" id="tb-tab-btn-pinjam" class="tab-btn is-on" onclick="tabletSwitchTab('pinjam')">Pinjam Tablet</button>
-                        <button type="button" id="tb-tab-btn-riwayat" class="tab-btn" onclick="tabletSwitchTab('riwayat')">Riwayat Peminjaman</button>
+                        <button type="button" class="tab-btn is-on">Pinjam Tablet</button>
                     </div>
+
                     <!-- SUB-MENU: PINJAM TABLET -->
                     <div id="tb-tab-pinjam" class="tab-pane">
                         <div class="panel stack">
                             <!-- Dropdown dari tabel koneksi_tablet -->
                             <div>
-                                <label class="field-label" for="tb-dd-trigger">Pilih Tablet</label>
-                                <div id="tb-dd" class="tb-dd">
-                                    <button type="button" id="tb-dd-trigger" class="field tb-dd-trigger" onclick="tbDdToggle()" aria-haspopup="listbox" aria-expanded="false">
-                                        <span id="tb-dd-label" class="tb-dd-label is-placeholder">Memuat daftar tablet...</span>
-                                        <svg class="tb-dd-chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                                    </button>
-                                    <div id="tb-dd-panel" class="tb-dd-panel">
-                                        <div class="tb-dd-scroll touch-scroll"><div id="tb-dd-list" class="tb-dd-list" role="listbox"></div></div>
-                                    </div>
-                                </div>
-                                <!-- Select asli tetap dipakai sebagai penyimpan nilai (disembunyikan) -->
-                                <select id="tb-select" class="tb-native-hidden" tabindex="-1" aria-hidden="true" onchange="tabletOnSelectChange()">
+                                <label class="field-label" for="tb-select">Pilih Tablet</label>
+                                <select id="tb-select" class="field" onchange="tabletOnSelectChange()">
                                     <option value="">Memuat daftar tablet...</option>
                                 </select>
                             </div>
+
                             <!-- Tombol ikon foto -->
                             <div>
                                 <label class="field-label" for="tb-cam-btn">Foto Tablet</label>
@@ -892,17 +725,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                 </div>
                                 <input type="file" id="tb-photo-input" accept="image/*" capture="environment" class="hidden" onchange="tabletOnPhotoPicked(this)">
                             </div>
-                            <!-- Catatan tablet (opsional) -> kolom "noted" tabel status_tablet -->
-                            <div id="tb-note-wrap" class="tb-note-wrap">
-                                <label class="field-label" for="tb-note">Catatan Tablet <span class="tb-opt">(opsional)</span></label>
-                                <textarea id="tb-note" class="field tb-note" rows="3" maxlength="300" placeholder="Contoh: layar retak di pojok kanan atas, baterai cepat habis..." oninput="tbNoteOnInput()"></textarea>
-                                <p class="tb-note-meta"><span>Isi hanya jika ada kerusakan / kondisi khusus pada tablet.</span><span id="tb-note-count">0/300</span></p>
-                            </div>
+
                             <!-- Tombol PINJAM / KEMBALIKAN -->
                             <div>
                                 <button type="button" id="tb-action-btn" onclick="handleTabletAction()" class="btn-primary">PINJAM</button>
                             </div>
                         </div>
+
                         <!-- TIMER DURASI PINJAM (muncul saat tablet sedang Anda pinjam) -->
                         <div id="tb-timer-card" class="timer-card tb-timer-card hidden">
                             <p class="timer-label"><span class="live-dot"></span>Durasi pinjam berjalan</p>
@@ -913,26 +742,8 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                 <div class="tb-clock-box"><p id="tb-clock-s" class="tb-clock-num">00</p><p class="tb-clock-lbl">Detik</p></div>
                             </div>
                             <p class="tb-status-line">Status <span class="tb-pill-pinjam">DIPINJAM</span></p>
-                            <div id="tb-device" class="tb-device">
-                                <div id="tb-dev-net" class="tb-dev-box is-na">
-                                    <span class="tb-dev-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg></span>
-                                    <div class="tb-dev-info">
-                                        <p class="tb-dev-lbl">Koneksi Internet</p>
-                                        <p id="tb-dev-net-val" class="tb-dev-val">-</p>
-                                        <p id="tb-dev-net-sub" class="tb-dev-sub"></p>
-                                    </div>
-                                </div>
-                                <div id="tb-dev-bat" class="tb-dev-box is-na">
-                                    <span class="tb-dev-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2.5"/><path stroke-linecap="round" d="M22 11v2"/></svg></span>
-                                    <div class="tb-dev-info">
-                                        <p class="tb-dev-lbl">Baterai Tablet</p>
-                                        <p id="tb-dev-bat-val" class="tb-dev-val">-</p>
-                                        <p id="tb-dev-bat-sub" class="tb-dev-sub"></p>
-                                        <div class="tb-bat-bar"><i id="tb-bat-fill"></i></div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+
                         <!-- CARD VIEW DATA status_tablet (realtime) -->
                         <div class="panel">
                             <div class="tb-title-row">
@@ -944,58 +755,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             </div>
                         </div>
                     </div>
-                    <!-- SUB-MENU: RIWAYAT PEMINJAMAN (data dari tabel status_tablet) -->
-                    <div id="tb-tab-riwayat" class="tab-pane hidden">
-                        <div class="panel">
-                            <p class="panel-title">Filter tanggal riwayat peminjaman tablet</p>
-                            <div class="rh-dates">
-                                <div>
-                                    <label class="field-label" for="tbr-tgl-mulai">Tanggal Mulai</label>
-                                    <input type="date" id="tbr-tgl-mulai" class="field">
-                                </div>
-                                <div>
-                                    <label class="field-label" for="tbr-tgl-akhir">Tanggal Akhir</label>
-                                    <input type="date" id="tbr-tgl-akhir" class="field">
-                                </div>
-                            </div>
-                            <div class="rh-actions">
-                                <button onclick="tbrLoad()" id="tbr-btn-filter" class="btn-primary">
-                                    <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18l-7 8.5V19l-4 2v-8.5L3 4z"/></svg>
-                                    <span>Filter</span>
-                                </button>
-                                <button onclick="tbrDownloadPDF()" id="tbr-btn-download" class="btn-download" disabled>
-                                    <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3M12 3v13m0 0l-4-4m4 4l4-4"/></svg>
-                                    <span>Download</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="panel rh-summary">
-                            <div class="rh-sum-box">
-                                <div class="stat-chip tint-violet"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
-                                <div>
-                                    <p id="tbr-sum-karyawan" class="rh-sum-num">0</p>
-                                    <p class="rh-sum-lbl">Peminjam</p>
-                                </div>
-                            </div>
-                            <div class="rh-sum-box">
-                                <div class="stat-chip tint-amber"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>
-                                <div>
-                                    <p id="tbr-sum-data" class="rh-sum-num">0</p>
-                                    <p class="rh-sum-lbl">Total Data</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel">
-                            <p id="tbr-periode-text" class="panel-title">Riwayat peminjaman tablet</p>
-                            <div id="tbr-list-container" class="list-scroll rh-scroll touch-scroll">
-                                <p class="empty">Memuat riwayat...</p>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
+
         </div>
     </div>
+
     <!-- DIALOG KONFIRMASI KELUAR APLIKASI -->
     <div id="exit-overlay" class="exit-overlay" aria-hidden="true">
         <div class="exit-dialog" role="alertdialog" aria-modal="true" aria-labelledby="exit-title" aria-describedby="exit-text">
@@ -1010,6 +776,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             </div>
         </div>
     </div>
+
     <!-- PANDUAN KELUAR APLIKASI (setelah memilih "Iya") -->
     <div id="exit-guide" class="exit-overlay" aria-hidden="true">
         <div class="guide-dialog" role="dialog" aria-modal="true" aria-labelledby="guide-title">
@@ -1030,40 +797,17 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             </div>
         </div>
     </div>
-    <button id="btn" class="btn" disabled>Hubungkan</button>
-    <div class="code">Kode perangkat: <span id="kode"></span></div>
-  </div>
-  <div class="card">
-    <div class="grid">
-      <div class="mini"><small>Jaringan</small><b id="net">-</b><span id="netname" class="nm"></span></div>
-      <div class="mini"><small>Baterai</small><b id="batv">-</b><div class="bat"><div id="batbar"></div></div></div>
-    <!-- LIGHTBOX FOTO TABLET -->
-    <div id="tbr-lightbox" class="tbr-lightbox" onclick="tbrZoomClose()" aria-hidden="true">
-        <button type="button" class="tbr-lb-x" onclick="tbrZoomClose()" aria-label="Tutup">&times;</button>
-        <img id="tbr-lb-img" alt="Foto tablet" src="">
-        <p id="tbr-lb-cap"></p>
-    </div>
-    <div id="sync" class="sync"><i></i><span id="synctxt">Pengiriman status belum aktif</span></div>
-    <div id="cd" class="cd"><div></div></div>
-  </div>
-  <div class="card">
-    <button id="perm" class="btn ghost">🔔 Aktifkan Notifikasi &amp; Suara</button>
-  </div>
-</div>
-<div id="ov" class="ov"><div class="modal">
-  <h3>Perbarui Koneksi?</h3>
-  <p>Apakah Anda yakin memperbarui koneksi di tablet ini?</p>
-  <div class="acts"><button id="no" class="btn ghost">Tidak</button><button id="yes" class="btn">Iya</button></div>
-</div></div>
-<div id="toast" class="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
     <div id="toast-root"></div>
+
 <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI SUPABASE ---
         const SUPABASE_URL = 'https://vxsopsnopeurnxdkfsbe.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4c29wc25vcGV1cm54ZGtmc2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NzM4MjgsImV4cCI6MjEwOTE0OTgyOH0.53GRhBd5Pvjjcqbh4M9ok7HKfqJs7klyxPqomXMEzus'; 
+
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         // Notifikasi pop-up modern (menggantikan kotak alert bawaan browser)
         function showToast(message) {
             const root = document.getElementById('toast-root');
@@ -1084,6 +828,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             timer = setTimeout(dismiss, Math.min(9000, 2600 + text.length * 40));
         }
         window.alert = showToast;
+
         let realtimeChannel = null;
         let teamRealtimeChannel = null;
         let activeIstirahatId = null;
@@ -1091,6 +836,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         let timerInterval = null;
         let globalTimerInterval = null;
         let teamTimerInterval = null;
+
         // =========================================================================
         // PENGATURAN WAKTU THRESHOLD NOTIFIKASI & ALARM (DALAM MENIT)
         // Anda dapat mengedit nilai variabel di bawah ini di kemudian hari:
@@ -1098,17 +844,21 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         const BREAK_ALERT_MINUTE_1 = 30; // Batas waktu pertama (45 Menit)
         const BREAK_ALERT_MINUTE_2 = 60; // Batas waktu kedua (60 Menit)
         // =========================================================================
+
         let alertTriggered45 = false;
         let alertTriggered60 = false;
+
         function resetBreakAlerts() {
             alertTriggered45 = false;
             alertTriggered60 = false;
         }
+
         // =========================================================================
         // WEB PUSH (BERJALAN WALAU TAB DITUTUP / LAYAR HP MATI)
         // VAPID_PUBLIC_KEY harus pasangan dari VAPID_PRIVATE_KEY di Supabase Edge Function.
         // =========================================================================
         const VAPID_PUBLIC_KEY = 'BIPI_SPnl26l3peYek3V1SqvZVEmzrr9sg5m5sZLVWAXndXBkXNlEwktZ7pduc3lzxwx9dbeQ19UAUosJXuDIAA';
+
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
             const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -1117,6 +867,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
             return out;
         }
+
         async function registerServiceWorker() {
             if (!('serviceWorker' in navigator)) return null;
             try {
@@ -1126,6 +877,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 return null;
             }
         }
+
         // Pesan dari service worker (push diterima saat aplikasi terbuka / notifikasi ditutup)
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
@@ -1137,15 +889,19 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 }
             });
         }
+
         // Daftarkan perangkat ini ke push server (dipanggil saat login / halaman dimuat)
         async function ensurePushSubscription(nipParam) {
             try {
                 if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return;
                 if (Notification.permission !== 'granted') return;
+
                 const nip = Number(nipParam || localStorage.getItem('emp_nip'));
                 if (!nip) return;
+
                 await registerServiceWorker();
                 const reg = await navigator.serviceWorker.ready;
+
                 let sub = await reg.pushManager.getSubscription();
                 if (!sub) {
                     sub = await reg.pushManager.subscribe({
@@ -1153,6 +909,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
                     });
                 }
+
                 const json = sub.toJSON();
                 const { error } = await supabaseClient
                     .from('push_subscriptions')
@@ -1162,20 +919,24 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         p256dh: json.keys.p256dh,
                         auth: json.keys.auth
                     }, { onConflict: 'endpoint' });
+
                 if (error) console.error('Gagal menyimpan push subscription:', error.message);
             } catch (e) {
                 console.error('Gagal mengaktifkan push notifikasi:', e);
             }
         }
+
         // Jadwalkan alarm di server berdasarkan sisa waktu menuju threshold
         async function scheduleBreakPush(nipParam, baseCompletedSecs, startTimeStr) {
             try {
                 if (!('Notification' in window) || Notification.permission !== 'granted') return;
                 const nip = Number(nipParam);
                 if (!nip || !startTimeStr) return;
+
                 const [h, m, sec = 0] = startTimeStr.split(':').map(Number);
                 const startDate = new Date();
                 startDate.setHours(h, m, sec, 0);
+
                 const nowMs = Date.now();
                 const rows = [];
                 [[1, BREAK_ALERT_MINUTE_1], [2, BREAK_ALERT_MINUTE_2]].forEach(([no, minutes]) => {
@@ -1184,8 +945,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         rows.push({ nip: nip, alert_no: no, fire_at: new Date(fireMs).toISOString() });
                     }
                 });
+
                 await supabaseClient.from('break_alert_schedule')
                     .delete().eq('nip', nip).eq('sent', false);
+
                 if (rows.length > 0) {
                     const { error } = await supabaseClient.from('break_alert_schedule')
                         .upsert(rows, { onConflict: 'nip,alert_no,fire_at', ignoreDuplicates: true });
@@ -1195,6 +958,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 console.error('Gagal menjadwalkan push:', e);
             }
         }
+
         // Batalkan jadwal alarm yang belum terkirim (istirahat selesai / logout)
         async function cancelBreakPush(nipParam) {
             try {
@@ -1206,6 +970,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 console.error('Gagal membatalkan jadwal push:', e);
             }
         }
+
         async function removePushSubscriptionRow() {
             try {
                 if (!('serviceWorker' in navigator)) return;
@@ -1216,6 +981,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 }
             } catch (e) {}
         }
+
         // Tampilkan notifikasi dengan NADA BAWAAN HP (silent:false = pakai suara notifikasi perangkat)
         // constructor (desktop) -> fallback service worker (Android/Chrome mobile)
         async function showBreakNotification(alertNo) {
@@ -1241,6 +1007,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 console.log("Gagal menampilkan notifikasi:", e);
             }
         }
+
         // Fungsi pemicu Notifikasi Web (bunyi mengikuti nada notifikasi bawaan HP masing-masing)
         function triggerBreakAlert(alertNo) {
             if (!("Notification" in window)) return;
@@ -1248,9 +1015,11 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 showBreakNotification(alertNo);
             }
         }
+
         // Pengecekan batas waktu durasi istirahat saat berjalan
         function checkBreakThresholds(totalSecsToday) {
             const totalMinutes = totalSecsToday / 60;
+
             if (totalMinutes >= BREAK_ALERT_MINUTE_1 && !alertTriggered45) {
                 alertTriggered45 = true;
                 triggerBreakAlert(1);
@@ -1260,6 +1029,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 triggerBreakAlert(2);
             }
         }
+
         // Cek sesi login saat halaman dimuat
         window.addEventListener('DOMContentLoaded', async () => {
             const savedNip = localStorage.getItem('emp_nip');
@@ -1272,6 +1042,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 ensurePushSubscription(savedNip);
             }
         });
+
         // Ambil data terbaru dari database secara real-time
         async function fetchLatestUserData(nip) {
             try {
@@ -1280,6 +1051,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     .select('nip_kar, nama_kar')
                     .eq('nip_kar', nip)
                     .maybeSingle();
+
                 if (!error && data) {
                     localStorage.setItem('emp_nama', data.nama_kar);
                     document.getElementById('user-nama').innerText = data.nama_kar;
@@ -1289,11 +1061,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 console.error("Gagal memperbarui data:", e);
             }
         }
+
         // Sinkronisasi Realtime Supabase
         function setupRealtimeSync(nip) {
             if (realtimeChannel) {
                 supabaseClient.removeChannel(realtimeChannel);
             }
+
             realtimeChannel = supabaseClient
                 .channel('public:data_karyawan:' + nip)
                 .on('postgres_changes', {
@@ -1311,30 +1085,37 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 })
                 .subscribe();
         }
+
         // Fungsi Membunyikan Alarm Web (Tes Manual)
         function playAlarmSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
+
                 oscillator.type = 'sine';
                 oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
                 gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
+
                 oscillator.start();
                 oscillator.stop(audioCtx.currentTime + 0.4);
             } catch (e) {
                 console.log("Audio Context dibatasi browser sebelum interaksi user.");
             }
         }
+
         function testWebAlarm() {
             playAlarmSound();
             alert("Suara alarm web berhasil dibunyikan!");
         }
+
         function showAlertFeature(menuName) {
             alert(`Fitur "${menuName}" sedang dipilih.`);
         }
+
         function handleMenuClick(menuName, callback) {
             if (!("Notification" in window) || Notification.permission !== 'granted') {
                 alert("PERIZINAN LAYANAN HARUS DI AKTIFKAN");
@@ -1342,6 +1123,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             }
             callback();
         }
+
         async function requestNotificationPermission() {
             if (!("Notification" in window)) return "Not Supported";
             let permission = Notification.permission;
@@ -1351,6 +1133,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             updatePermissionUI();
             return permission;
         }
+
         async function handleStatusClick() {
             if (!("Notification" in window)) {
                 alert("Browser perangkat ini tidak mendukung perizinan aplikasi.");
@@ -1370,8 +1153,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 }
             }
         }
+
         function updatePermissionUI() {
             const statusNotifEl = document.getElementById('status-notif');
+
             if (Notification.permission === 'granted') {
                 statusNotifEl.innerText = 'Diizinkan';
                 statusNotifEl.className = 'status-pill ok';
@@ -1380,6 +1165,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 statusNotifEl.className = 'status-pill bad';
             }
         }
+
         // Navigasi ke Menu Istirahat
         function openIstirahatMenu() {
             document.getElementById('main-menu-section').classList.add('hidden');
@@ -1388,6 +1174,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             document.getElementById('header-subtitle').innerText = 'Pencatatan Waktu & Pantau Team';
             switchIstirahatTab('pribadi');
         }
+
         function closeIstirahatMenu() {
             if (timerInterval) clearInterval(timerInterval);
             if (teamTimerInterval) clearInterval(teamTimerInterval);
@@ -1401,6 +1188,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const nip = localStorage.getItem('emp_nip');
             if (nip) checkActiveBreakStatus(nip);
         }
+
         // --- PENGALIH TAB ---
         function switchIstirahatTab(tabName) {
             const btnPribadi = document.getElementById('tab-btn-pribadi');
@@ -1409,8 +1197,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const contentPribadi = document.getElementById('tab-content-pribadi');
             const contentTeam = document.getElementById('tab-content-team');
             const contentRiwayat = document.getElementById('tab-content-riwayat');
+
             const tabSwitcher = document.getElementById('tab-switcher');
             if (tabSwitcher) tabSwitcher.dataset.tab = tabName;
+
             if (tabName === 'pribadi') {
                 if (teamTimerInterval) clearInterval(teamTimerInterval);
                 btnPribadi.className = "tab-btn is-on";
@@ -1440,24 +1230,31 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 initRiwayatIstirahat();
             }
         }
+
         // --- LOGIKA DATA TEAM ISTIRAHAT ---
         async function loadTeamIstirahatData() {
             const today = new Date().toISOString().split('T')[0];
             const container = document.getElementById('team-istirahat-list-container');
             const countText = document.getElementById('team-active-count-text');
+
             container.innerHTML = `<p class="empty">Memuat data tim...</p>`;
+
             try {
                 const { data: allRecords, error: errIstirahat } = await supabaseClient
                     .from('data_istirahat')
                     .select('*')
                     .eq('tanggal', today);
+
                 if (errIstirahat) throw errIstirahat;
+
                 const activeMap = {}; 
                 const completedSecsMap = {}; 
+
                 if (allRecords) {
                     allRecords.forEach(item => {
                         const nip = item.nip;
                         if (!completedSecsMap[nip]) completedSecsMap[nip] = 0;
+
                         if (!item.jam_selesai) {
                             activeMap[nip] = item;
                         } else {
@@ -1470,23 +1267,29 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         }
                     });
                 }
+
                 const activeNips = Object.keys(activeMap);
                 countText.innerText = `${activeNips.length} Orang Aktif`;
+
                 if (activeNips.length === 0) {
                     container.innerHTML = `<p class="empty">Tidak ada karyawan yang sedang beristirahat saat ini.</p>`;
                     if (teamTimerInterval) clearInterval(teamTimerInterval);
                     return;
                 }
+
                 const { data: karData, error: errKar } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar');
+
                 if (errKar) throw errKar;
+
                 const karMap = {};
                 if (karData) {
                     karData.forEach(k => {
                         karMap[k.nip_kar] = k.nama_kar;
                     });
                 }
+
                 let html = '';
                 activeNips.forEach((nipStr, idx) => {
                     const nip = Number(nipStr);
@@ -1495,6 +1298,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     const initial = nama.charAt(0).toUpperCase();
                     const baseCompletedSecs = completedSecsMap[nip] || 0;
                     const jamMulai = activeRecord.jam_mulai ? (activeRecord.jam_mulai.split(':').length === 2 ? activeRecord.jam_mulai + ':00' : activeRecord.jam_mulai) : '00:00:00';
+
                     html += `
                         <div class="row-item row-team" style="--i:${idx}">
                             <div class="row-main">
@@ -1511,20 +1315,26 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         </div>
                     `;
                 });
+
                 container.innerHTML = html;
+
                 activeNips.forEach(nipStr => {
                     loadTeamMemberPhoto(Number(nipStr));
                 });
+
                 startTeamLiveTimers();
+
             } catch (err) {
                 console.error("Gagal memuat team istirahat:", err.message);
                 container.innerHTML = `<p class="empty empty-err">Gagal memuat team istirahat.</p>`;
             }
         }
+
         async function loadTeamMemberPhoto(nip) {
             const photoImg = document.getElementById(`team-photo-${nip}`);
             const userInitials = document.getElementById(`team-initials-${nip}`);
             if (!photoImg || !userInitials) return;
+
             const possiblePaths = [
                 nip.toString(),
                 `${nip}.jpg`,
@@ -1534,11 +1344,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 `${nip}.JPEG`,
                 `${nip}.PNG`
             ];
+
             for (const path of possiblePaths) {
                 try {
                     const { data, error } = await supabaseClient.storage
                         .from('FOTO SALES')
                         .download(path);
+
                     if (!error && data) {
                         const objectUrl = URL.createObjectURL(data);
                         photoImg.src = objectUrl;
@@ -1549,24 +1361,31 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 } catch (e) {}
             }
         }
+
         function startTeamLiveTimers() {
             if (teamTimerInterval) clearInterval(teamTimerInterval);
+
             teamTimerInterval = setInterval(() => {
                 const timerElements = document.querySelectorAll('.team-live-timer');
                 timerElements.forEach(el => {
                     const baseSecs = parseInt(el.getAttribute('data-basesecs') || '0', 10);
                     const startTimeStr = el.getAttribute('data-starttime');
                     if (!startTimeStr) return;
+
                     const [h, m, s = 0] = startTimeStr.split(':').map(Number);
                     const startDate = new Date();
                     startDate.setHours(h, m, s, 0);
+
                     const now = new Date();
                     let currentSessionSecs = Math.floor((now - startDate) / 1000);
                     if (currentSessionSecs < 0) currentSessionSecs = 0;
+
                     const totalSecsToday = baseSecs + currentSessionSecs;
+
                     const hours = Math.floor(totalSecsToday / 3600);
                     const minutes = Math.floor((totalSecsToday % 3600) / 60);
                     const seconds = totalSecsToday % 60;
+
                     el.innerText = 
                         String(hours).padStart(2, '0') + ':' + 
                         String(minutes).padStart(2, '0') + ':' + 
@@ -1574,10 +1393,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 });
             }, 1000);
         }
+
         function setupTeamIstirahatRealtime() {
             if (teamRealtimeChannel) {
                 supabaseClient.removeChannel(teamRealtimeChannel);
             }
+
             teamRealtimeChannel = supabaseClient
                 .channel('public:team_istirahat_live')
                 .on('postgres_changes', {
@@ -1589,6 +1410,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 })
                 .subscribe();
         }
+
         // =========================================================================
         // --- RIWAYAT ISTIRAHAT (FILTER TANGGAL + DOWNLOAD PDF) ---
         // =========================================================================
@@ -1599,25 +1421,31 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         const riwayatPdfPhotos = {};          // cache foto PDF: nip -> dataURL | null
         let riwayatPhotoQueue = null;         // promise pemuatan foto yang sedang berjalan
         let riwayatRequestId = 0;             // mencegah hasil lama menimpa hasil baru
+
         function riwayatEscape(str) {
             return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
+
         function riwayatLocalISO(d = new Date()) {
             const y = d.getFullYear();
             const m = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
             return `${y}-${m}-${day}`;
         }
+
         function riwayatParseDate(iso) {
             const [y, m, d] = String(iso).substring(0, 10).split('-').map(Number);
             return new Date(y, m - 1, d);
         }
+
         function riwayatFormatPanjang(iso) {
             return riwayatParseDate(iso).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         }
+
         function riwayatFormatPendek(iso) {
             return riwayatParseDate(iso).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
         }
+
         function riwayatHitungDetik(mulai, selesai) {
             if (!mulai || !selesai) return 0;
             const [h1, m1, s1 = 0] = String(mulai).split(':').map(Number);
@@ -1625,12 +1453,14 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
             return diff > 0 ? diff : 0;
         }
+
         function riwayatFormatDurasi(totalSecs) {
             const h = Math.floor(totalSecs / 3600);
             const m = Math.floor((totalSecs % 3600) / 60);
             const s = totalSecs % 60;
             return `${h} Jam ${m} Menit ${s} Detik`;
         }
+
         // Dipanggil setiap kali sub-menu "Riwayat Istirahat" dibuka
         function initRiwayatIstirahat() {
             const startEl = document.getElementById('riwayat-tgl-mulai');
@@ -1640,6 +1470,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             if (!endEl.value) endEl.value = today;
             loadRiwayatIstirahat();
         }
+
         async function loadRiwayatIstirahat() {
             const startEl = document.getElementById('riwayat-tgl-mulai');
             const endEl = document.getElementById('riwayat-tgl-akhir');
@@ -1647,8 +1478,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const periodeText = document.getElementById('riwayat-periode-text');
             const btnFilter = document.getElementById('btn-riwayat-filter');
             const btnDownload = document.getElementById('btn-riwayat-download');
+
             const start = startEl.value;
             const end = endEl.value;
+
             if (!start || !end) {
                 alert('Gagal memfilter: Tanggal Mulai dan Tanggal Akhir wajib diisi.');
                 return;
@@ -1657,11 +1490,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 alert('Gagal memfilter: Tanggal Mulai tidak boleh lebih besar dari Tanggal Akhir.');
                 return;
             }
+
             const requestId = ++riwayatRequestId;
             btnFilter.disabled = true;
             btnFilter.querySelector('span').innerText = 'Memuat...';
             btnDownload.disabled = true;
             container.innerHTML = `<p class="empty">Memuat riwayat istirahat...</p>`;
+
             try {
                 // Ambil seluruh data pada rentang tanggal (per halaman 1000 baris agar tidak terpotong)
                 let rows = [];
@@ -1681,7 +1516,9 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     if (!data || data.length < PAGE) break;
                     from += PAGE;
                 }
+
                 if (requestId !== riwayatRequestId) return;
+
                 // Nama karyawan
                 const karMap = {};
                 if (rows.length > 0) {
@@ -1691,7 +1528,9 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     if (errKar) throw errKar;
                     if (karData) karData.forEach(k => { karMap[String(k.nip_kar)] = k.nama_kar; });
                 }
+
                 if (requestId !== riwayatRequestId) return;
+
                 // Akumulasi istirahat per karyawan per tanggal
                 const grouped = {};
                 rows.forEach(item => {
@@ -1714,16 +1553,20 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         grouped[key].belumSelesai += 1;
                     }
                 });
+
                 riwayatData = Object.values(grouped).sort((a, b) => {
                     if (a.tanggal !== b.tanggal) return a.tanggal < b.tanggal ? -1 : 1;
                     return a.nama.localeCompare(b.nama, 'id');
                 });
                 riwayatPeriode = { start, end };
+
                 periodeText.innerText = start === end
                     ? `Riwayat istirahat • ${riwayatFormatPendek(start)}`
                     : `Riwayat istirahat • ${riwayatFormatPendek(start)} s/d ${riwayatFormatPendek(end)}`;
+
                 renderRiwayatIstirahat();
                 btnDownload.disabled = riwayatData.length === 0;
+
             } catch (err) {
                 if (requestId !== riwayatRequestId) return;
                 console.error("Gagal memuat riwayat istirahat team:", err.message);
@@ -1738,15 +1581,19 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 }
             }
         }
+
         function renderRiwayatIstirahat() {
             const container = document.getElementById('riwayat-list-container');
             const uniqueNips = [...new Set(riwayatData.map(r => r.nip))];
+
             document.getElementById('riwayat-sum-karyawan').innerText = uniqueNips.length;
             document.getElementById('riwayat-sum-data').innerText = riwayatData.length;
+
             if (riwayatData.length === 0) {
                 container.innerHTML = `<p class="empty">Tidak ada riwayat istirahat pada rentang tanggal ini.</p>`;
                 return;
             }
+
             // Kelompokkan per tanggal agar mudah dibaca
             const byDate = {};
             const dateOrder = [];
@@ -1754,6 +1601,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 if (!byDate[r.tanggal]) { byDate[r.tanggal] = []; dateOrder.push(r.tanggal); }
                 byDate[r.tanggal].push(r);
             });
+
             let html = '';
             let idx = 0;
             dateOrder.forEach(tgl => {
@@ -1767,6 +1615,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             <span class="rh-date-count">${byDate[tgl].length} Karyawan</span>
                         </div>
                         <div class="rh-group-body">`;
+
                 byDate[tgl].forEach(r => {
                     const initial = riwayatEscape((r.nama || '?').charAt(0).toUpperCase());
                     const warn = r.belumSelesai > 0
@@ -1795,16 +1644,20 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             </div>`;
                     idx++;
                 });
+
                 html += `
                         </div>
                     </div>`;
             });
+
             container.innerHTML = html;
             container.scrollTop = 0;
+
             // Pasang foto dari cache lalu muat sisanya
             uniqueNips.forEach(nip => applyRiwayatPhoto(nip));
             riwayatPhotoQueue = loadRiwayatPhotos(uniqueNips);
         }
+
         function applyRiwayatPhoto(nip) {
             const url = riwayatPhotoUrls[nip];
             if (!url) return;
@@ -1814,8 +1667,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             });
             document.querySelectorAll(`span.rh-initial[data-nip="${nip}"]`).forEach(sp => sp.classList.add('hidden'));
         }
+
         async function fetchRiwayatPhoto(nip) {
             if (nip in riwayatPhotoBlobs) return riwayatPhotoBlobs[nip];
+
             const possiblePaths = [
                 nip.toString(),
                 `${nip}.jpg`,
@@ -1825,6 +1680,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 `${nip}.JPEG`,
                 `${nip}.PNG`
             ];
+
             let found = null;
             for (const path of possiblePaths) {
                 try {
@@ -1838,6 +1694,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             if (found) riwayatPhotoUrls[nip] = URL.createObjectURL(found);
             return found;
         }
+
         // Muat foto beberapa karyawan sekaligus (maks. 4 paralel)
         async function loadRiwayatPhotos(nips) {
             const queue = nips.filter(n => !(n in riwayatPhotoBlobs));
@@ -1850,6 +1707,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             };
             await Promise.all([worker(), worker(), worker(), worker()]);
         }
+
         function riwayatBlobToSquareDataURL(blob, size = 120) {
             return new Promise(resolve => {
                 const url = URL.createObjectURL(blob);
@@ -1877,6 +1735,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 img.src = url;
             });
         }
+
         // --- DOWNLOAD LAPORAN PDF ---
         async function downloadRiwayatPDF() {
             if (!riwayatData || riwayatData.length === 0) {
@@ -1887,11 +1746,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 alert('Gagal mengunduh: pustaka PDF belum termuat. Periksa koneksi internet lalu coba lagi.');
                 return;
             }
+
             const btn = document.getElementById('btn-riwayat-download');
             const btnLabel = btn.querySelector('span');
             btn.disabled = true;
             btn.classList.add('is-busy');
             btnLabel.innerText = 'Menyiapkan...';
+
             try {
                 // Pastikan semua foto sudah dimuat
                 const uniqueNips = [...new Set(riwayatData.map(r => r.nip))];
@@ -1903,10 +1764,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         riwayatPdfPhotos[nip] = blob ? await riwayatBlobToSquareDataURL(blob) : null;
                     }
                 }
+
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
                 const pageW = doc.internal.pageSize.getWidth();
                 const pageH = doc.internal.pageSize.getHeight();
+
                 const { start, end } = riwayatPeriode;
                 const periodeStr = start === end
                     ? riwayatFormatPendek(start)
@@ -1914,6 +1777,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 const uniqueCount = uniqueNips.length;
                 const dicetakOleh = localStorage.getItem('emp_nama');
                 const dicetakStr = new Date().toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
                 // Kop laporan
                 doc.setFillColor(67, 56, 202);
                 doc.rect(0, 0, pageW, 36, 'F');
@@ -1928,6 +1792,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 doc.text(`Periode        : ${periodeStr}`, 12, 21.5);
                 doc.text(`Total Data   : ${riwayatData.length} baris  |  Karyawan : ${uniqueCount} orang`, 12, 27);
                 doc.text(`Dicetak       : ${dicetakStr}${dicetakOleh ? '  |  Oleh : ' + dicetakOleh : ''}`, 12, 32.5);
+
                 const body = riwayatData.map((r, i) => [
                     String(i + 1),
                     '',
@@ -1937,6 +1802,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     String(r.sesi),
                     riwayatFormatDurasi(r.detik)
                 ]);
+
                 doc.autoTable({
                     startY: 43,
                     margin: { top: 14, left: 12, right: 12, bottom: 16 },
@@ -1990,6 +1856,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         doc.text((rec.nama || '?').charAt(0).toUpperCase(), x + size / 2, y + size / 2 + 1.3, { align: 'center' });
                     }
                 });
+
                 // Footer: nomor halaman
                 const totalPages = doc.internal.getNumberOfPages();
                 for (let p = 1; p <= totalPages; p++) {
@@ -2003,8 +1870,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     doc.text('Portal Karyawan - Riwayat Istirahat Team', 12, pageH - 6.5);
                     doc.text(`Halaman ${p} dari ${totalPages}`, pageW - 12, pageH - 6.5, { align: 'right' });
                 }
+
                 doc.save(`Riwayat_Istirahat_${start}_sd_${end}.pdf`);
                 alert('Laporan riwayat istirahat berhasil diunduh.');
+
             } catch (err) {
                 console.error("Gagal membuat PDF:", err);
                 alert('Gagal membuat PDF: ' + (err.message || err));
@@ -2014,6 +1883,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 btn.disabled = !(riwayatData && riwayatData.length > 0);
             }
         }
+
         // --- CEK STATUS ISTIRAHAT AKTIF UNTUK CARD MENU UTAMA ---
         async function checkActiveBreakStatus(nip) {
             const today = new Date().toISOString().split('T')[0];
@@ -2024,11 +1894,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     .eq('nip', nip)
                     .eq('tanggal', today)
                     .order('id', { ascending: false });
+
                 const card = document.getElementById('main-menu-istirahat-card');
                 const iconContainer = document.getElementById('main-menu-istirahat-icon');
                 const titleEl = document.getElementById('main-menu-istirahat-title');
                 const descEl = document.getElementById('main-menu-istirahat-desc');
                 const timerEl = document.getElementById('main-menu-timer');
+
                 if (!error && data) {
                     const activeRecord = data.find(item => !item.jam_selesai);
                     let completedSecs = 0;
@@ -2040,14 +1912,17 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             if (diff > 0) completedSecs += diff;
                         }
                     });
+
                     if (activeRecord) {
                         activeIstirahatId = activeRecord.id;
                         activeStartTime = activeRecord.jam_mulai;
+
                         card.className = "menu-hero is-active";
                         iconContainer.className = "menu-hero-icon";
                         titleEl.className = "menu-hero-title";
                         descEl.className = "menu-hero-desc";
                         timerEl.classList.remove('hidden');
+
                         startGlobalLiveTimer(completedSecs, activeRecord.jam_mulai);
                         scheduleBreakPush(nip, completedSecs, activeRecord.jam_mulai);
                         return;
@@ -2055,18 +1930,22 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     // Tidak ada istirahat aktif: pastikan tidak ada jadwal push tersisa
                     cancelBreakPush(nip);
                 }
+
                 activeIstirahatId = null;
                 activeStartTime = null;
                 if (globalTimerInterval) clearInterval(globalTimerInterval);
+
                 card.className = "menu-hero";
                 iconContainer.className = "menu-hero-icon";
                 titleEl.className = "menu-hero-title";
                 descEl.className = "menu-hero-desc";
                 timerEl.classList.add('hidden');
+
             } catch (e) {
                 console.error("Gagal memeriksa status istirahat aktif:", e);
             }
         }
+
         // --- MANAJEMEN DATA ISTIRAHAT PRIBADI ---
         async function loadIstirahatHistory() {
             const nip = localStorage.getItem('emp_nip');
@@ -2076,8 +1955,11 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const keteranganSelect = document.getElementById('istirahat-keterangan');
             const totalTextEl = document.getElementById('total-istirahat-text');
             const largeTimerCard = document.getElementById('large-timer-card');
+
             if (timerInterval) clearInterval(timerInterval);
+
             container.innerHTML = `<p class="empty">Memuat riwayat...</p>`;
+
             try {
                 const { data, error } = await supabaseClient
                     .from('data_istirahat')
@@ -2085,8 +1967,11 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     .eq('nip', nip)
                     .eq('tanggal', today)
                     .order('id', { ascending: false });
+
                 if (error) throw error;
+
                 const activeRecord = data ? data.find(item => !item.jam_selesai) : null;
+
                 let completedSecs = 0;
                 if (data) {
                     data.forEach(item => {
@@ -2098,6 +1983,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         }
                     });
                 }
+
                 if (activeRecord) {
                     activeIstirahatId = activeRecord.id;
                     activeStartTime = activeRecord.jam_mulai;
@@ -2121,20 +2007,24 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     `;
                     largeTimerCard.classList.add('hidden');
                 }
+
                 if (!data || data.length === 0) {
                     container.innerHTML = `<p class="empty">Belum ada riwayat istirahat hari ini.</p>`;
                     totalTextEl.innerText = '0 Jam 0 Menit 0 Detik';
                     await checkActiveBreakStatus(nip);
                     return;
                 }
+
                 let html = '';
                 let totalSecsAll = completedSecs;
                 
                 data.forEach((item, idx) => {
                     let durasiTampil = '-';
                     let badgeClass = 'badge-ok';
+
                     const mulainya = item.jam_mulai ? (item.jam_mulai.split(':').length === 2 ? item.jam_mulai + ':00' : item.jam_mulai) : '-';
                     const selesainya = item.jam_selesai ? (item.jam_selesai.split(':').length === 2 ? item.jam_selesai + ':00' : item.jam_selesai) : '-';
+
                     if (!item.jam_selesai) {
                         durasiTampil = '<span class="inline-timer-badge">00:00:00</span>';
                         badgeClass = 'badge-live';
@@ -2144,6 +2034,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             const [h2, m2, s2 = 0] = selesainya.split(':').map(Number);
                             let diff = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
                             if (diff < 0) diff = 0;
+
                             const dh = Math.floor(diff / 3600);
                             const dm = Math.floor((diff % 3600) / 60);
                             const ds = diff % 60;
@@ -2152,6 +2043,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             durasiTampil = item.durasi;
                         }
                     }
+
                     html += `
                         <div class="row-item row-hist" style="--i:${idx}">
                             <span class="row-title">${item.keterangan}</span>
@@ -2160,74 +2052,96 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         </div>
                     `;
                 });
+
                 container.innerHTML = html;
+
                 const th = Math.floor(totalSecsAll / 3600);
                 const tm = Math.floor((totalSecsAll % 3600) / 60);
                 const ts = totalSecsAll % 60;
                 totalTextEl.innerText = `${th} Jam ${tm} Menit ${ts} Detik`;
+
                 await checkActiveBreakStatus(nip);
+
             } catch (err) {
                 console.error("Gagal memuat riwayat istirahat:", err.message);
                 container.innerHTML = `<p class="empty empty-err">Gagal memuat riwayat data.</p>`;
             }
         }
+
         // Timer berjalan untuk Sub-menu Pribadi (Menampilkan Total Istirahat Hari Ini)
         function startLiveTimer(baseCompletedSecs = 0) {
             if (!activeStartTime) return;
+
             const [startH, startM, startS = 0] = activeStartTime.split(':').map(Number);
             const startDate = new Date();
             startDate.setHours(startH, startM, startS, 0);
+
             timerInterval = setInterval(() => {
                 const now = new Date();
                 let currentSessionSecs = Math.floor((now - startDate) / 1000);
                 if (currentSessionSecs < 0) currentSessionSecs = 0;
+
                 const totalSecsToday = baseCompletedSecs + currentSessionSecs;
+
                 // Periksa apakah mencapai threshold waktu yang ditentukan (45 & 60 menit)
                 checkBreakThresholds(totalSecsToday);
+
                 const hours = Math.floor(totalSecsToday / 3600);
                 const minutes = Math.floor((totalSecsToday % 3600) / 60);
                 const seconds = totalSecsToday % 60;
+
                 const formatted = 
                     String(hours).padStart(2, '0') + ':' + 
                     String(minutes).padStart(2, '0') + ':' + 
                     String(seconds).padStart(2, '0');
+
                 const largeDisplay = document.getElementById('large-timer-display');
                 if (largeDisplay) {
                     largeDisplay.innerText = formatted;
                 }
+
                 const inlineBadges = document.querySelectorAll('.inline-timer-badge');
                 inlineBadges.forEach(badge => {
                     badge.innerText = formatted;
                 });
             }, 1000);
         }
+
         // Global Timer untuk Card Menu Utama
         function startGlobalLiveTimer(baseCompletedSecs = 0, startTimeStr) {
             if (!startTimeStr) return;
             if (globalTimerInterval) clearInterval(globalTimerInterval);
+
             const [startH, startM, startS = 0] = startTimeStr.split(':').map(Number);
             const startDate = new Date();
             startDate.setHours(startH, startM, startS, 0);
+
             globalTimerInterval = setInterval(() => {
                 const now = new Date();
                 let currentSessionSecs = Math.floor((now - startDate) / 1000);
                 if (currentSessionSecs < 0) currentSessionSecs = 0;
+
                 const totalSecsToday = baseCompletedSecs + currentSessionSecs;
+
                 // Periksa apakah mencapai threshold waktu yang ditentukan (45 & 60 menit)
                 checkBreakThresholds(totalSecsToday);
+
                 const hours = Math.floor(totalSecsToday / 3600);
                 const minutes = Math.floor((totalSecsToday % 3600) / 60);
                 const seconds = totalSecsToday % 60;
+
                 const formatted = 
                     String(hours).padStart(2, '0') + ':' + 
                     String(minutes).padStart(2, '0') + ':' + 
                     String(seconds).padStart(2, '0');
+
                 const mainMenuTimer = document.getElementById('main-menu-timer');
                 if (mainMenuTimer) {
                     mainMenuTimer.innerText = formatted;
                 }
             }, 1000);
         }
+
         async function handleMulaiIstirahat() {
             const nip = parseInt(localStorage.getItem('emp_nip'), 10);
             const tanggal = new Date().toISOString().split('T')[0];
@@ -2236,9 +2150,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const jam_mulai = String(now.getHours()).padStart(2, '0') + ':' + 
                               String(now.getMinutes()).padStart(2, '0') + ':' + 
                               String(now.getSeconds()).padStart(2, '0');
+
             const keterangan = document.getElementById('istirahat-keterangan').value;
+
             // Reset status alarm threshold saat memulai sesi baru
             resetBreakAlerts();
+
             try {
                 const { error } = await supabaseClient
                     .from('data_istirahat')
@@ -2248,40 +2165,50 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         jam_mulai: jam_mulai,
                         keterangan: keterangan
                     }]);
+
                 if (error) throw error;
+
                 alert("Waktu istirahat dimulai.");
                 loadIstirahatHistory();
             } catch (err) {
                 alert("Gagal memulai istirahat: " + err.message);
             }
         }
+
         async function handleSelesaiIstirahat() {
             if (!activeIstirahatId) return;
             if (timerInterval) clearInterval(timerInterval);
             if (globalTimerInterval) clearInterval(globalTimerInterval);
+
             const now = new Date();
             const jam_selesai = String(now.getHours()).padStart(2, '0') + ':' + 
                                 String(now.getMinutes()).padStart(2, '0') + ':' + 
                                 String(now.getSeconds()).padStart(2, '0');
+
             try {
                 const { data: currentData } = await supabaseClient
                     .from('data_istirahat')
                     .select('jam_mulai')
                     .eq('id', activeIstirahatId)
                     .single();
+
                 let durasiStr = '-';
                 if (currentData && currentData.jam_mulai) {
                     const [h1, m1, s1 = 0] = currentData.jam_mulai.split(':').map(Number);
                     const h2 = now.getHours();
                     const m2 = now.getMinutes();
                     const s2 = now.getSeconds();
+
                     let totalSecs = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
                     if (totalSecs < 0) totalSecs = 0;
+
                     const dh = Math.floor(totalSecs / 3600);
                     const dm = Math.floor((totalSecs % 3600) / 60);
                     const ds = totalSecs % 60;
+
                     durasiStr = `${dh} Jam ${dm} Menit ${ds} Detik`;
                 }
+
                 const { error } = await supabaseClient
                     .from('data_istirahat')
                     .update({
@@ -2289,7 +2216,9 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         durasi: durasiStr
                     })
                     .eq('id', activeIstirahatId);
+
                 if (error) throw error;
+
                 cancelBreakPush(localStorage.getItem('emp_nip'));
                 alert("Waktu istirahat selesai.");
                 activeIstirahatId = null;
@@ -2299,44 +2228,56 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 alert("Gagal menyelesaikan istirahat: " + err.message);
             }
         }
+
         // Fungsi Login & Sinkronisasi ke Supabase
         async function handleLogin() {
             const nipRaw = document.getElementById('nip-input').value.trim();
             const errorMsg = document.getElementById('error-msg');
             const loginBtn = document.getElementById('login-btn');
+
             errorMsg.classList.add('hidden');
+
             if (!nipRaw) {
                 errorMsg.innerText = 'Mohon masukkan NIP Anda terlebih dahulu.';
                 errorMsg.classList.remove('hidden');
                 return;
             }
+
             const nipInput = parseInt(nipRaw, 10);
             if (isNaN(nipInput)) {
                 errorMsg.innerText = 'NIP harus berupa angka.';
                 errorMsg.classList.remove('hidden');
                 return;
             }
+
             loginBtn.disabled = true;
             loginBtn.innerText = 'Memverifikasi NIP...';
+
             try {
                 const { data, error } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar')
                     .eq('nip_kar', nipInput)
                     .maybeSingle();
+
                 if (error) {
                     throw new Error('Database error: ' + error.message);
                 }
+
                 if (!data) {
                     throw new Error(`NIP "${nipInput}" tidak ditemukan dalam tabel "data_karyawan".`);
                 }
+
                 const namaKaryawan = data.nama_kar;
+
                 await requestNotificationPermission();
+
                 let deviceToken = localStorage.getItem('device_token_int');
                 if (!deviceToken) {
                     deviceToken = Math.floor(Math.random() * 900000000) + 100000000;
                     localStorage.setItem('device_token_int', deviceToken);
                 }
+
                 const { error: insertError } = await supabaseClient
                     .from('data_employee')
                     .upsert({
@@ -2344,14 +2285,19 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         nama: namaKaryawan,
                         token: Number(deviceToken)
                     }, { onConflict: 'nip' });
+
                 if (insertError) {
                     console.error('Gagal menyimpan token ke data_employee:', insertError.message);
                 }
+
                 localStorage.setItem('emp_nip', data.nip_kar);
                 localStorage.setItem('emp_nama', namaKaryawan);
+
                 ensurePushSubscription(data.nip_kar);
+
                 setupRealtimeSync(data.nip_kar);
                 showMainMenu(namaKaryawan, data.nip_kar);
+
             } catch (err) {
                 errorMsg.innerText = err.message || 'Terjadi kesalahan pada sistem.';
                 errorMsg.classList.remove('hidden');
@@ -2360,6 +2306,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 loginBtn.innerText = 'Masuk ke Menu Utama';
             }
         }
+
         // Tampilkan Tampilan Menu Utama & Muat Foto Otomatis Serta Profil Persisten
         async function showMainMenu(nama, nip) {
             document.getElementById('login-section').classList.add('hidden');
@@ -2367,16 +2314,20 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             
             document.getElementById('header-title').innerText = 'Portal Karyawan';
             document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan Informa MOG';
+
             document.getElementById('main-menu-section').classList.remove('hidden');
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('tablet-section').classList.add('hidden');
             
             document.getElementById('persistent-profile-container').classList.remove('hidden');
+
             document.getElementById('user-nama').innerText = nama;
             document.getElementById('user-nip').innerText = `NIP: ${nip}`;
             document.getElementById('user-initials').innerText = nama.charAt(0).toUpperCase();
+
             // Cek status istirahat aktif untuk styling card utama
             await checkActiveBreakStatus(nip);
+
             // Memuat foto otomatis dari Bucket "FOTO SALES"
             const photoImg = document.getElementById('user-photo');
             const userInitials = document.getElementById('user-initials');
@@ -2390,12 +2341,14 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 `${nip}.JPEG`,
                 `${nip}.PNG`
             ];
+
             let photoLoaded = false;
             for (const path of possiblePaths) {
                 try {
                     const { data, error } = await supabaseClient.storage
                         .from('FOTO SALES')
                         .download(path);
+
                     if (!error && data) {
                         const objectUrl = URL.createObjectURL(data);
                         photoImg.src = objectUrl;
@@ -2406,12 +2359,15 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     }
                 } catch (err) {}
             }
+
             if (!photoLoaded) {
                 photoImg.classList.add('hidden');
                 userInitials.classList.remove('hidden');
             }
+
             updatePermissionUI();
         }
+
         // Fungsi Keluar / Logout
         function handleLogout() {
             if (realtimeChannel) {
@@ -2427,8 +2383,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             tabletCleanup();
             cancelBreakPush(localStorage.getItem('emp_nip'));
             removePushSubscriptionRow();
+
             localStorage.removeItem('emp_nip');
             localStorage.removeItem('emp_nama');
+
             document.getElementById('main-menu-section').classList.add('hidden');
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('tablet-section').classList.add('hidden');
@@ -2437,9 +2395,11 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             
             document.getElementById('header-title').innerText = 'Portal Karyawan';
             document.getElementById('header-subtitle').innerText = 'Silahkan masukkan NIP Anda untuk masuk';
+
             document.getElementById('login-section').classList.remove('hidden');
             document.getElementById('nip-input').value = '';
         }
+
         // =========================================================================
         // --- TABLET STORE : PINJAM & KEMBALIKAN TABLET ---
         // Tabel   : koneksi_tablet (daftar tablet)  &  status_tablet (data peminjaman)
@@ -2454,6 +2414,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         const TABLET_MASTER_AKTIF = 'AKTIF';     // hanya tablet berstatus_sts AKTIF yang muncul di dropdown
         const TABLET_MAX_BYTES = 95 * 1024;      // target kompres (batas aman di bawah 100 KB)
         const TABLET_LIST_LIMIT = 50;            // jumlah kartu terbaru yang ditampilkan
+
         let tabletRealtimeChannel = null;
         let tabletTimerInterval = null;
         let tabletReloadTimer = null;
@@ -2465,6 +2426,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         let tabletBusy = false;         // sedang upload / simpan
         let tabletPhotoBusy = false;    // sedang mengompres foto
         let tabletUserTouched = false;  // pengguna sudah memilih sendiri di dropdown
+
         // ---------- Helper ----------
         function tbKey(v) { return String(v ?? '').trim().toUpperCase(); }
         function tbPad(n) { return String(n).padStart(2, '0'); }
@@ -2496,6 +2458,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const name = tabletSelectedName();
             return name && tbFindMine(name) ? 'kembali' : 'pinjam';
         }
+
         // ---------- Navigasi ----------
         function openTabletStore() {
             document.getElementById('main-menu-section').classList.add('hidden');
@@ -2503,18 +2466,17 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             document.getElementById('tablet-section').classList.remove('hidden');
             document.getElementById('header-title').innerText = 'Tablet Store';
             document.getElementById('header-subtitle').innerText = 'Pinjam & Kembalikan Tablet';
+
             tabletUserTouched = false;
             tabletClearPhoto(true);
-            tbNoteClear();
-            tbDdClose();
             document.getElementById('tb-select').innerHTML = '<option value="">Memuat daftar tablet...</option>';
-            tbDdSync();
-            tabletSwitchTab('pinjam', true);
             document.getElementById('tb-list-container').innerHTML = '<p class="empty">Memuat data tablet...</p>';
+
             tabletLoadAll();
             tabletSetupRealtime();
             tabletStartTimers();
         }
+
         function closeTabletStore() {
             tabletCleanup();
             document.getElementById('tablet-section').classList.add('hidden');
@@ -2524,6 +2486,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const nip = localStorage.getItem('emp_nip');
             if (nip) checkActiveBreakStatus(nip);
         }
+
         function tabletCleanup() {
             if (tabletTimerInterval) { clearInterval(tabletTimerInterval); tabletTimerInterval = null; }
             if (tabletReloadTimer) { clearTimeout(tabletReloadTimer); tabletReloadTimer = null; }
@@ -2531,9 +2494,8 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             tabletBusy = false;
             tabletPhotoBusy = false;
             tabletClearPhoto(true);
-            tbNoteClear();
-            tbDdClose();
         }
+
         // ---------- Realtime ----------
         function tabletSetLive(on) {
             const chip = document.getElementById('tb-live-chip');
@@ -2542,16 +2504,20 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             chip.classList.toggle('off', !on);
             txt.innerText = on ? 'Live' : 'Menyambung';
         }
+
         function tabletScheduleReload() {
             if (tabletReloadTimer) clearTimeout(tabletReloadTimer);
             tabletReloadTimer = setTimeout(tabletLoadAll, 250);
         }
+
         function tabletTeardownRealtime() {
             if (tabletRealtimeChannel) { supabaseClient.removeChannel(tabletRealtimeChannel); tabletRealtimeChannel = null; }
         }
+
         function tabletSetupRealtime() {
             tabletTeardownRealtime();
             tabletSetLive(false);
+
             tabletRealtimeChannel = supabaseClient
                 .channel('public:tablet_store_live')
                 .on('postgres_changes', { event: '*', schema: 'public', table: TABLET_TABLE_STATUS }, () => tabletScheduleReload())
@@ -2561,6 +2527,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     if (status === 'SUBSCRIBED') tabletScheduleReload();   // sinkron ulang setelah (re)connect
                 });
         }
+
         // ---------- Muat data ----------
         async function tabletLoadAll() {
             const reqId = ++tabletLoadId;
@@ -2574,12 +2541,16 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 if (rr.error) throw rr.error;
                 if (ra.error) throw ra.error;
                 if (reqId !== tabletLoadId) return;
+
                 tabletMaster = rm.data || [];
+
                 tabletActiveMap = {};
                 (ra.data || []).forEach(r => { tabletActiveMap[tbKey(r.nama_tablet)] = r; });
+
                 const merged = {};
                 [...(rr.data || []), ...(ra.data || [])].forEach(r => { merged[`${r.id}|${r.nama_tablet}`] = r; });
                 tabletRows = Object.values(merged).sort((a, b) => Number(b.id) - Number(a.id));
+
                 tabletRenderSelect();
                 tabletRenderCards();
                 tabletUpdateActionUI();
@@ -2592,34 +2563,38 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 if (list && !tabletRows.length) list.innerHTML = '<p class="empty empty-err">Gagal memuat data tablet. Pastikan SQL Tablet Store sudah dijalankan.</p>';
             }
         }
+
         // ---------- Dropdown (data dari tabel koneksi_tablet) ----------
         function tabletRenderSelect() {
             const sel = document.getElementById('tb-select');
             if (!sel) return;
+
             const prev = sel.value;
             const aktif = tabletMaster.filter(r => tbKey(r.status_sts) === TABLET_MASTER_AKTIF);
+
             if (!aktif.length) {
                 sel.innerHTML = '<option value="">Belum ada tablet aktif</option>';
-                tbDdSync();
                 return;
             }
+
             let html = '<option value="">-- Pilih Tablet --</option>';
             aktif.forEach(r => {
                 const name = r.nama_tab_sts;
                 const act = tbFindActive(name);
                 let label = name;
+                let dis = '';
                 if (act) {
                     if (Number(act.nip) === tbMyNip()) {
                         label += ' (sedang Anda pinjam)';
                     } else {
                         label += ` (dipinjam: ${act.nama || '-'})`;
+                        dis = ' disabled';
                     }
                 }
-                // Tablet yang dipinjam orang lain tetap bisa dipilih agar notifikasi tampil,
-                // tetapi tombol PINJAM dikunci (lihat tabletUpdateActionUI).
-                html += `<option value="${riwayatEscape(name)}">${riwayatEscape(label)}</option>`;
+                html += `<option value="${riwayatEscape(name)}"${dis}>${riwayatEscape(label)}</option>`;
             });
             sel.innerHTML = html;
+
             let target = prev;
             if (!target || !aktif.some(r => r.nama_tab_sts === target)) {
                 target = '';
@@ -2630,113 +2605,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 }
             }
             sel.value = target;
-            tbDdSync();
         }
+
         function tabletOnSelectChange() {
             tabletUserTouched = true;
             tabletUpdateActionUI();
-            tbDdSync();
-            // Tablet sedang dipinjam orang lain -> tampilkan notifikasi
-            const name = tabletSelectedName();
-            const act = name ? tbFindActive(name) : null;
-            if (act && Number(act.nip) !== tbMyNip()) {
-                alert(`Gagal: TABLET SUDAH DIPINJAM oleh ${act.nama || '-'}`);
-            }
         }
-        // ---------- Dropdown kustom: status DIPINJAM berwarna hijau + nama peminjam ----------
-        const TB_ICON_TABLET = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>';
-        const TB_ICON_CHECK = '<svg class="tb-dd-check" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
-        function tbBorrowerText(act) {
-            const mine = Number(act.nip) === tbMyNip();
-            return 'DIPINJAM \u2022 ' + (act.nama || '-') + (mine ? ' (Anda)' : '');
-        }
-        function tbDdRender() {
-            const list = document.getElementById('tb-dd-list');
-            if (!list) return;
-            const sel = document.getElementById('tb-select');
-            const current = sel ? sel.value : '';
-            const aktif = tabletMaster.filter(r => tbKey(r.status_sts) === TABLET_MASTER_AKTIF);
-            if (!aktif.length) {
-                list.innerHTML = '<p class="tb-dd-empty">Belum ada tablet aktif</p>';
-                return;
-            }
-            let html = '';
-            aktif.forEach((r, idx) => {
-                const name = r.nama_tab_sts;
-                const act = tbFindActive(name);
-                const cls = 'tb-dd-item' + (act ? ' is-borrowed' : '') + (name === current ? ' is-selected' : '');
-                const status = act
-                    ? `<span class="tb-dd-pill">${riwayatEscape(tbBorrowerText(act))}</span>`
-                    : '<span class="tb-dd-free">Tersedia</span>';
-                html += `
-                    <button type="button" class="${cls}" role="option" aria-selected="${name === current}" data-name="${riwayatEscape(name)}" style="--i:${Math.min(idx, 12)}" onclick="tbDdPick(this)">
-                        <span class="tb-dd-ico">${TB_ICON_TABLET}</span>
-                        <span class="tb-dd-txt"><span class="tb-dd-name">${riwayatEscape(name)}</span>${status}</span>
-                        ${TB_ICON_CHECK}
-                    </button>`;
-            });
-            list.innerHTML = html;
-        }
-        function tbDdSync() {
-            const sel = document.getElementById('tb-select');
-            const label = document.getElementById('tb-dd-label');
-            if (!sel || !label) return;
-            const name = sel.value;
-            if (name) {
-                const act = tbFindActive(name);
-                label.classList.remove('is-placeholder');
-                label.innerHTML = `<span>${riwayatEscape(name)}</span>` +
-                    (act ? `<span class="tb-dd-pill">${riwayatEscape(tbBorrowerText(act))}</span>` : '');
-            } else {
-                const opt = sel.options[sel.selectedIndex];
-                label.classList.add('is-placeholder');
-                label.textContent = opt ? opt.text : '-- Pilih Tablet --';
-            }
-            tbDdRender();
-        }
-        function tbDdSetOpen(open) {
-            const dd = document.getElementById('tb-dd');
-            const trg = document.getElementById('tb-dd-trigger');
-            if (!dd || !trg) return;
-            dd.classList.toggle('is-open', open);
-            trg.setAttribute('aria-expanded', open ? 'true' : 'false');
-        }
-        function tbDdClose() { tbDdSetOpen(false); }
-        function tbDdToggle() {
-            const dd = document.getElementById('tb-dd');
-            const trg = document.getElementById('tb-dd-trigger');
-            if (!dd || !trg || trg.disabled) return;
-            tbDdSetOpen(!dd.classList.contains('is-open'));
-        }
-        function tbDdPick(el) {
-            const sel = document.getElementById('tb-select');
-            if (!sel || !el || tabletBusy) return;
-            sel.value = el.getAttribute('data-name') || '';
-            tbDdClose();
-            tabletOnSelectChange();
-        }
-        // Tutup dropdown bila mengetuk di luar
-        document.addEventListener('click', (e) => {
-            const dd = document.getElementById('tb-dd');
-            if (dd && dd.classList.contains('is-open') && !dd.contains(e.target)) tbDdClose();
-        });
-        // ---------- Catatan tablet (kolom "noted") ----------
-        function tbNoteValue() {
-            const el = document.getElementById('tb-note');
-            return el ? el.value.trim() : '';
-        }
-        function tbNoteOnInput() {
-            const el = document.getElementById('tb-note');
-            const cnt = document.getElementById('tb-note-count');
-            if (!el) return;
-            el.classList.toggle('has-text', el.value.trim().length > 0);
-            if (cnt) cnt.innerText = `${el.value.length}/${el.maxLength > 0 ? el.maxLength : 300}`;
-        }
-        function tbNoteClear() {
-            const el = document.getElementById('tb-note');
-            if (el) el.value = '';
-            tbNoteOnInput();
-        }
+
         // ---------- Tampilan tombol, foto & timer ----------
         function tabletRefreshPhotoTexts() {
             const title = document.getElementById('tb-photo-title');
@@ -2757,16 +2632,20 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 hint.innerText = 'Ketuk ikon kamera. Foto otomatis dikecilkan ke JPG maks. 100 KB.';
             }
         }
+
         function tabletUpdateActionUI() {
             if (tabletBusy) return;
             const btn = document.getElementById('tb-action-btn');
             const timerCard = document.getElementById('tb-timer-card');
             if (!btn || !timerCard) return;
+
             const name = tabletSelectedName();
             const act = name ? tbFindActive(name) : null;
             const mine = act && Number(act.nip) === tbMyNip() ? act : null;
+
             // Foto pinjam tidak boleh terbawa ke mode kembali (dan sebaliknya)
             if (tabletPhoto && tabletPhoto.mode !== (mine ? 'kembali' : 'pinjam')) tabletClearPhoto(true);
+
             if (mine) {
                 btn.className = 'btn-danger';
                 btn.innerText = 'KEMBALIKAN';
@@ -2774,10 +2653,9 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 document.getElementById('tb-timer-name').innerText = mine.nama_tablet;
                 timerCard.classList.remove('hidden');
             } else if (act) {
-                // Dikunci (tidak bisa PINJAM), tetapi tetap bisa diketuk untuk menampilkan notifikasi
-                btn.className = 'btn-primary is-locked';
+                btn.className = 'btn-primary';
                 btn.innerText = 'SEDANG DIPINJAM';
-                btn.disabled = false;
+                btn.disabled = true;
                 timerCard.classList.add('hidden');
             } else {
                 btn.className = 'btn-primary';
@@ -2785,12 +2663,11 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 btn.disabled = false;
                 timerCard.classList.add('hidden');
             }
-            // Catatan tablet hanya tampil saat mode PINJAM (tablet tersedia)
-            const noteWrap = document.getElementById('tb-note-wrap');
-            if (noteWrap) noteWrap.classList.toggle('hidden', !!act);
+
             tabletRefreshPhotoTexts();
             tabletTickTimers();
         }
+
         function tabletTickTimers() {
             const name = tabletSelectedName();
             const mine = name ? tbFindMine(name) : null;
@@ -2802,74 +2679,65 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 if (h) h.innerText = tbPad(Math.floor(s / 3600));
                 if (m) m.innerText = tbPad(Math.floor((s % 3600) / 60));
                 if (sc) sc.innerText = tbPad(s % 60);
-                tbRenderDevice(mine);
             }
             document.querySelectorAll('.tb-live-timer').forEach(el => {
                 el.innerText = tbClockStr(tbElapsedSecs(el.getAttribute('data-start')));
             });
         }
+
         function tabletStartTimers() {
             if (tabletTimerInterval) clearInterval(tabletTimerInterval);
             tabletTimerInterval = setInterval(tabletTickTimers, 1000);
             tabletTickTimers();
         }
+
         function tabletSetBusy(on, label) {
             tabletBusy = on;
             const btn = document.getElementById('tb-action-btn');
             const sel = document.getElementById('tb-select');
             const cam = document.getElementById('tb-cam-btn');
-            const ddTrg = document.getElementById('tb-dd-trigger');
-            const note = document.getElementById('tb-note');
             if (sel) sel.disabled = on;
             if (cam) cam.disabled = on;
-            if (ddTrg) ddTrg.disabled = on;
-            if (note) note.disabled = on;
-            if (on) tbDdClose();
             if (on) {
                 if (btn) { btn.disabled = true; btn.innerText = label || 'Memproses...'; }
             } else {
                 tabletUpdateActionUI();
             }
         }
+
         // ---------- Kartu status_tablet ----------
         function tabletRenderCards() {
             const container = document.getElementById('tb-list-container');
             if (!container) return;
+
             if (!tabletRows.length) {
                 container.innerHTML = '<p class="empty">Belum ada data peminjaman tablet.</p>';
                 return;
             }
+
             const iconTablet = '<svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>';
             const iconBell = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>';
+
             let html = '';
             tabletRows.forEach((r, idx) => {
                 const dipinjam = tbKey(r.status) === TABLET_STATUS_PINJAM;
                 const tgl = r.tgl ? riwayatFormatPendek(r.tgl) : '-';
                 const nama = r.nama ? riwayatEscape(r.nama) : '-';
                 const statusText = r.status ? riwayatEscape(r.status) : '-';
-                const nipEsc = riwayatEscape(String(r.nip ?? ''));
-                const initial = riwayatEscape(String(r.nama || '?').trim().charAt(0).toUpperCase() || '?');
+
                 let durasiHtml;
                 if (dipinjam) {
                     durasiHtml = `<b class="tb-live-timer" data-start="${riwayatEscape(r.waktu_pinjam || '')}">${tbClockStr(tbElapsedSecs(r.waktu_pinjam))}</b>`;
                 } else {
                     durasiHtml = `<b>${riwayatEscape(String(r.durasi || '00:00:00').substring(0, 8))}</b>`;
                 }
+
                 html += `
                     <div class="tb-card ${dipinjam ? 'is-live' : ''}" style="--i:${Math.min(idx, 12)}">
                         <div class="tb-icon">${iconTablet}</div>
                         <div class="tb-body">
                             <h4 class="tb-name">${riwayatEscape(r.nama_tablet)}</h4>
-                            <div class="tb-who">
-                                <div class="avatar avatar-sm tb-avatar">
-                                    <img class="img-fill hidden rh-photo" data-nip="${nipEsc}" alt="Foto peminjam">
-                                    <span class="center-fill rh-initial" data-nip="${nipEsc}">${initial}</span>
-                                </div>
-                                <div class="tb-who-txt">
-                                    <p class="tb-who-lbl">Nama Peminjam</p>
-                                    <p class="tb-who-name">${nama}</p>
-                                </div>
-                            </div>
+                            <p class="tb-meta">Nama Peminjam : <b>${nama}</b></p>
                             <p class="tb-meta">Tanggal : <b>${tgl}</b></p>
                             <div class="tb-foot">
                                 <span class="tb-dur">Durasi ${durasiHtml}</span>
@@ -2881,11 +2749,8 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 `;
             });
             container.innerHTML = html;
-            // Pasang foto peminjam dari cache lalu muat sisanya
-            const nips = [...new Set(tabletRows.map(r => String(r.nip ?? '')).filter(Boolean))];
-            nips.forEach(n => applyRiwayatPhoto(n));
-            loadRiwayatPhotos(nips);
         }
+
         // ---------- Foto: kamera + kompres otomatis JPG <= 100 KB ----------
         function tbLoadImage(file) {
             return new Promise((resolve, reject) => {
@@ -2896,17 +2761,21 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 img.src = url;
             });
         }
+
         function tbCanvasBlob(canvas, quality) {
             return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/jpeg', quality));
         }
+
         async function tbCompressJpg(file, maxBytes) {
             const img = await tbLoadImage(file);
             const w0 = img.naturalWidth || img.width;
             const h0 = img.naturalHeight || img.height;
             if (!w0 || !h0) throw new Error('Ukuran foto tidak valid.');
+
             const dims = [1024, 900, 800, 700, 600, 500, 400, 320];
             const qualities = [0.8, 0.7, 0.6, 0.5, 0.4];
             let smallest = null;
+
             for (const maxDim of dims) {
                 const scale = Math.min(1, maxDim / Math.max(w0, h0));
                 const cw = Math.max(1, Math.round(w0 * scale));
@@ -2918,6 +2787,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, cw, ch);
                 ctx.drawImage(img, 0, 0, cw, ch);
+
                 for (const q of qualities) {
                     const blob = await tbCanvasBlob(canvas, q);
                     if (!blob) continue;
@@ -2928,6 +2798,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             if (smallest && smallest.size <= 100 * 1024) return smallest;
             throw new Error('Foto tidak dapat dikecilkan sampai 100 KB.');
         }
+
         function tabletOpenCamera() {
             if (tabletBusy || tabletPhotoBusy) return;
             const input = document.getElementById('tb-photo-input');
@@ -2935,6 +2806,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             input.value = '';
             input.click();
         }
+
         async function tabletOnPhotoPicked(input) {
             const file = input.files && input.files[0];
             if (!file) return;
@@ -2943,10 +2815,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 input.value = '';
                 return;
             }
+
             const cam = document.getElementById('tb-cam-btn');
             tabletPhotoBusy = true;
             if (cam) cam.classList.add('is-busy');
             tabletRefreshPhotoTexts();
+
             try {
                 const blob = await tbCompressJpg(file, TABLET_MAX_BYTES);
                 tabletSetPhoto(blob);
@@ -2961,6 +2835,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 tabletRefreshPhotoTexts();
             }
         }
+
         function tabletSetPhoto(blob) {
             tabletClearPhoto(true);
             const url = URL.createObjectURL(blob);
@@ -2973,6 +2848,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             if (cam) cam.classList.add('has-photo');
             tabletRefreshPhotoTexts();
         }
+
         function tabletClearPhoto(silent) {
             if (tabletPhoto && tabletPhoto.url) URL.revokeObjectURL(tabletPhoto.url);
             tabletPhoto = null;
@@ -2984,6 +2860,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             if (cam) cam.classList.remove('has-photo');
             if (silent !== true) tabletRefreshPhotoTexts();
         }
+
         async function tabletUploadPhoto(prefix, nip, blob) {
             const path = `${prefix}/${nip}_${Date.now()}.jpg`;
             const { error } = await supabaseClient.storage
@@ -2993,58 +2870,57 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const { data } = supabaseClient.storage.from(TABLET_BUCKET).getPublicUrl(path);
             return data.publicUrl;
         }
+
         // ---------- Tombol PINJAM / KEMBALIKAN ----------
         function handleTabletAction() {
             if (tabletBusy || tabletPhotoBusy) return;
+
             const nip = tbMyNip();
             const nama = localStorage.getItem('emp_nama') || '';
             const tablet = tabletSelectedName();
+
             if (!nip) { alert('Gagal: sesi login tidak ditemukan. Silakan login ulang.'); return; }
             if (!tablet) { alert('Gagal: pilih tablet terlebih dahulu.'); return; }
+
             const mine = tbFindMine(tablet);
             if (mine) {
                 tabletDoReturn(mine, nip);
             } else {
-                const other = tbFindActive(tablet);
-                if (other) {
-                    const btn = document.getElementById('tb-action-btn');
-                    if (btn) { btn.classList.remove('tb-shake'); void btn.offsetWidth; btn.classList.add('tb-shake'); }
-                    alert(`Gagal: TABLET SUDAH DIPINJAM oleh ${other.nama || '-'}`);
-                    return;
-                }
+                if (tbFindActive(tablet)) { alert('Gagal: tablet ini sedang dipinjam orang lain.'); return; }
                 tabletDoBorrow(tablet, nip, nama);
             }
         }
+
         async function tabletDoBorrow(tablet, nip, nama) {
             if (!tabletPhoto) {
                 alert('Gagal: ambil foto tablet terlebih dahulu dengan tombol ikon kamera.');
                 return;
             }
             const blob = tabletPhoto.blob;
-            const catatan = tbNoteValue();   // kosong -> kolom "noted" tidak dikirim
             tabletSetBusy(true, 'Mengunggah foto...');
             try {
                 const url = await tabletUploadPhoto('pinjam', nip, blob);
+
                 const btn = document.getElementById('tb-action-btn');
                 if (btn) btn.innerText = 'Menyimpan...';
-                const payload = {
-                    nama_tablet: tablet,
-                    nip: nip,
-                    nama: nama,
-                    tgl: riwayatLocalISO(),
-                    url: url,
-                    status: TABLET_STATUS_PINJAM
-                };
-                if (catatan) payload.noted = catatan;   // hanya dikirim jika diisi
+
                 const { error } = await supabaseClient
                     .from(TABLET_TABLE_STATUS)
-                    .insert([payload]);
+                    .insert([{
+                        nama_tablet: tablet,
+                        nip: nip,
+                        nama: nama,
+                        tgl: riwayatLocalISO(),
+                        url: url,
+                        status: TABLET_STATUS_PINJAM
+                    }]);
+
                 if (error) {
-                    if (error.code === '23505') throw new Error('TABLET SUDAH DIPINJAM oleh orang lain (baru saja).');
+                    if (error.code === '23505') throw new Error('Tablet ini baru saja dipinjam orang lain.');
                     throw error;
                 }
+
                 tabletClearPhoto(true);
-                tbNoteClear();
                 alert('Tablet berhasil dipinjam. Timer durasi berjalan.');
             } catch (err) {
                 console.error('Gagal meminjam tablet:', err);
@@ -3054,6 +2930,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 tabletSetBusy(false);
             }
         }
+
         async function tabletDoReturn(mine, nip) {
             if (!tabletPhoto) {
                 alert('Foto pengembalian diperlukan. Potret tablet terlebih dahulu, lalu ketuk KEMBALIKAN.');
@@ -3064,8 +2941,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             tabletSetBusy(true, 'Mengunggah foto...');
             try {
                 const url = await tabletUploadPhoto('kembali', nip, blob);
+
                 const btn = document.getElementById('tb-action-btn');
                 if (btn) btn.innerText = 'Menyimpan...';
+
                 const durasi = tbTimeStr(tbElapsedSecs(mine.waktu_pinjam));
                 const { data, error } = await supabaseClient
                     .from(TABLET_TABLE_STATUS)
@@ -3079,8 +2958,10 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     .eq('nama_tablet', mine.nama_tablet)
                     .eq('status', TABLET_STATUS_PINJAM)
                     .select();
+
                 if (error) throw error;
                 if (!data || data.length === 0) throw new Error('Data peminjaman tidak ditemukan atau sudah diubah.');
+
                 tabletClearPhoto(true);
                 alert('Tablet berhasil dikembalikan. Durasi pinjam: ' + durasi);
             } catch (err) {
@@ -3091,6 +2972,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 tabletSetBusy(false);
             }
         }
+
         // ---------- Lonceng: bunyikan notifikasi di tablet yang dituju ----------
         // Memanggil fungsi SQL bunyikan_tablet(nama) yang memicu perubahan data pada koneksi_tablet.
         // Aplikasi di tablet (listener realtime koneksi_tablet) lalu membunyikan notifikasi + suara.
@@ -3098,6 +2980,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         async function ringTabletBell(btn) {
             if (!btn) return;
             const nama = btn.getAttribute('data-tablet') || '';
+
             const master = tabletMaster.find(r => tbKey(r.nama_tab_sts) === tbKey(nama));
             if (!master) {
                 alert(`Gagal: tablet "${nama}" tidak ditemukan pada tabel koneksi_tablet.`);
@@ -3106,10 +2989,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const key = tbKey(master.nama_tab_sts);
             if (tabletBellBusy[key]) return;
             tabletBellBusy[key] = true;
+
             btn.classList.remove('is-ring');
             void btn.offsetWidth;
             btn.classList.add('is-ring');
             setTimeout(() => btn.classList.remove('is-ring'), 1000);
+
             try {
                 const { data, error } = await supabaseClient.rpc('bunyikan_tablet', { p_nama: master.nama_tab_sts });
                 if (error) throw error;
@@ -3122,619 +3007,13 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 setTimeout(() => { delete tabletBellBusy[key]; }, 1500);
             }
         }
-        // =========================================================================
-        // --- KONEKSI INTERNET & BATERAI TABLET (card "Durasi pinjam berjalan") ---
-        // Data dibaca dari baris tablet yang dipinjam pada tabel koneksi_tablet
-        // (otomatis ter-update lewat realtime). Kolom dideteksi otomatis dari namanya.
-        // Jika nama kolom Anda tidak terdeteksi, isi nama kolom persisnya di bawah ini.
-        // =========================================================================
-        const TB_DEVICE_COLS = {
-            baterai:  '',   // contoh: 'baterai_sts'   (angka 0-100 atau teks "85%")
-            charging: '',   // contoh: 'charging_sts'  (true/false / "CHARGING")
-            koneksi:  '',   // contoh: 'koneksi_sts'   (true/false / "ONLINE" / "OFFLINE" / "WIFI")
-            update:   ''    // contoh: 'updated_at'    (waktu data terakhir dikirim tablet)
-        };
-        let tbDevLogged = false;
-        function tbDevFind(row, explicit, re, skip) {
-            if (explicit && Object.prototype.hasOwnProperty.call(row, explicit)) return explicit;
-            return Object.keys(row).find(k => re.test(k) && !(skip && skip.test(k))) || null;
-        }
-        function tbDevIsDate(v) {
-            return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(v) && !isNaN(Date.parse(v));
-        }
-        function tbDevBool(v) {
-            if (v === null || v === undefined || v === '') return null;
-            if (typeof v === 'boolean') return v;
-            if (typeof v === 'number') return v > 0;
-            const u = String(v).trim().toUpperCase();
-            if (/^(1|TRUE|T|YA|Y|ON|YES|CHARGING|MENGISI|NGECAS|AC|USB)/.test(u)) return true;
-            if (/^(0|FALSE|F|TIDAK|NO|N|OFF|NOT|DISCHARGING|UNPLUGGED)/.test(u)) return false;
-            return null;
-        }
-        function tbDevAgo(iso) {
-            const secs = Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 1000));
-            if (secs < 60) return 'baru saja';
-            if (secs < 3600) return Math.floor(secs / 60) + ' menit lalu';
-            if (secs < 86400) return Math.floor(secs / 3600) + ' jam lalu';
-            return Math.floor(secs / 86400) + ' hari lalu';
-        }
-        function tbDevInfo(row) {
-            const C = TB_DEVICE_COLS;
-            const kBat = tbDevFind(row, C.baterai, /(bat|baterai|battery|batre|daya)/i, /(charg|ngecas|isi_|plug|nama|status_sts)/i);
-            const kChg = tbDevFind(row, C.charging, /(charg|ngecas|isi_daya|plug)/i, null);
-            const kNet = tbDevFind(row, C.koneksi, /(koneksi|konek|internet|online|network|jaringan|wifi|wi_fi|conn|sinyal|signal|inet)/i, /(nama|bat|charg|update|seen)/i);
-            const kSeen = tbDevFind(row, C.update, /(last_?seen|terakhir|heartbeat|last_?ping|last_?active|updated?_?at|update|waktu|timestamp)/i, /(nama|created)/i);
-            const info = { bat: null, charging: null, net: null, seen: null, keys: { kBat, kChg, kNet, kSeen } };
-            // Baterai
-            if (kBat && row[kBat] !== null && row[kBat] !== undefined && row[kBat] !== '') {
-                let n = parseFloat(String(row[kBat]).replace(',', '.').replace('%', ''));
-                if (!isNaN(n)) {
-                    if (n > 0 && n <= 1 && !Number.isInteger(n)) n = n * 100;
-                    info.bat = Math.min(100, Math.max(0, Math.round(n)));
-                }
-            }
-            if (kChg) info.charging = tbDevBool(row[kChg]);
-            else if (kBat && typeof row[kBat] === 'string' && /charg|mengisi|ngecas/i.test(row[kBat])) info.charging = true;
-            // Waktu update terakhir
-            if (kSeen && tbDevIsDate(row[kSeen])) info.seen = row[kSeen];
-            // Koneksi
-            if (kNet) {
-                const v = row[kNet];
-                if (tbDevIsDate(v)) {
-                    if (!info.seen) info.seen = v;
-                } else {
-                    const b = tbDevBool(v);
-                    const txt = v === null || v === undefined ? '' : String(v).trim();
-                    if (b !== null) {
-                        const generic = /^(1|0|true|false|t|f|ya|y|tidak|no|n|on|off|yes)$/i.test(txt) || typeof v === 'boolean' || typeof v === 'number';
-                        info.net = { on: b, label: generic ? '' : txt };
-                    } else if (txt) {
-                        // Teks lain (misal "WIFI", "4G"): dianggap online, kecuali berisi kata putus
-                        const off = /(OFFLINE|PUTUS|TERPUTUS|DISCONNECT|MATI|TIDAK|NONE|TANPA)/i.test(txt);
-                        info.net = { on: !off, label: txt };
-                    }
-                }
-            }
-            // Tidak ada kolom koneksi eksplisit, tetapi ada waktu update -> turunkan dari usia data
-            if (!info.net && info.seen) {
-                const age = (Date.now() - Date.parse(info.seen)) / 1000;
-                info.net = { on: age <= 300, label: '', derived: true };
-            }
-            return info;
-        }
-        function tbRenderDevice(mine) {
-            const netBox = document.getElementById('tb-dev-net');
-            const batBox = document.getElementById('tb-dev-bat');
-            if (!netBox || !batBox) return;
-            const master = mine ? tabletMaster.find(r => tbKey(r.nama_tab_sts) === tbKey(mine.nama_tablet)) : null;
-            const info = master ? tbDevInfo(master) : tbDevInfo({});
-            if (master && !tbDevLogged) {
-                tbDevLogged = true;
-                console.info('[Tablet] Kolom tabel koneksi_tablet:', Object.keys(master), '| terdeteksi:', info.keys);
-            }
-            // ---- Koneksi internet ----
-            let netState, netVal, netSub = '';
-            if (info.net) {
-                netState = info.net.on ? 'is-on' : 'is-off';
-                netVal = info.net.on ? 'Online' : 'Offline';
-                if (info.net.label && info.net.label.toUpperCase() !== netVal.toUpperCase()) netVal += ' \u2022 ' + info.net.label;
-                if (info.seen) netSub = 'Data terakhir ' + tbDevAgo(info.seen);
-            } else {
-                netState = 'is-na';
-                netVal = 'Data belum tersedia';
-                netSub = master ? 'Kolom koneksi tidak ditemukan di koneksi_tablet' : 'Tablet tidak ada di koneksi_tablet';
-            }
-            // ---- Baterai ----
-            let batState, batVal, batSub = '', pct = 0;
-            if (info.bat !== null) {
-                pct = info.bat;
-                batState = pct >= 50 ? 'bat-ok' : (pct >= 20 ? 'bat-mid' : 'bat-low');
-                batVal = pct + '%';
-                if (info.charging === true) { batSub = 'Sedang mengisi daya'; batState += ' is-charging'; }
-                else if (pct < 20) batSub = 'Baterai lemah';
-                else if (info.charging === false) batSub = 'Tidak diisi daya';
-            } else {
-                batState = 'is-na';
-                batVal = 'Data belum tersedia';
-                batSub = master ? 'Kolom baterai tidak ditemukan di koneksi_tablet' : 'Tablet tidak ada di koneksi_tablet';
-            }
-            const sig = [netState, netVal, netSub, batState, batVal, batSub, pct].join('|');
-            if (netBox.dataset.sig === sig) return;
-            netBox.dataset.sig = sig;
-            netBox.className = 'tb-dev-box ' + netState;
-            document.getElementById('tb-dev-net-val').innerText = netVal;
-            document.getElementById('tb-dev-net-sub').innerText = netSub;
-            batBox.className = 'tb-dev-box ' + batState;
-            document.getElementById('tb-dev-bat-val').innerText = batVal;
-            document.getElementById('tb-dev-bat-sub').innerText = batSub;
-            document.getElementById('tb-bat-fill').style.width = pct + '%';
-        }
-        // =========================================================================
-        // --- RIWAYAT PEMINJAMAN TABLET (FILTER TANGGAL + FOTO + DOWNLOAD PDF) ---
-        // Sumber data: tabel status_tablet
-        // =========================================================================
-        let tbrData = [];
-        let tbrPeriode = { start: '', end: '' };
-        let tbrRequestId = 0;
-        let tbrPhotoQueue = null;
-        const tbrPdfImgs = {};   // url foto tablet -> dataURL | null
-        function tabletSwitchTab(tab, silent) {
-            const sw = document.getElementById('tb-tab-switcher');
-            const bP = document.getElementById('tb-tab-btn-pinjam');
-            const bR = document.getElementById('tb-tab-btn-riwayat');
-            const pP = document.getElementById('tb-tab-pinjam');
-            const pR = document.getElementById('tb-tab-riwayat');
-            if (!sw || !bP || !bR || !pP || !pR) return;
-            sw.dataset.tab = tab;
-            const isR = tab === 'riwayat';
-            bP.className = 'tab-btn' + (isR ? '' : ' is-on');
-            bR.className = 'tab-btn' + (isR ? ' is-on' : '');
-            pP.classList.toggle('hidden', isR);
-            pR.classList.toggle('hidden', !isR);
-            const pane = isR ? pR : pP;
-            if (!silent) {
-                pane.classList.remove('tb-pane-in');
-                void pane.offsetWidth;
-                pane.classList.add('tb-pane-in');
-            }
-            if (isR && !silent) tbrInit();
-            if (!isR) tabletTickTimers();
-        }
-        function tbrInit() {
-            const startEl = document.getElementById('tbr-tgl-mulai');
-            const endEl = document.getElementById('tbr-tgl-akhir');
-            const today = riwayatLocalISO();
-            if (!startEl.value) startEl.value = today;
-            if (!endEl.value) endEl.value = today;
-            tbrLoad();
-        }
-        function tbrIsBorrowed(r) { return tbKey(r.status) === TABLET_STATUS_PINJAM; }
-        function tbrDurSecs(r) {
-            if (r.waktu_pinjam && r.waktu_kembali) {
-                const d = (Date.parse(r.waktu_kembali) - Date.parse(r.waktu_pinjam)) / 1000;
-                if (!isNaN(d) && d >= 0) return Math.floor(d);   // durasi riil (tidak dibatasi 23:59:59)
-            }
-            if (r.durasi) {
-                const [h = 0, m = 0, sc = 0] = String(r.durasi).split(':').map(Number);
-                return (h || 0) * 3600 + (m || 0) * 60 + (sc || 0);
-            }
-            return 0;
-        }
-        function tbrTime(iso, refDate) {
-            if (!iso) return '-';
-            const d = new Date(iso);
-            if (isNaN(d)) return '-';
-            const t = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
-            return riwayatLocalISO(d) !== refDate
-                ? d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) + ' ' + t
-                : t;
-        }
-        async function tbrLoad() {
-            const startEl = document.getElementById('tbr-tgl-mulai');
-            const endEl = document.getElementById('tbr-tgl-akhir');
-            const container = document.getElementById('tbr-list-container');
-            const periodeText = document.getElementById('tbr-periode-text');
-            const btnFilter = document.getElementById('tbr-btn-filter');
-            const btnDownload = document.getElementById('tbr-btn-download');
-            if (!startEl || !endEl || !container) return;
-            const start = startEl.value;
-            const end = endEl.value;
-            if (!start || !end) { alert('Gagal memfilter: Tanggal Mulai dan Tanggal Akhir wajib diisi.'); return; }
-            if (start > end) { alert('Gagal memfilter: Tanggal Mulai tidak boleh lebih besar dari Tanggal Akhir.'); return; }
-            const requestId = ++tbrRequestId;
-            btnFilter.disabled = true;
-            btnFilter.querySelector('span').innerText = 'Memuat...';
-            btnDownload.disabled = true;
-            container.innerHTML = '<p class="empty">Memuat riwayat peminjaman tablet...</p>';
-            try {
-                let rows = [];
-                const PAGE = 1000;
-                let from = 0;
-                while (true) {
-                    const { data, error } = await supabaseClient
-                        .from(TABLET_TABLE_STATUS)
-                        .select('*')
-                        .gte('tgl', start)
-                        .lte('tgl', end)
-                        .order('tgl', { ascending: true })
-                        .order('id', { ascending: true })
-                        .range(from, from + PAGE - 1);
-                    if (error) throw error;
-                    rows = rows.concat(data || []);
-                    if (!data || data.length < PAGE) break;
-                    from += PAGE;
-                }
-                if (requestId !== tbrRequestId) return;
-                tbrData = rows.map(r => Object.assign({}, r, {
-                    tanggal: String(r.tgl || '').substring(0, 10),
-                    nipStr: String(r.nip ?? ''),
-                    namaTampil: r.nama || `NIP: ${r.nip}`
-                }));
-                tbrPeriode = { start, end };
-                periodeText.innerText = start === end
-                    ? `Riwayat peminjaman \u2022 ${riwayatFormatPendek(start)}`
-                    : `Riwayat peminjaman \u2022 ${riwayatFormatPendek(start)} s/d ${riwayatFormatPendek(end)}`;
-                tbrRender();
-                btnDownload.disabled = tbrData.length === 0;
-            } catch (err) {
-                if (requestId !== tbrRequestId) return;
-                console.error('Gagal memuat riwayat peminjaman tablet:', err.message || err);
-                tbrData = [];
-                document.getElementById('tbr-sum-karyawan').innerText = '0';
-                document.getElementById('tbr-sum-data').innerText = '0';
-                container.innerHTML = '<p class="empty empty-err">Gagal memuat riwayat peminjaman tablet.</p>';
-            } finally {
-                if (requestId === tbrRequestId) {
-                    btnFilter.disabled = false;
-                    btnFilter.querySelector('span').innerText = 'Filter';
-                }
-            }
-        }
-        function tbrPhotoFig(url, caption) {
-            if (!url) {
-                return `<figure class="tbr-ph is-missing"><img alt=""><figcaption>${caption}</figcaption></figure>`;
-            }
-            const u = riwayatEscape(url);
-            return `<figure class="tbr-ph" data-src="${u}" data-cap="${caption}" onclick="tbrZoom(this)">
-                        <img loading="lazy" src="${u}" alt="${caption}" onload="this.classList.add('is-ready')" onerror="this.parentNode.classList.add('is-missing');this.parentNode.removeAttribute('onclick')">
-                        <figcaption>${caption}</figcaption>
-                    </figure>`;
-        }
-        function tbrRender() {
-            const container = document.getElementById('tbr-list-container');
-            const nips = [...new Set(tbrData.map(r => r.nipStr).filter(Boolean))];
-            document.getElementById('tbr-sum-karyawan').innerText = nips.length;
-            document.getElementById('tbr-sum-data').innerText = tbrData.length;
-            if (!tbrData.length) {
-                container.innerHTML = '<p class="empty">Tidak ada riwayat peminjaman tablet pada rentang tanggal ini.</p>';
-                return;
-            }
-            const today = riwayatLocalISO();
-            const byDate = {};
-            const dateOrder = [];
-            tbrData.forEach(r => {
-                if (!byDate[r.tanggal]) { byDate[r.tanggal] = []; dateOrder.push(r.tanggal); }
-                byDate[r.tanggal].push(r);
-            });
-            const iconTablet = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>';
-            const iconArrow = '<svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>';
-            const iconNote = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h10M7 16h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>';
-            let html = '';
-            let idx = 0;
-            dateOrder.forEach(tgl => {
-                html += `
-                    <div class="rh-group">
-                        <div class="rh-date-head">
-                            <span>
-                                <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>
-                                ${riwayatEscape(riwayatFormatPanjang(tgl))}
-                            </span>
-                            <span class="rh-date-count">${byDate[tgl].length} Peminjaman</span>
-                        </div>
-                        <div class="rh-group-body">`;
-                byDate[tgl].forEach(r => {
-                    const borrowed = tbrIsBorrowed(r);
-                    const nipEsc = riwayatEscape(r.nipStr);
-                    const initial = riwayatEscape(String(r.namaTampil).trim().charAt(0).toUpperCase() || '?');
-                    const statusText = riwayatEscape(r.status || '-');
-                    // Penanda lewat hari (mis. lupa menekan KEMBALIKAN)
-                    let flags = '';
-                    if (borrowed && r.tanggal < today) {
-                        flags = '<span class="tbr-chip bad">Belum dikembalikan \u2022 lewat hari</span>';
-                    } else if (!borrowed && r.waktu_kembali && !isNaN(Date.parse(r.waktu_kembali)) && riwayatLocalISO(new Date(r.waktu_kembali)) !== r.tanggal) {
-                        flags = '<span class="tbr-chip warn">Dikembalikan di hari berikutnya</span>';
-                    }
-                    const durBadge = borrowed
-                        ? `<span class="badge badge-live"><span class="tb-live-timer" data-start="${riwayatEscape(r.waktu_pinjam || '')}">${tbClockStr(tbElapsedSecs(r.waktu_pinjam))}</span></span>`
-                        : `<span class="badge badge-ok">${riwayatFormatDurasi(tbrDurSecs(r))}</span>`;
-                    const noted = r.noted && String(r.noted).trim()
-                        ? `<div class="tbr-note">${iconNote}<div><b>Catatan Tablet</b>${riwayatEscape(r.noted)}</div></div>`
-                        : '';
-                    html += `
-                            <div class="rh-item" style="--i:${Math.min(idx, 12)}">
-                                <div class="rh-top">
-                                    <div class="avatar avatar-sm">
-                                        <img class="img-fill hidden rh-photo" data-nip="${nipEsc}" alt="Foto">
-                                        <span class="center-fill rh-initial" data-nip="${nipEsc}">${initial}</span>
-                                    </div>
-                                    <div class="rh-info">
-                                        <h4 class="rh-name truncate">${riwayatEscape(r.namaTampil)}</h4>
-                                        <p class="row-meta">NIP <b>${nipEsc}</b></p>
-                                    </div>
-                                    <span class="badge ${borrowed ? 'badge-live' : 'badge-ok'}">${statusText}</span>
-                                </div>
-                                <div class="tbr-tablet">${iconTablet}<span>${riwayatEscape(r.nama_tablet)}</span></div>
-                                <div class="tbr-times">
-                                    <div class="tbr-time"><span class="tbr-time-lbl">Waktu Pinjam</span><b>${riwayatEscape(tbrTime(r.waktu_pinjam, r.tanggal))}</b></div>
-                                    <span class="tbr-arrow">${iconArrow}</span>
-                                    <div class="tbr-time ${borrowed ? 'is-pending' : 'is-out'}"><span class="tbr-time-lbl">Waktu Kembali</span><b>${borrowed ? 'Belum kembali' : riwayatEscape(tbrTime(r.waktu_kembali, r.tanggal))}</b></div>
-                                </div>
-                                ${flags ? `<div class="tbr-flags">${flags}</div>` : ''}
-                                <div class="tbr-photos">
-                                    ${tbrPhotoFig(r.url, 'Foto Pinjam')}
-                                    ${tbrPhotoFig(r.url_kembali, 'Foto Kembali')}
-                                </div>
-                                ${noted}
-                                <div class="rh-bottom">
-                                    <span class="rh-bottom-label">
-                                        <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                        ${borrowed ? 'Durasi berjalan' : 'Durasi pinjam'}
-                                    </span>
-                                    ${durBadge}
-                                </div>
-                            </div>`;
-                    idx++;
-                });
-                html += `
-                        </div>
-                    </div>`;
-            });
-            container.innerHTML = html;
-            container.scrollTop = 0;
-            nips.forEach(n => applyRiwayatPhoto(n));
-            tbrPhotoQueue = loadRiwayatPhotos(nips);
-            tabletTickTimers();
-        }
-        // ---------- Lightbox foto ----------
-        function tbrZoom(el) {
-            const src = el && el.getAttribute('data-src');
-            if (!src) return;
-            const box = document.getElementById('tbr-lightbox');
-            document.getElementById('tbr-lb-img').src = src;
-            document.getElementById('tbr-lb-cap').innerText = el.getAttribute('data-cap') || '';
-            box.classList.add('is-open');
-            box.setAttribute('aria-hidden', 'false');
-        }
-        function tbrZoomClose() {
-            const box = document.getElementById('tbr-lightbox');
-            if (!box) return;
-            box.classList.remove('is-open');
-            box.setAttribute('aria-hidden', 'true');
-        }
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') tbrZoomClose(); });
-        // ---------- Download PDF ----------
-        async function tbrFetchPdfImage(url) {
-            if (url in tbrPdfImgs) return;
-            try {
-                const res = await fetch(url, { mode: 'cors' });
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                const blob = await res.blob();
-                tbrPdfImgs[url] = await riwayatBlobToSquareDataURL(blob, 160);
-            } catch (e) {
-                tbrPdfImgs[url] = null;
-            }
-        }
-        async function tbrLoadPdfImages(urls) {
-            const queue = urls.filter(u => !(u in tbrPdfImgs));
-            const worker = async () => { while (queue.length) await tbrFetchPdfImage(queue.shift()); };
-            await Promise.all([worker(), worker(), worker(), worker()]);
-        }
-        async function tbrDownloadPDF() {
-            if (!tbrData || tbrData.length === 0) {
-                alert('Gagal mengunduh: tidak ada data riwayat untuk diunduh. Silakan filter tanggal terlebih dahulu.');
-                return;
-            }
-            if (!window.jspdf || !window.jspdf.jsPDF) {
-                alert('Gagal mengunduh: pustaka PDF belum termuat. Periksa koneksi internet lalu coba lagi.');
-                return;
-            }
-            const btn = document.getElementById('tbr-btn-download');
-            const btnLabel = btn.querySelector('span');
-            btn.disabled = true;
-            btn.classList.add('is-busy');
-            btnLabel.innerText = 'Menyiapkan...';
-            try {
-                const nips = [...new Set(tbrData.map(r => r.nipStr).filter(Boolean))];
-                if (tbrPhotoQueue) await tbrPhotoQueue;
-                await loadRiwayatPhotos(nips);
-                for (const nip of nips) {
-                    if (!(nip in riwayatPdfPhotos)) {
-                        const blob = riwayatPhotoBlobs[nip];
-                        riwayatPdfPhotos[nip] = blob ? await riwayatBlobToSquareDataURL(blob) : null;
-                    }
-                }
-                const urls = new Set();
-                tbrData.forEach(r => { if (r.url) urls.add(r.url); if (r.url_kembali) urls.add(r.url_kembali); });
-                await tbrLoadPdfImages([...urls]);
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-                const pageW = doc.internal.pageSize.getWidth();
-                const pageH = doc.internal.pageSize.getHeight();
-                const { start, end } = tbrPeriode;
-                const periodeStr = start === end
-                    ? riwayatFormatPendek(start)
-                    : `${riwayatFormatPendek(start)} s/d ${riwayatFormatPendek(end)}`;
-                const dicetakOleh = localStorage.getItem('emp_nama');
-                const dicetakStr = new Date().toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-                doc.setFillColor(67, 56, 202);
-                doc.rect(0, 0, pageW, 34, 'F');
-                doc.setFillColor(124, 92, 245);
-                doc.rect(0, 34, pageW, 1.2, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(16);
-                doc.text('LAPORAN RIWAYAT PEMINJAMAN TABLET', 12, 13);
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(9.5);
-                doc.text(`Periode        : ${periodeStr}`, 12, 20.5);
-                doc.text(`Total Data   : ${tbrData.length} baris  |  Peminjam : ${nips.length} orang`, 12, 26);
-                doc.text(`Dicetak       : ${dicetakStr}${dicetakOleh ? '  |  Oleh : ' + dicetakOleh : ''}`, 12, 31.5);
-                const body = tbrData.map((r, i) => {
-                    const borrowed = tbrIsBorrowed(r);
-                    return [
-                        String(i + 1),
-                        '',
-                        r.namaTampil,
-                        r.nama_tablet || '-',
-                        riwayatFormatPendek(r.tanggal),
-                        tbrTime(r.waktu_pinjam, r.tanggal),
-                        borrowed ? 'Belum kembali' : tbrTime(r.waktu_kembali, r.tanggal),
-                        borrowed ? 'Berjalan' : riwayatFormatDurasi(tbrDurSecs(r)),
-                        r.status || '-',
-                        (r.noted && String(r.noted).trim()) ? String(r.noted).trim() : '-',
-                        '',
-                        ''
-                    ];
-                });
-                doc.autoTable({
-                    startY: 41,
-                    margin: { top: 14, left: 12, right: 12, bottom: 16 },
-                    head: [['No', 'Foto', 'Nama Peminjam', 'Tablet', 'Tanggal', 'Pinjam', 'Kembali', 'Durasi', 'Status', 'Catatan', 'Foto Pinjam', 'Foto Kembali']],
-                    body: body,
-                    theme: 'grid',
-                    rowPageBreak: 'avoid',
-                    styles: { font: 'helvetica', fontSize: 8, cellPadding: 1.8, valign: 'middle', minCellHeight: 17, textColor: [21, 21, 58], lineColor: [230, 232, 246], lineWidth: 0.1 },
-                    headStyles: { fillColor: [67, 56, 202], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', minCellHeight: 10 },
-                    alternateRowStyles: { fillColor: [246, 247, 254] },
-                    columnStyles: {
-                        0: { cellWidth: 8, halign: 'center' },
-                        1: { cellWidth: 15 },
-                        2: { cellWidth: 'auto', fontStyle: 'bold' },
-                        3: { cellWidth: 32 },
-                        4: { cellWidth: 22, halign: 'center' },
-                        5: { cellWidth: 17, halign: 'center' },
-                        6: { cellWidth: 20, halign: 'center' },
-                        7: { cellWidth: 25, halign: 'center', fontStyle: 'bold', textColor: [4, 120, 87] },
-                        8: { cellWidth: 22, halign: 'center' },
-                        9: { cellWidth: 28 },
-                        10: { cellWidth: 17 },
-                        11: { cellWidth: 17 }
-                    },
-                    didDrawCell: (d) => {
-                        if (d.section !== 'body') return;
-                        const col = d.column.index;
-                        if (col !== 1 && col !== 10 && col !== 11) return;
-                        const rec = tbrData[d.row.index];
-                        if (!rec) return;
-                        const size = 13;
-                        const x = d.cell.x + (d.cell.width - size) / 2;
-                        const y = d.cell.y + (d.cell.height - size) / 2;
-                        const img = col === 1 ? riwayatPdfPhotos[rec.nipStr]
-                            : tbrPdfImgs[col === 10 ? rec.url : rec.url_kembali];
-                        if (img) {
-                            try { doc.addImage(img, 'JPEG', x, y, size, size); return; } catch (e) {}
-                        }
-                        if (col === 1) {
-                            doc.setFillColor(124, 92, 245);
-                            doc.roundedRect(x, y, size, size, 2, 2, 'F');
-                            doc.setTextColor(255, 255, 255);
-                            doc.setFont('helvetica', 'bold');
-                            doc.setFontSize(10);
-                            doc.text(String(rec.namaTampil || '?').charAt(0).toUpperCase(), x + size / 2, y + size / 2 + 1.3, { align: 'center' });
-                        } else {
-                            doc.setTextColor(132, 134, 173);
-                            doc.setFont('helvetica', 'normal');
-                            doc.setFontSize(8);
-                            doc.text('-', d.cell.x + d.cell.width / 2, d.cell.y + d.cell.height / 2 + 1, { align: 'center' });
-                        }
-                    }
-                });
-                const totalPages = doc.internal.getNumberOfPages();
-                for (let p = 1; p <= totalPages; p++) {
-                    doc.setPage(p);
-                    doc.setDrawColor(230, 232, 246);
-                    doc.setLineWidth(0.2);
-                    doc.line(12, pageH - 11, pageW - 12, pageH - 11);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8);
-                    doc.setTextColor(132, 134, 173);
-                    doc.text('Portal Karyawan - Riwayat Peminjaman Tablet', 12, pageH - 6.5);
-                    doc.text(`Halaman ${p} dari ${totalPages}`, pageW - 12, pageH - 6.5, { align: 'right' });
-                }
-                doc.save(`Riwayat_Peminjaman_Tablet_${start}_sd_${end}.pdf`);
-                alert('Laporan riwayat peminjaman tablet berhasil diunduh.');
-            } catch (err) {
-                console.error('Gagal membuat PDF:', err);
-                alert('Gagal membuat PDF: ' + (err.message || err));
-            } finally {
-                btn.classList.remove('is-busy');
-                btnLabel.innerText = 'Download';
-                btn.disabled = !(tbrData && tbrData.length > 0);
-            }
-        }
     </script>
+
 <!-- NAVIGASI TOMBOL BACK HP (History API) -->
 <script>
-const SUPABASE_URL = 'https://vxsopsnopeurnxdkfsbe.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4c29wc25vcGV1cm54ZGtmc2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NzM4MjgsImV4cCI6MjEwOTE0OTgyOH0.53GRhBd5Pvjjcqbh4M9ok7HKfqJs7klyxPqomXMEzus'; 
-// Kunci PUBLIK VAPID untuk Web Push (isi setelah menjalankan: npx web-push generate-vapid-keys)
-const VAPID_PUBLIC_KEY = 'ISI_VAPID_PUBLIC_KEY_DI_SINI';
-const INTERVAL_KIRIM = 10000; // 10 detik
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const $ = id => document.getElementById(id);
-// Kode unik perangkat (disimpan permanen di browser/PWA ini)
-let kode = localStorage.getItem("kode_sts");
-if (!kode) { kode = "TAB-" + crypto.randomUUID().slice(0,13).toUpperCase(); localStorage.setItem("kode_sts", kode); }
-$("kode").textContent = kode;
-let sel = localStorage.getItem("tab_dipilih") || "", connected = false, busy = false, ownerKode = null, bat = null, sending = false;
-/* ---------- UI helpers ---------- */
-function toast(t){ const e=$("toast"); e.textContent=t; e.classList.add("show"); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove("show"),3000); }
-function setBadge(state){
-  const b=$("badge"); b.className="badge "+state;
-  b.lastChild.textContent = {ok:"Terkoneksi",bad:"Belum Terkoneksi",load:"Mengecek…",none:"-"}[state];
-  if(state==="ok"||state==="bad"){ $("btn").textContent = connected ? "Perbarui Koneksi" : "Hubungkan"; }
-  $("btn").disabled = !(sel && (state==="ok"||state==="bad"));
-}
-function setSync(state, txt){
-  $("sync").className = "sync " + state; $("synctxt").textContent = txt;
-  $("cd").classList.toggle("run", state==="ok"||state==="send");
-}
-const jam = () => new Date().toLocaleTimeString("id-ID",{hour12:false});
-/* ---------- Suara & notifikasi ---------- */
-let ac;
-function unlockAudio(){ ac = ac || new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==="suspended") ac.resume(); }
-function playSound(){
-  try{ unlockAudio(); [880,1175,1568].forEach((f,i)=>{
-    const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+i*.18;
-    o.frequency.value=f; o.type="sine"; g.gain.setValueAtTime(.0001,t);
-    g.gain.exponentialRampToValueAtTime(.4,t+.03); g.gain.exponentialRampToValueAtTime(.0001,t+.17);
-    o.connect(g).connect(ac.destination); o.start(t); o.stop(t+.18);
-  }); }catch(e){}
-}
-async function notify(title, body){
-  playSound(); toast(title+" — "+body);
-  if("Notification" in window && Notification.permission==="granted"){
-    const reg = await navigator.serviceWorker.ready;
-    reg.showNotification(title,{body,icon:"/icon-192.png",badge:"/icon-192.png",vibrate:[200,100,200],tag:"tablet",renotify:true,silent:false});
-  }
-}
 (function () {
     'use strict';
 
-/* ---------- Web Push (agar notifikasi + suara tetap muncul saat PWA ditutup) ---------- */
-function urlB64(s){ const p="=".repeat((4-s.length%4)%4), b=(s+p).replace(/-/g,"+").replace(/_/g,"/"), r=atob(b); return Uint8Array.from([...r].map(c=>c.charCodeAt(0))); }
-async function daftarPush(){
-  try{
-    if(!sel || !("PushManager" in window) || !VAPID_PUBLIC_KEY || VAPID_PUBLIC_KEY.startsWith("ISI_")) return;
-    if(Notification.permission!=="granted") return;
-    const reg = await navigator.serviceWorker.ready;
-    let s = await reg.pushManager.getSubscription();
-    if(!s) s = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64(VAPID_PUBLIC_KEY)});
-    await db.rpc("simpan_push",{p_kode:kode, p_nama:sel, p_sub:s.toJSON()});
-  }catch(e){ console.warn("Push gagal:",e); }
-}
-$("perm").onclick = async()=>{
-  unlockAudio(); playSound();
-  if(!("Notification" in window)) return toast("Browser belum mendukung notifikasi. Di iOS, install dulu ke Layar Utama.");
-  const r = await Notification.requestPermission();
-  toast(r==="granted" ? "Notifikasi aktif ✅" : "Izin notifikasi ditolak");
-  if(r==="granted") daftarPush();
-};
-document.addEventListener("click", unlockAudio, {once:true});
-// Jika service worker menerima push saat aplikasi terbuka, bunyikan suara juga
-if("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message",e=>{ if(e.data && e.data.type==="play") playSound(); });
-/* ---------- Informasi jaringan & baterai ---------- */
-function getNet(){
-  const on = navigator.onLine;
-  const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  let nama = "";
-  if(on && c){
-    const tipe = {wifi:"WiFi",cellular:"Seluler",ethernet:"Ethernet",bluetooth:"Bluetooth",wimax:"WiMAX",other:"Lainnya"}[c.type] || "";
-    const gen = c.effectiveType ? c.effectiveType.toUpperCase() : "";
-    nama = [tipe,gen].filter(Boolean).join(" ");
-  }
-  return {on, nama};
-}
     var STATE_GUARD = 'portal-guard';   // entri "penjaga" di belakang Menu Utama
     var STATE_MAIN  = 'portal-main';    // Menu Utama / Halaman Login
     var STATE_SUB   = 'portal-sub';     // Menu "Istirahat Karyawan"
@@ -3742,109 +3021,17 @@ function getNet(){
     var exiting = false;        // sedang proses keluar
     var exitReload = false;     // menunggu kembali ke entri awal lalu muat ulang
 
-/* ---------- Kirim status baterai & internet ke Supabase tiap 10 detik ---------- */
-async function kirimStatus(){
-  if(!sel || !connected || sending) return;
-  if(ownerKode && ownerKode!==kode) return setSync("bad","Tablet ini terhubung ke perangkat lain");
-  if(!navigator.onLine) return setSync("bad","Offline — menunggu jaringan…");
-  sending = true; setSync("send","Mengirim status…");
-  const n = getNet();
-  const payload = {
-    status_internet: n.on ? "ONLINE"+(n.nama?" - "+n.nama:"") : "OFFLINE",
-    terakhir_update: new Date().toISOString()
-  };
-  if(bat) payload.status_baterai = Math.round(bat.level*100);
-  const {data,error} = await db.from("koneksi_tablet").update(payload).eq("nama_tab_sts",sel).eq("kode_sts",kode).select("id");
-  sending = false;
-  if(error) return setSync("bad","Gagal kirim: "+error.message);
-  if(!data || !data.length) return setSync("bad","Data koneksi tablet tidak ditemukan");
-  setSync("ok","Status terkirim "+jam()+" · otomatis tiap 10 detik");
-}
-setInterval(kirimStatus, INTERVAL_KIRIM);
-/* ---------- Jaga layar tetap menyala agar pengiriman 10 detik tidak terhenti ---------- */
-let wl = null;
-async function jagaLayar(){
-  try{
-    if("wakeLock" in navigator && connected && document.visibilityState==="visible" && !wl){
-      wl = await navigator.wakeLock.request("screen"); wl.addEventListener("release",()=>{ wl=null; });
     var overlay = document.getElementById('exit-overlay');
     var btnYes  = document.getElementById('exit-btn-yes');
     var btnNo   = document.getElementById('exit-btn-no');
+
     function isHidden(id) {
         var el = document.getElementById(id);
         return !el || el.classList.contains('hidden');
     }
-  }catch(e){}
-}
-document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"){ jagaLayar(); kirimStatus(); } });
-/* ---------- Data Supabase ---------- */
-async function loadTablets(){
-  const {data,error} = await db.from("data_tablet").select("nama_tab").order("nama_tab");
-  const s=$("tab");
-  if(error){ s.innerHTML='<option value="">Gagal memuat data</option>'; return toast("Gagal: "+error.message); }
-  const names=[...new Set(data.map(d=>d.nama_tab).filter(Boolean))]
-    .sort((a,b)=>a.localeCompare(b,"id",{numeric:true,sensitivity:"base"})); // urut natural: B-1, B-2, ... B-10
-  s.innerHTML='<option value="">— Pilih tablet —</option>'+names.map(n=>`<option>${n}</option>`).join("");
-  if(names.includes(sel)){ s.value=sel; checkStatus(); daftarPush(); } else sel="";
-}
-async function checkStatus(){
-  if(!sel){ connected=false; ownerKode=null; setSync("","Pengiriman status belum aktif"); return setBadge("none"); }
-  setBadge("load");
-  const {data,error} = await db.from("koneksi_tablet").select("id,kode_sts").eq("nama_tab_sts",sel).limit(1);
-  if(error){ setBadge("none"); return toast("Gagal cek: "+error.message); }
-  connected = data.length>0; ownerKode = connected ? data[0].kode_sts : null; setBadge(connected?"ok":"bad");
-  if(connected){ kirimStatus(); jagaLayar(); } else setSync("","Hubungkan tablet untuk mulai mengirim status");
-}
-$("tab").onchange = e=>{ sel=e.target.value; localStorage.setItem("tab_dipilih",sel); checkStatus(); daftarPush(); };
-async function simpan(){
-  if(busy) return; busy=true; $("btn").disabled=true;
-  let error;
-  if(!connected){
-    ({error} = await db.from("koneksi_tablet").insert({nama_tab_sts:sel,kode_sts:kode,status_sts:"AKTIF"}));
-  } else {
-    ({error} = await db.from("koneksi_tablet").update({kode_sts:kode,status_sts:"AKTIF"}).eq("nama_tab_sts",sel));
-  }
-  busy=false;
-  if(error){ toast("Gagal: "+error.message); return checkStatus(); }
-  await checkStatus(); daftarPush(); notify("Berhasil","Koneksi "+sel+" tersimpan");
-}
-$("btn").onclick = ()=>{ if(!sel) return; connected ? $("ov").classList.add("show") : simpan(); };
-$("no").onclick = ()=>$("ov").classList.remove("show");
-$("yes").onclick = ()=>{ $("ov").classList.remove("show"); simpan(); };
-/* ---------- Realtime: notifikasi + suara saat data koneksi berubah ---------- */
-db.channel("koneksi").on("postgres_changes",{event:"*",schema:"public",table:"koneksi_tablet"},p=>{
-  const n = p.new && p.new.nama_tab_sts;
-  // Abaikan update rutin (status baterai/internet) dari tablet pemilik koneksi, supaya tidak berbunyi tiap 10 detik
-  if(p.eventType==="UPDATE" && n===sel && connected && p.new.kode_sts===ownerKode) return;
-  if(p.new && p.new.kode_sts===kode && busy===false && n===sel) { checkStatus(); return; }
-  if(!n || n===sel){ checkStatus(); notify("Info Koneksi", n ? "Data "+n+" berubah" : "Ada koneksi dihapus"); }
-}).subscribe();
-/* ---------- Online / Offline ---------- */
-function updNet(first){
-  const {on,nama}=getNet(); $("net").textContent=on?"🟢 Online":"🔴 Offline"; $("net").style.color=on?"var(--ok)":"var(--bad)";
-  $("netname").textContent = on ? (nama || "") : "Tidak ada jaringan";
-  if(!first){ notify("Jaringan", on?"Perangkat kembali online":"Perangkat offline"); if(on){ checkStatus(); } else setSync("bad","Offline — menunggu jaringan…"); }
-}
-addEventListener("online",()=>updNet()); addEventListener("offline",()=>updNet()); updNet(true);
-// Perubahan tipe jaringan (WiFi <-> Seluler) — hanya didukung Chrome/Android
-const _c = navigator.connection; if(_c && _c.addEventListener) _c.addEventListener("change",()=>{ updNet(true); kirimStatus(); });
-/* ---------- Baterai (Chrome/Android; tidak didukung iOS) ---------- */
-if(navigator.getBattery){
-  navigator.getBattery().then(b=>{
-    bat=b; let warned=false;
-    const upd=()=>{ const p=Math.round(b.level*100);
-      $("batv").textContent=p+"% "+(b.charging?"⚡":""); const bar=$("batbar");
-      bar.style.width=p+"%"; bar.style.background=p<=20?"var(--bad)":p<=50?"#f59e0b":"var(--ok)";
-      if(p<=20&&!b.charging&&!warned){warned=true;notify("Baterai Rendah","Tersisa "+p+"%");} if(p>20||b.charging) warned=false; };
-    upd(); b.onlevelchange=upd; b.onchargingchange=upd;
-    kirimStatus();
-  });
-} else { $("batv").textContent="N/A"; $("batv").style.fontSize="14px"; }
-/* ---------- Init ---------- */
-if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");
-loadTablets();
     function isSubMenuOpen() { return !isHidden('istirahat-section') || !isHidden('tablet-section'); }
     function isDialogOpen()  { return overlay.classList.contains('is-open'); }
+
     function openExitDialog() {
         overlay.classList.add('is-open');
         overlay.setAttribute('aria-hidden', 'false');
@@ -3863,6 +3050,7 @@ loadTablets();
         guide.classList.remove('is-open');
         guide.setAttribute('aria-hidden', 'true');
     }
+
     // ---- Susun riwayat: [guard] -> [main]. Back dari [main] jatuh ke [guard] ----
     function setupStack() {
         history.replaceState({ portal: STATE_GUARD }, '');
@@ -3878,12 +3066,14 @@ loadTablets();
         if (cur === STATE_MAIN || cur === STATE_SUB) return;
         setupStack();
     }
+
     var startLen = history.length;
     var pendingExit = false;
     try {
         pendingExit = sessionStorage.getItem(EXIT_KEY) === '1';
         sessionStorage.removeItem(EXIT_KEY);
     } catch (err) {}
+
     if (pendingExit) {
         // Halaman baru saja dimuat ulang untuk keluar: riwayat kini hanya 1 entri,
         // sehingga browser mengizinkan window.close()
@@ -3903,6 +3093,7 @@ loadTablets();
             setupStack();
         }
     }
+
     // ---- Bungkus openIstirahatMenu: catat 1 langkah riwayat ----
     var origOpen = window.openIstirahatMenu;
     window.openIstirahatMenu = function () {
@@ -3911,6 +3102,7 @@ loadTablets();
             history.pushState({ portal: STATE_SUB }, '');
         }
     };
+
     // ---- Bungkus closeIstirahatMenu: tombol "<" di layar ikut tombol Back HP ----
     var origClose = window.closeIstirahatMenu;
     window.closeIstirahatMenu = function (fromPopState) {
@@ -3920,6 +3112,7 @@ loadTablets();
         }
         origClose.apply(this, arguments);
     };
+
     // ---- Bungkus openTabletStore / closeTabletStore (Tablet Store) ----
     var origOpenTablet = window.openTabletStore;
     window.openTabletStore = function () {
@@ -3936,9 +3129,11 @@ loadTablets();
         }
         origCloseTablet.apply(this, arguments);
     };
+
     // ---- Tombol Back HP ----
     window.addEventListener('popstate', function (e) {
         var st = e.state && e.state.portal;
+
         if (exiting) {
             // Sudah mundur ke entri awal: muat ulang agar riwayat tinggal 1 entri
             if (exitReload && st === STATE_GUARD) {
@@ -3948,6 +3143,7 @@ loadTablets();
             }
             return;
         }
+
         // 1) Sedang di sub-menu (semua tab Istirahat) -> kembali ke Menu Utama
         if (isSubMenuOpen()) {
             if (!isHidden('tablet-section')) window.closeTabletStore(true);
@@ -3955,6 +3151,7 @@ loadTablets();
             if (st === STATE_GUARD) history.pushState({ portal: STATE_MAIN }, '');
             return;
         }
+
         // 2) Sudah di Menu Utama / Login -> tampilkan konfirmasi keluar
         if (st === STATE_GUARD) {
             history.pushState({ portal: STATE_MAIN }, '');   // tetap di halaman
@@ -3966,21 +3163,27 @@ loadTablets();
             openExitDialog();
         }
     });
+
     // ---- Tombol dialog ----
     btnNo.addEventListener('click', closeExitDialog);
     overlay.addEventListener('click', function (ev) {
         if (ev.target === overlay) closeExitDialog();
     });
+
     document.getElementById('guide-btn-ok').addEventListener('click', hideGuide);
     document.getElementById('guide-btn-cancel').addEventListener('click', rearm);
+
     document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'visible') rearm();
     });
+
     btnYes.addEventListener('click', function () {
         exiting = true;
         closeExitDialog();
+
         // 1. Coba langsung (berhasil bila riwayat hanya 1 entri / jendela hasil script)
         try { window.close(); } catch (err) {}
+
         setTimeout(function () {
             if (startLen > 1) {
                 // 2. Ada halaman sebelumnya: keluar dari aplikasi ke halaman itu
@@ -3997,6 +3200,7 @@ loadTablets();
             }
         }, 150);
     });
+
     // Jika halaman dipulihkan dari cache browser, siapkan ulang kondisi normal
     window.addEventListener('pageshow', function (ev) {
         if (ev.persisted) { exiting = false; exitReload = false; closeExitDialog(); hideGuide(); }

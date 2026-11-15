@@ -2201,7 +2201,9 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
     var STATE_GUARD = 'portal-guard';   // entri "penjaga" di belakang Menu Utama
     var STATE_MAIN  = 'portal-main';    // Menu Utama / Halaman Login
     var STATE_SUB   = 'portal-sub';     // Menu "Istirahat Karyawan"
-    var exiting = false;
+    var EXIT_KEY    = 'portal_exit_pending';
+    var exiting = false;        // sedang proses keluar
+    var exitReload = false;     // menunggu kembali ke entri awal lalu muat ulang
 
     var overlay = document.getElementById('exit-overlay');
     var btnYes  = document.getElementById('exit-btn-yes');
@@ -2222,16 +2224,51 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
         overlay.classList.remove('is-open');
         overlay.setAttribute('aria-hidden', 'true');
     }
+    function toast(msg) {
+        if (typeof showToast === 'function') showToast(msg);
+    }
 
     // ---- Susun riwayat: [guard] -> [main]. Back dari [main] jatuh ke [guard] ----
-    var startLen = history.length;
-    var cur = history.state && history.state.portal;
-    if (cur === STATE_MAIN || cur === STATE_SUB) {
-        // Halaman di-refresh: pertahankan susunan riwayat yang ada
-        history.replaceState({ portal: STATE_MAIN }, '');
-    } else {
+    function setupStack() {
         history.replaceState({ portal: STATE_GUARD }, '');
         history.pushState({ portal: STATE_MAIN }, '');
+    }
+    // Pasang penjaga Back lagi (dipakai jika karyawan batal keluar / kembali ke aplikasi)
+    function rearm() {
+        if (!exiting) return;
+        exiting = false;
+        exitReload = false;
+        var cur = history.state && history.state.portal;
+        if (cur === STATE_MAIN || cur === STATE_SUB) return;
+        setupStack();
+    }
+
+    var startLen = history.length;
+    var pendingExit = false;
+    try {
+        pendingExit = sessionStorage.getItem(EXIT_KEY) === '1';
+        sessionStorage.removeItem(EXIT_KEY);
+    } catch (err) {}
+
+    if (pendingExit) {
+        // Halaman baru saja dimuat ulang untuk keluar: riwayat kini hanya 1 entri,
+        // sehingga browser mengizinkan window.close()
+        exiting = true;
+        try { window.close(); } catch (err) {}
+        // Jika masih terbuka: biarkan TANPA penjaga, agar satu tekanan Back
+        // berikutnya langsung menyembunyikan/menutup aplikasi (bawaan Android)
+        setTimeout(function () {
+            toast('Tekan tombol Back sekali lagi untuk keluar dari aplikasi.');
+        }, 600);
+        setTimeout(rearm, 6000);   // jika tidak jadi keluar, kembali normal
+    } else {
+        var cur = history.state && history.state.portal;
+        if (cur === STATE_MAIN || cur === STATE_SUB) {
+            // Halaman di-refresh: pertahankan susunan riwayat yang ada
+            history.replaceState({ portal: STATE_MAIN }, '');
+        } else {
+            setupStack();
+        }
     }
 
     // ---- Bungkus openIstirahatMenu: catat 1 langkah riwayat ----
@@ -2255,8 +2292,17 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 
     // ---- Tombol Back HP ----
     window.addEventListener('popstate', function (e) {
-        if (exiting) return;
         var st = e.state && e.state.portal;
+
+        if (exiting) {
+            // Sudah mundur ke entri awal: muat ulang agar riwayat tinggal 1 entri
+            if (exitReload && st === STATE_GUARD) {
+                exitReload = false;
+                try { sessionStorage.setItem(EXIT_KEY, '1'); } catch (err) {}
+                window.location.replace(window.location.href);
+            }
+            return;
+        }
 
         // 1) Sedang di sub-menu (semua tab Istirahat) -> kembali ke Menu Utama
         if (isSubMenuOpen()) {
@@ -2282,14 +2328,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
     overlay.addEventListener('click', function (ev) {
         if (ev.target === overlay) closeExitDialog();
     });
-    // Siapkan ulang penjaga Back setelah "Iya" (jika karyawan kembali ke aplikasi)
-    function rearm() {
-        if (!exiting) return;
-        exiting = false;
-        if (!(history.state && history.state.portal === STATE_MAIN)) {
-            history.pushState({ portal: STATE_MAIN }, '');
-        }
-    }
+
     document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'visible') rearm();
     });
@@ -2298,29 +2337,29 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
         exiting = true;
         closeExitDialog();
 
-        // 1. PWA terpasang / jendela hasil script: window.close() menyembunyikan aplikasi
+        // 1. Coba langsung (berhasil bila riwayat hanya 1 entri / jendela hasil script)
         try { window.close(); } catch (err) {}
 
         setTimeout(function () {
             if (startLen > 1) {
                 // 2. Ada halaman sebelumnya: keluar dari aplikasi ke halaman itu
                 try { history.go(-2); } catch (err) {}
-                setTimeout(rearm, 1200);   // jika ternyata gagal, aplikasi tetap normal
+                setTimeout(rearm, 1200);
             } else {
-                // 3. Tidak ada halaman sebelumnya: mundur ke entri awal.
-                //    Satu tekanan Back berikutnya otomatis menyembunyikan browser (bawaan Android).
+                // 3. Mundur ke entri awal lalu muat ulang -> riwayat jadi 1 entri,
+                //    kemudian window.close() dipanggil dari awal halaman
+                exitReload = true;
                 try { history.go(-1); } catch (err) {}
-                if (typeof showToast === 'function') {
-                    showToast('Tekan tombol Back sekali lagi untuk menyembunyikan browser.');
-                }
-                setTimeout(rearm, 4000);   // jika tidak jadi keluar, aplikasi kembali normal
+                setTimeout(function () {
+                    if (exitReload) { exitReload = false; rearm(); }   // gagal -> kembali normal
+                }, 1500);
             }
         }, 150);
     });
 
     // Jika halaman dipulihkan dari cache browser, siapkan ulang kondisi normal
     window.addEventListener('pageshow', function (ev) {
-        if (ev.persisted) { exiting = false; closeExitDialog(); }
+        if (ev.persisted) { exiting = false; exitReload = false; closeExitDialog(); }
     });
 })();
 </script>

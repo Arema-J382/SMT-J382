@@ -407,6 +407,58 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 @keyframes bellShake{0%,100%{transform:rotate(0)}15%{transform:rotate(18deg)}30%{transform:rotate(-16deg)}45%{transform:rotate(12deg)}60%{transform:rotate(-9deg)}75%{transform:rotate(4deg)}}
 @keyframes tbRing{0%{box-shadow:0 0 0 0 rgba(99,91,240,.35)}100%{box-shadow:0 0 0 14px rgba(99,91,240,0)}}
 @keyframes tbPulse{0%,100%{transform:scale(1)}50%{transform:scale(.92)}}
+
+/* ===== Dropdown tablet kustom (status DIPINJAM hijau + nama peminjam) ===== */
+.tb-native-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;clip:rect(0,0,0,0)}
+.tb-dd{position:relative}
+.tb-dd-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer;min-height:50px}
+.tb-dd-trigger:disabled{opacity:.7;cursor:default}
+.tb-dd.is-open .tb-dd-trigger{background:#fff;border-color:#8b83f5;box-shadow:0 0 0 4px rgba(99,91,240,.16)}
+.tb-dd-label{min-width:0;flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:14px;font-weight:600;color:var(--ink);word-break:break-word}
+.tb-dd-label.is-placeholder{color:var(--muted);font-weight:500}
+.tb-dd-chev{width:18px;height:18px;flex-shrink:0;color:var(--ink-2);transition:transform .3s var(--ease)}
+.tb-dd.is-open .tb-dd-chev{transform:rotate(180deg)}
+.tb-dd-panel{display:grid;grid-template-rows:0fr;opacity:0;margin-top:0;transition:grid-template-rows .35s var(--ease),opacity .25s,margin-top .3s var(--ease)}
+.tb-dd.is-open .tb-dd-panel{grid-template-rows:1fr;opacity:1;margin-top:8px}
+.tb-dd-scroll{min-height:0;overflow:hidden}
+.tb-dd.is-open .tb-dd-scroll{overflow-y:auto;max-height:17rem;-webkit-overflow-scrolling:touch}
+.tb-dd-list{display:flex;flex-direction:column;gap:6px;padding:6px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}
+.tb-dd-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 11px;border-radius:12px;text-align:left;background:#f6f7fe;border:1px solid transparent;cursor:pointer;
+  transition:transform .15s var(--ease),background .2s,border-color .2s;animation:rise .35s var(--ease) backwards;animation-delay:calc(var(--i,0) * 35ms)}
+.tb-dd-item:hover{background:#eceefb}
+.tb-dd-item:active{transform:scale(.98)}
+.tb-dd-item.is-selected{background:#eef0ff;border-color:#b9b4ff}
+.tb-dd-item.is-borrowed{background:#f0fdf6;border-color:#bbf0d6}
+.tb-dd-item.is-borrowed.is-selected{background:#e3faee;border-color:#6ee7a8}
+.tb-dd-ico{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#e3e1ff;color:var(--brand)}
+.tb-dd-ico svg{width:18px;height:18px}
+.tb-dd-item.is-borrowed .tb-dd-ico{background:#d1f7e4;color:#047857}
+.tb-dd-txt{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.tb-dd-name{font-size:13px;font-weight:700;line-height:1.3;color:var(--ink);word-break:break-word}
+.tb-dd-free{font-size:11px;font-weight:600;color:var(--muted)}
+.tb-dd-pill{display:inline-flex;align-items:center;align-self:flex-start;gap:6px;max-width:100%;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.3;
+  color:#047857;background:#d1f7e4;border:1px solid #86e3b6;word-break:break-word}
+.tb-dd-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;animation:blink 1.4s ease-in-out infinite}
+.tb-dd-check{width:18px;height:18px;flex-shrink:0;color:var(--brand);opacity:0;transform:scale(.6);transition:opacity .2s,transform .25s var(--ease)}
+.tb-dd-item.is-selected .tb-dd-check{opacity:1;transform:none}
+.tb-dd-item.is-borrowed .tb-dd-check{color:#047857}
+.tb-dd-empty{padding:14px;text-align:center;font-size:12.5px;color:var(--muted)}
+
+/* --- Tombol terkunci (tablet dipinjam orang lain) --- */
+.btn-primary.is-locked{background:linear-gradient(135deg,#94a3b8,#a8b3c4);box-shadow:none;cursor:not-allowed;filter:none}
+.btn-primary.is-locked:hover{filter:none}
+.btn-primary.is-locked::after{display:none}
+.btn-primary.is-locked.tb-shake{animation:tbShake .45s ease}
+@keyframes tbShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* --- Catatan tablet --- */
+.tb-note-wrap{animation:rise .4s var(--ease) backwards}
+.tb-opt{font-weight:500;color:var(--muted)}
+textarea.tb-note{display:block;resize:none;min-height:84px;line-height:1.5;font-size:14px;font-family:inherit}
+textarea.tb-note::placeholder{color:#a9abc9;font-weight:400}
+textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
+.tb-note-meta{display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-size:11.5px;line-height:1.4;color:var(--muted)}
+.tb-note-meta span:last-child{flex-shrink:0;font-variant-numeric:tabular-nums}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -701,8 +753,18 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                         <div class="panel stack">
                             <!-- Dropdown dari tabel koneksi_tablet -->
                             <div>
-                                <label class="field-label" for="tb-select">Pilih Tablet</label>
-                                <select id="tb-select" class="field" onchange="tabletOnSelectChange()">
+                                <label class="field-label" for="tb-dd-trigger">Pilih Tablet</label>
+                                <div id="tb-dd" class="tb-dd">
+                                    <button type="button" id="tb-dd-trigger" class="field tb-dd-trigger" onclick="tbDdToggle()" aria-haspopup="listbox" aria-expanded="false">
+                                        <span id="tb-dd-label" class="tb-dd-label is-placeholder">Memuat daftar tablet...</span>
+                                        <svg class="tb-dd-chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div id="tb-dd-panel" class="tb-dd-panel">
+                                        <div class="tb-dd-scroll touch-scroll"><div id="tb-dd-list" class="tb-dd-list" role="listbox"></div></div>
+                                    </div>
+                                </div>
+                                <!-- Select asli tetap dipakai sebagai penyimpan nilai (disembunyikan) -->
+                                <select id="tb-select" class="tb-native-hidden" tabindex="-1" aria-hidden="true" onchange="tabletOnSelectChange()">
                                     <option value="">Memuat daftar tablet...</option>
                                 </select>
                             </div>
@@ -724,6 +786,13 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                                     </div>
                                 </div>
                                 <input type="file" id="tb-photo-input" accept="image/*" capture="environment" class="hidden" onchange="tabletOnPhotoPicked(this)">
+                            </div>
+
+                            <!-- Catatan tablet (opsional) -> kolom "noted" tabel status_tablet -->
+                            <div id="tb-note-wrap" class="tb-note-wrap">
+                                <label class="field-label" for="tb-note">Catatan Tablet <span class="tb-opt">(opsional)</span></label>
+                                <textarea id="tb-note" class="field tb-note" rows="3" maxlength="300" placeholder="Contoh: layar retak di pojok kanan atas, baterai cepat habis..." oninput="tbNoteOnInput()"></textarea>
+                                <p class="tb-note-meta"><span>Isi hanya jika ada kerusakan / kondisi khusus pada tablet.</span><span id="tb-note-count">0/300</span></p>
                             </div>
 
                             <!-- Tombol PINJAM / KEMBALIKAN -->
@@ -2469,7 +2538,10 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 
             tabletUserTouched = false;
             tabletClearPhoto(true);
+            tbNoteClear();
+            tbDdClose();
             document.getElementById('tb-select').innerHTML = '<option value="">Memuat daftar tablet...</option>';
+            tbDdSync();
             document.getElementById('tb-list-container').innerHTML = '<p class="empty">Memuat data tablet...</p>';
 
             tabletLoadAll();
@@ -2494,6 +2566,8 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
             tabletBusy = false;
             tabletPhotoBusy = false;
             tabletClearPhoto(true);
+            tbNoteClear();
+            tbDdClose();
         }
 
         // ---------- Realtime ----------
@@ -2574,6 +2648,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 
             if (!aktif.length) {
                 sel.innerHTML = '<option value="">Belum ada tablet aktif</option>';
+                tbDdSync();
                 return;
             }
 
@@ -2582,16 +2657,16 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 const name = r.nama_tab_sts;
                 const act = tbFindActive(name);
                 let label = name;
-                let dis = '';
                 if (act) {
                     if (Number(act.nip) === tbMyNip()) {
                         label += ' (sedang Anda pinjam)';
                     } else {
                         label += ` (dipinjam: ${act.nama || '-'})`;
-                        dis = ' disabled';
                     }
                 }
-                html += `<option value="${riwayatEscape(name)}"${dis}>${riwayatEscape(label)}</option>`;
+                // Tablet yang dipinjam orang lain tetap bisa dipilih agar notifikasi tampil,
+                // tetapi tombol PINJAM dikunci (lihat tabletUpdateActionUI).
+                html += `<option value="${riwayatEscape(name)}">${riwayatEscape(label)}</option>`;
             });
             sel.innerHTML = html;
 
@@ -2605,11 +2680,120 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 }
             }
             sel.value = target;
+            tbDdSync();
         }
 
         function tabletOnSelectChange() {
             tabletUserTouched = true;
             tabletUpdateActionUI();
+            tbDdSync();
+            // Tablet sedang dipinjam orang lain -> tampilkan notifikasi
+            const name = tabletSelectedName();
+            const act = name ? tbFindActive(name) : null;
+            if (act && Number(act.nip) !== tbMyNip()) {
+                alert(`Gagal: TABLET SUDAH DIPINJAM oleh ${act.nama || '-'}`);
+            }
+        }
+
+        // ---------- Dropdown kustom: status DIPINJAM berwarna hijau + nama peminjam ----------
+        const TB_ICON_TABLET = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>';
+        const TB_ICON_CHECK = '<svg class="tb-dd-check" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+
+        function tbBorrowerText(act) {
+            const mine = Number(act.nip) === tbMyNip();
+            return 'DIPINJAM \u2022 ' + (act.nama || '-') + (mine ? ' (Anda)' : '');
+        }
+
+        function tbDdRender() {
+            const list = document.getElementById('tb-dd-list');
+            if (!list) return;
+            const sel = document.getElementById('tb-select');
+            const current = sel ? sel.value : '';
+            const aktif = tabletMaster.filter(r => tbKey(r.status_sts) === TABLET_MASTER_AKTIF);
+
+            if (!aktif.length) {
+                list.innerHTML = '<p class="tb-dd-empty">Belum ada tablet aktif</p>';
+                return;
+            }
+            let html = '';
+            aktif.forEach((r, idx) => {
+                const name = r.nama_tab_sts;
+                const act = tbFindActive(name);
+                const cls = 'tb-dd-item' + (act ? ' is-borrowed' : '') + (name === current ? ' is-selected' : '');
+                const status = act
+                    ? `<span class="tb-dd-pill">${riwayatEscape(tbBorrowerText(act))}</span>`
+                    : '<span class="tb-dd-free">Tersedia</span>';
+                html += `
+                    <button type="button" class="${cls}" role="option" aria-selected="${name === current}" data-name="${riwayatEscape(name)}" style="--i:${Math.min(idx, 12)}" onclick="tbDdPick(this)">
+                        <span class="tb-dd-ico">${TB_ICON_TABLET}</span>
+                        <span class="tb-dd-txt"><span class="tb-dd-name">${riwayatEscape(name)}</span>${status}</span>
+                        ${TB_ICON_CHECK}
+                    </button>`;
+            });
+            list.innerHTML = html;
+        }
+
+        function tbDdSync() {
+            const sel = document.getElementById('tb-select');
+            const label = document.getElementById('tb-dd-label');
+            if (!sel || !label) return;
+            const name = sel.value;
+            if (name) {
+                const act = tbFindActive(name);
+                label.classList.remove('is-placeholder');
+                label.innerHTML = `<span>${riwayatEscape(name)}</span>` +
+                    (act ? `<span class="tb-dd-pill">${riwayatEscape(tbBorrowerText(act))}</span>` : '');
+            } else {
+                const opt = sel.options[sel.selectedIndex];
+                label.classList.add('is-placeholder');
+                label.textContent = opt ? opt.text : '-- Pilih Tablet --';
+            }
+            tbDdRender();
+        }
+
+        function tbDdSetOpen(open) {
+            const dd = document.getElementById('tb-dd');
+            const trg = document.getElementById('tb-dd-trigger');
+            if (!dd || !trg) return;
+            dd.classList.toggle('is-open', open);
+            trg.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+        function tbDdClose() { tbDdSetOpen(false); }
+        function tbDdToggle() {
+            const dd = document.getElementById('tb-dd');
+            const trg = document.getElementById('tb-dd-trigger');
+            if (!dd || !trg || trg.disabled) return;
+            tbDdSetOpen(!dd.classList.contains('is-open'));
+        }
+        function tbDdPick(el) {
+            const sel = document.getElementById('tb-select');
+            if (!sel || !el || tabletBusy) return;
+            sel.value = el.getAttribute('data-name') || '';
+            tbDdClose();
+            tabletOnSelectChange();
+        }
+        // Tutup dropdown bila mengetuk di luar
+        document.addEventListener('click', (e) => {
+            const dd = document.getElementById('tb-dd');
+            if (dd && dd.classList.contains('is-open') && !dd.contains(e.target)) tbDdClose();
+        });
+
+        // ---------- Catatan tablet (kolom "noted") ----------
+        function tbNoteValue() {
+            const el = document.getElementById('tb-note');
+            return el ? el.value.trim() : '';
+        }
+        function tbNoteOnInput() {
+            const el = document.getElementById('tb-note');
+            const cnt = document.getElementById('tb-note-count');
+            if (!el) return;
+            el.classList.toggle('has-text', el.value.trim().length > 0);
+            if (cnt) cnt.innerText = `${el.value.length}/${el.maxLength > 0 ? el.maxLength : 300}`;
+        }
+        function tbNoteClear() {
+            const el = document.getElementById('tb-note');
+            if (el) el.value = '';
+            tbNoteOnInput();
         }
 
         // ---------- Tampilan tombol, foto & timer ----------
@@ -2653,9 +2837,10 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 document.getElementById('tb-timer-name').innerText = mine.nama_tablet;
                 timerCard.classList.remove('hidden');
             } else if (act) {
-                btn.className = 'btn-primary';
+                // Dikunci (tidak bisa PINJAM), tetapi tetap bisa diketuk untuk menampilkan notifikasi
+                btn.className = 'btn-primary is-locked';
                 btn.innerText = 'SEDANG DIPINJAM';
-                btn.disabled = true;
+                btn.disabled = false;
                 timerCard.classList.add('hidden');
             } else {
                 btn.className = 'btn-primary';
@@ -2663,6 +2848,10 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 btn.disabled = false;
                 timerCard.classList.add('hidden');
             }
+
+            // Catatan tablet hanya tampil saat mode PINJAM (tablet tersedia)
+            const noteWrap = document.getElementById('tb-note-wrap');
+            if (noteWrap) noteWrap.classList.toggle('hidden', !!act);
 
             tabletRefreshPhotoTexts();
             tabletTickTimers();
@@ -2696,8 +2885,13 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
             const btn = document.getElementById('tb-action-btn');
             const sel = document.getElementById('tb-select');
             const cam = document.getElementById('tb-cam-btn');
+            const ddTrg = document.getElementById('tb-dd-trigger');
+            const note = document.getElementById('tb-note');
             if (sel) sel.disabled = on;
             if (cam) cam.disabled = on;
+            if (ddTrg) ddTrg.disabled = on;
+            if (note) note.disabled = on;
+            if (on) tbDdClose();
             if (on) {
                 if (btn) { btn.disabled = true; btn.innerText = label || 'Memproses...'; }
             } else {
@@ -2886,7 +3080,13 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
             if (mine) {
                 tabletDoReturn(mine, nip);
             } else {
-                if (tbFindActive(tablet)) { alert('Gagal: tablet ini sedang dipinjam orang lain.'); return; }
+                const other = tbFindActive(tablet);
+                if (other) {
+                    const btn = document.getElementById('tb-action-btn');
+                    if (btn) { btn.classList.remove('tb-shake'); void btn.offsetWidth; btn.classList.add('tb-shake'); }
+                    alert(`Gagal: TABLET SUDAH DIPINJAM oleh ${other.nama || '-'}`);
+                    return;
+                }
                 tabletDoBorrow(tablet, nip, nama);
             }
         }
@@ -2897,6 +3097,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 return;
             }
             const blob = tabletPhoto.blob;
+            const catatan = tbNoteValue();   // kosong -> kolom "noted" tidak dikirim
             tabletSetBusy(true, 'Mengunggah foto...');
             try {
                 const url = await tabletUploadPhoto('pinjam', nip, blob);
@@ -2904,23 +3105,27 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 const btn = document.getElementById('tb-action-btn');
                 if (btn) btn.innerText = 'Menyimpan...';
 
+                const payload = {
+                    nama_tablet: tablet,
+                    nip: nip,
+                    nama: nama,
+                    tgl: riwayatLocalISO(),
+                    url: url,
+                    status: TABLET_STATUS_PINJAM
+                };
+                if (catatan) payload.noted = catatan;   // hanya dikirim jika diisi
+
                 const { error } = await supabaseClient
                     .from(TABLET_TABLE_STATUS)
-                    .insert([{
-                        nama_tablet: tablet,
-                        nip: nip,
-                        nama: nama,
-                        tgl: riwayatLocalISO(),
-                        url: url,
-                        status: TABLET_STATUS_PINJAM
-                    }]);
+                    .insert([payload]);
 
                 if (error) {
-                    if (error.code === '23505') throw new Error('Tablet ini baru saja dipinjam orang lain.');
+                    if (error.code === '23505') throw new Error('TABLET SUDAH DIPINJAM oleh orang lain (baru saja).');
                     throw error;
                 }
 
                 tabletClearPhoto(true);
+                tbNoteClear();
                 alert('Tablet berhasil dipinjam. Timer durasi berjalan.');
             } catch (err) {
                 console.error('Gagal meminjam tablet:', err);

@@ -292,6 +292,28 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
   *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
 }
 
+    
+/* ====== DIALOG KONFIRMASI KELUAR (tombol Back HP di Menu Utama) ====== */
+.exit-overlay{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:rgba(21,21,58,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
+.exit-overlay.is-open{opacity:1;pointer-events:auto}
+.exit-dialog{width:100%;max-width:340px;background:#fff;border-radius:26px;padding:26px 22px 20px;text-align:center;
+  box-shadow:0 30px 60px -20px rgba(40,40,130,.55),0 0 0 1px rgba(60,60,140,.06);
+  transform:translateY(24px) scale(.92);opacity:0;transition:transform .35s var(--ease),opacity .25s var(--ease)}
+.exit-overlay.is-open .exit-dialog{transform:none;opacity:1}
+.exit-icon{width:64px;height:64px;margin:0 auto 14px;border-radius:20px;display:flex;align-items:center;justify-content:center;
+  background:var(--rose-soft);color:var(--rose);animation:exitPulse 1.8s ease-in-out infinite}
+.exit-icon svg{width:30px;height:30px}
+.exit-title{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.exit-text{font-size:13.5px;line-height:1.55;color:var(--ink-2);margin-bottom:20px}
+.exit-actions{display:flex;gap:10px}
+.exit-btn{flex:1;padding:13px 12px;border-radius:15px;font-size:14px;font-weight:700;cursor:pointer;
+  transition:transform .15s var(--ease),box-shadow .2s var(--ease)}
+.exit-btn:active{transform:scale(.95)}
+.exit-btn-no{background:linear-gradient(135deg,#4f46e5,#6d4df0);color:#fff;box-shadow:0 12px 22px -12px rgba(79,70,229,.75)}
+.exit-btn-yes{background:var(--rose-soft);color:#be123c;box-shadow:inset 0 0 0 1.5px #ffd3da}
+@keyframes exitPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -553,6 +575,21 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- DIALOG KONFIRMASI KELUAR APLIKASI -->
+    <div id="exit-overlay" class="exit-overlay" aria-hidden="true">
+        <div class="exit-dialog" role="alertdialog" aria-modal="true" aria-labelledby="exit-title" aria-describedby="exit-text">
+            <div class="exit-icon">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </div>
+            <h3 id="exit-title" class="exit-title">Keluar Aplikasi?</h3>
+            <p id="exit-text" class="exit-text">Anda yakin ingin keluar dari aplikasi Portal Karyawan?</p>
+            <div class="exit-actions">
+                <button type="button" id="exit-btn-yes" class="exit-btn exit-btn-yes">Iya</button>
+                <button type="button" id="exit-btn-no" class="exit-btn exit-btn-no">Tidak</button>
+            </div>
         </div>
     </div>
 
@@ -2155,5 +2192,121 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
             document.getElementById('nip-input').value = '';
         }
     </script>
+
+<!-- NAVIGASI TOMBOL BACK HP (History API) -->
+<script>
+(function () {
+    'use strict';
+
+    var STATE_GUARD = 'portal-guard';   // entri "penjaga" di belakang Menu Utama
+    var STATE_MAIN  = 'portal-main';    // Menu Utama / Halaman Login
+    var STATE_SUB   = 'portal-sub';     // Menu "Istirahat Karyawan"
+    var exiting = false;
+
+    var overlay = document.getElementById('exit-overlay');
+    var btnYes  = document.getElementById('exit-btn-yes');
+    var btnNo   = document.getElementById('exit-btn-no');
+
+    function isHidden(id) {
+        var el = document.getElementById(id);
+        return !el || el.classList.contains('hidden');
+    }
+    function isSubMenuOpen() { return !isHidden('istirahat-section'); }
+    function isDialogOpen()  { return overlay.classList.contains('is-open'); }
+
+    function openExitDialog() {
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+    function closeExitDialog() {
+        overlay.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    // ---- Susun riwayat: [guard] -> [main]. Back dari [main] jatuh ke [guard] ----
+    var startLen = history.length;
+    var cur = history.state && history.state.portal;
+    if (cur === STATE_MAIN || cur === STATE_SUB) {
+        // Halaman di-refresh: pertahankan susunan riwayat yang ada
+        history.replaceState({ portal: STATE_MAIN }, '');
+    } else {
+        history.replaceState({ portal: STATE_GUARD }, '');
+        history.pushState({ portal: STATE_MAIN }, '');
+    }
+
+    // ---- Bungkus openIstirahatMenu: catat 1 langkah riwayat ----
+    var origOpen = window.openIstirahatMenu;
+    window.openIstirahatMenu = function () {
+        origOpen.apply(this, arguments);
+        if (!(history.state && history.state.portal === STATE_SUB)) {
+            history.pushState({ portal: STATE_SUB }, '');
+        }
+    };
+
+    // ---- Bungkus closeIstirahatMenu: tombol "<" di layar ikut tombol Back HP ----
+    var origClose = window.closeIstirahatMenu;
+    window.closeIstirahatMenu = function (fromPopState) {
+        if (fromPopState !== true && history.state && history.state.portal === STATE_SUB) {
+            history.back();          // popstate yang akan memanggil origClose
+            return;
+        }
+        origClose.apply(this, arguments);
+    };
+
+    // ---- Tombol Back HP ----
+    window.addEventListener('popstate', function (e) {
+        if (exiting) return;
+        var st = e.state && e.state.portal;
+
+        // 1) Sedang di sub-menu (semua tab Istirahat) -> kembali ke Menu Utama
+        if (isSubMenuOpen()) {
+            window.closeIstirahatMenu(true);
+            if (st === STATE_GUARD) history.pushState({ portal: STATE_MAIN }, '');
+            return;
+        }
+
+        // 2) Sudah di Menu Utama / Login -> tampilkan konfirmasi keluar
+        if (st === STATE_GUARD) {
+            history.pushState({ portal: STATE_MAIN }, '');   // tetap di halaman
+        }
+        if (st === STATE_SUB) return;                         // abaikan (forward)
+        if (isDialogOpen()) {
+            closeExitDialog();                                // Back saat dialog terbuka = "Tidak"
+        } else {
+            openExitDialog();
+        }
+    });
+
+    // ---- Tombol dialog ----
+    btnNo.addEventListener('click', closeExitDialog);
+    overlay.addEventListener('click', function (ev) {
+        if (ev.target === overlay) closeExitDialog();
+    });
+    btnYes.addEventListener('click', function () {
+        exiting = true;
+        closeExitDialog();
+
+        // 1. Coba tutup jendela/tab (berhasil bila dibuka lewat script / PWA terpasang)
+        try { window.close(); } catch (err) {}
+
+        // 2. Jika gagal: mundur melewati entri guard + main (jika ada halaman sebelumnya)
+        setTimeout(function () {
+            if (startLen > 1) {
+                try { history.go(-2); } catch (err) {}
+            }
+        }, 150);
+
+        // 3. Cadangan terakhir: kosongkan halaman agar aplikasi benar-benar tertutup
+        setTimeout(function () {
+            window.location.replace('about:blank');
+        }, 700);
+    });
+
+    // Jika halaman dipulihkan dari cache browser, siapkan ulang kondisi normal
+    window.addEventListener('pageshow', function (ev) {
+        if (ev.persisted) { exiting = false; closeExitDialog(); }
+    });
+})();
+</script>
 </body>
 </html>

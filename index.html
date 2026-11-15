@@ -1266,7 +1266,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                         .select('*')
                         .gte('tanggal', start)
                         .lte('tanggal', end)
-                        .order('tanggal', { ascending: false })
+                        .order('tanggal', { ascending: true })
                         .order('id', { ascending: true })
                         .range(from, from + PAGE - 1);
                     if (error) throw error;
@@ -1313,7 +1313,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                 });
 
                 riwayatData = Object.values(grouped).sort((a, b) => {
-                    if (a.tanggal !== b.tanggal) return a.tanggal < b.tanggal ? 1 : -1;
+                    if (a.tanggal !== b.tanggal) return a.tanggal < b.tanggal ? -1 : 1;
                     return a.nama.localeCompare(b.nama, 'id');
                 });
                 riwayatPeriode = { start, end };

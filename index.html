@@ -2416,7 +2416,6 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
         const TABLET_LIST_LIMIT = 50;            // jumlah kartu terbaru yang ditampilkan
 
         let tabletRealtimeChannel = null;
-        let tabletBellChannel = null;
         let tabletTimerInterval = null;
         let tabletReloadTimer = null;
         let tabletLoadId = 0;
@@ -2513,7 +2512,6 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 
         function tabletTeardownRealtime() {
             if (tabletRealtimeChannel) { supabaseClient.removeChannel(tabletRealtimeChannel); tabletRealtimeChannel = null; }
-            if (tabletBellChannel) { supabaseClient.removeChannel(tabletBellChannel); tabletBellChannel = null; }
         }
 
         function tabletSetupRealtime() {
@@ -2528,12 +2526,6 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
                     tabletSetLive(status === 'SUBSCRIBED');
                     if (status === 'SUBSCRIBED') tabletScheduleReload();   // sinkron ulang setelah (re)connect
                 });
-
-            // Kanal siaran lonceng (dipakai tombol lonceng)
-            tabletBellChannel = supabaseClient
-                .channel('tablet_bell', { config: { broadcast: { self: false } } })
-                .on('broadcast', { event: 'bunyi' }, msg => tabletHandleBellBroadcast(msg && msg.payload))
-                .subscribe();
         }
 
         // ---------- Muat data ----------
@@ -2981,107 +2973,39 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
             }
         }
 
-        // ---------- Lonceng: bunyikan notifikasi berdasarkan nama tablet (koneksi_tablet) ----------
-        function tabletPlayBellSound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                [0, 0.32, 0.64].forEach(offset => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(988, ctx.currentTime + offset);
-                    gain.gain.setValueAtTime(0.0001, ctx.currentTime + offset);
-                    gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + offset + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + offset + 0.28);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(ctx.currentTime + offset);
-                    osc.stop(ctx.currentTime + offset + 0.3);
-                });
-            } catch (e) {
-                console.log('Audio dibatasi browser sebelum interaksi pengguna.');
-            }
-        }
-
-        async function tabletShowNotification(body, tag) {
-            if (!('Notification' in window) || Notification.permission !== 'granted') return;
-            const options = {
-                body: body,
-                tag: tag || 'tablet-bell',
-                renotify: true,
-                silent: false,
-                requireInteraction: true,
-                vibrate: [500, 200, 500, 200, 500]
-            };
-            try {
-                new Notification('Tablet Store', options);
-                return;
-            } catch (e) {
-                // Android Chrome: pakai service worker
-            }
-            try {
-                const reg = await navigator.serviceWorker.ready;
-                await reg.showNotification('Tablet Store', options);
-            } catch (e) {
-                console.log('Gagal menampilkan notifikasi tablet:', e);
-            }
-        }
-
-        function ringTabletBell(btn) {
+        // ---------- Lonceng: bunyikan notifikasi di tablet yang dituju ----------
+        // Memanggil fungsi SQL bunyikan_tablet(nama) yang memicu perubahan data pada koneksi_tablet.
+        // Aplikasi di tablet (listener realtime koneksi_tablet) lalu membunyikan notifikasi + suara.
+        const tabletBellBusy = {};
+        async function ringTabletBell(btn) {
             if (!btn) return;
             const nama = btn.getAttribute('data-tablet') || '';
+
+            const master = tabletMaster.find(r => tbKey(r.nama_tab_sts) === tbKey(nama));
+            if (!master) {
+                alert(`Gagal: tablet "${nama}" tidak ditemukan pada tabel koneksi_tablet.`);
+                return;
+            }
+            const key = tbKey(master.nama_tab_sts);
+            if (tabletBellBusy[key]) return;
+            tabletBellBusy[key] = true;
 
             btn.classList.remove('is-ring');
             void btn.offsetWidth;
             btn.classList.add('is-ring');
             setTimeout(() => btn.classList.remove('is-ring'), 1000);
 
-            // Ambil data nama tablet dari tabel koneksi_tablet
-            const master = tabletMaster.find(r => tbKey(r.nama_tab_sts) === tbKey(nama));
-            if (!master) {
-                alert(`Gagal: tablet "${nama}" tidak ditemukan pada tabel koneksi_tablet.`);
-                return;
-            }
-
-            const act = tbFindActive(master.nama_tab_sts);
-            const body = act
-                ? `${master.nama_tab_sts}\nDipinjam oleh ${act.nama || '-'}. Segera dikembalikan.`
-                : `${master.nama_tab_sts}\nPanggilan untuk tablet ini.`;
-
-            tabletPlayBellSound();
-            tabletShowNotification(body, 'tablet-bell-' + tbKey(master.nama_tab_sts));
-            alert('Notifikasi dibunyikan: ' + master.nama_tab_sts);
-
-            // Siarkan ke perangkat lain (peminjam / aplikasi tablet yang mendengarkan kanal "tablet_bell")
             try {
-                if (tabletBellChannel) {
-                    tabletBellChannel.send({
-                        type: 'broadcast',
-                        event: 'bunyi',
-                        payload: {
-                            nama_tablet: master.nama_tab_sts,
-                            kode_sts: master.kode_sts,
-                            dari_nip: tbMyNip(),
-                            dari_nama: localStorage.getItem('emp_nama') || ''
-                        }
-                    });
-                }
-            } catch (e) {
-                console.log('Gagal menyiarkan lonceng:', e);
+                const { data, error } = await supabaseClient.rpc('bunyikan_tablet', { p_nama: master.nama_tab_sts });
+                if (error) throw error;
+                if (data === false) throw new Error('Tablet belum terdaftar pada koneksi_tablet.');
+                alert('Notifikasi dikirim ke tablet: ' + master.nama_tab_sts);
+            } catch (err) {
+                console.error('Gagal membunyikan notifikasi tablet:', err);
+                alert('Gagal membunyikan notifikasi: ' + (err.message || err));
+            } finally {
+                setTimeout(() => { delete tabletBellBusy[key]; }, 1500);
             }
-        }
-
-        // Perangkat peminjam ikut berbunyi jika lonceng ditekan untuk tablet yang sedang ia pinjam
-        function tabletHandleBellBroadcast(p) {
-            if (!p || !p.nama_tablet) return;
-            if (Number(p.dari_nip) === tbMyNip()) return;
-            const mine = tbFindMine(p.nama_tablet);
-            if (!mine) return;
-            tabletPlayBellSound();
-            tabletShowNotification(
-                `${mine.nama_tablet}\nSegera kembalikan tablet yang Anda pinjam.`,
-                'tablet-bell-' + tbKey(mine.nama_tablet)
-            );
         }
     </script>
 

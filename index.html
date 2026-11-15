@@ -2282,24 +2282,40 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
     overlay.addEventListener('click', function (ev) {
         if (ev.target === overlay) closeExitDialog();
     });
+    // Siapkan ulang penjaga Back setelah "Iya" (jika karyawan kembali ke aplikasi)
+    function rearm() {
+        if (!exiting) return;
+        exiting = false;
+        if (!(history.state && history.state.portal === STATE_MAIN)) {
+            history.pushState({ portal: STATE_MAIN }, '');
+        }
+    }
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') rearm();
+    });
+
     btnYes.addEventListener('click', function () {
         exiting = true;
         closeExitDialog();
 
-        // 1. Coba tutup jendela/tab (berhasil bila dibuka lewat script / PWA terpasang)
+        // 1. PWA terpasang / jendela hasil script: window.close() menyembunyikan aplikasi
         try { window.close(); } catch (err) {}
 
-        // 2. Jika gagal: mundur melewati entri guard + main (jika ada halaman sebelumnya)
         setTimeout(function () {
             if (startLen > 1) {
+                // 2. Ada halaman sebelumnya: keluar dari aplikasi ke halaman itu
                 try { history.go(-2); } catch (err) {}
+                setTimeout(rearm, 1200);   // jika ternyata gagal, aplikasi tetap normal
+            } else {
+                // 3. Tidak ada halaman sebelumnya: mundur ke entri awal.
+                //    Satu tekanan Back berikutnya otomatis menyembunyikan browser (bawaan Android).
+                try { history.go(-1); } catch (err) {}
+                if (typeof showToast === 'function') {
+                    showToast('Tekan tombol Back sekali lagi untuk menyembunyikan browser.');
+                }
+                setTimeout(rearm, 4000);   // jika tidak jadi keluar, aplikasi kembali normal
             }
         }, 150);
-
-        // 3. Cadangan terakhir: kosongkan halaman agar aplikasi benar-benar tertutup
-        setTimeout(function () {
-            window.location.replace('about:blank');
-        }, 700);
     });
 
     // Jika halaman dipulihkan dari cache browser, siapkan ulang kondisi normal

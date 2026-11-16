@@ -95,7 +95,14 @@ body.app-body{
 .list-scroll::-webkit-scrollbar{width:4px}
 .list-scroll::-webkit-scrollbar-thumb{background:#d6d8ee;border-radius:4px}
 .hist-scroll{max-height:15rem}
-.team-scroll{max-height:20rem}
+.team-scroll{max-height:none;overflow:visible;padding-right:0}
+/* --- Timer istirahat: kotak Jam/Menit/Detik (sama dengan Durasi pinjam berjalan) --- */
+.br-clock{margin-top:14px}
+.br-clock .tb-clock-box{transition:transform .25s var(--ease),background .25s}
+.br-clock .tb-clock-num{display:inline-block}
+.br-clock .tb-clock-num.is-tick{animation:brTick .35s var(--ease)}
+@keyframes brTick{0%{transform:translateY(-4px) scale(1.08);opacity:.55}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.br-clock .tb-clock-num.is-tick{animation:none}}
 
 /* ====== LOGIN ====== */
 .login-card{display:flex;flex-direction:column;gap:18px;padding:26px 20px;background:#fff;border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow)}
@@ -724,7 +731,11 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         <!-- TOTAL WAKTU ISTIRAHAT HARI INI (LIVE) -->
                         <div id="large-timer-card" class="timer-card hidden">
                             <p class="timer-label"><span class="live-dot"></span>Total waktu istirahat hari ini</p>
-                            <h2 id="large-timer-display" class="timer-digits">00:00:00</h2>
+                            <div class="tb-clock br-clock" id="large-timer-display" role="timer" aria-label="Total waktu istirahat hari ini">
+                                <div class="tb-clock-box"><p id="large-clock-h" class="tb-clock-num">00</p><p class="tb-clock-lbl">Jam</p></div>
+                                <div class="tb-clock-box"><p id="large-clock-m" class="tb-clock-num">00</p><p class="tb-clock-lbl">Menit</p></div>
+                                <div class="tb-clock-box"><p id="large-clock-s" class="tb-clock-num">00</p><p class="tb-clock-lbl">Detik</p></div>
+                            </div>
                         </div>
 
                         <!-- Akumulasi istirahat selesai -->
@@ -2388,10 +2399,20 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     String(minutes).padStart(2, '0') + ':' + 
                     String(seconds).padStart(2, '0');
 
-                const largeDisplay = document.getElementById('large-timer-display');
-                if (largeDisplay) {
-                    largeDisplay.innerText = formatted;
-                }
+                const clockParts = [
+                    ['large-clock-h', String(hours).padStart(2, '0')],
+                    ['large-clock-m', String(minutes).padStart(2, '0')],
+                    ['large-clock-s', String(seconds).padStart(2, '0')]
+                ];
+                clockParts.forEach(([id, val]) => {
+                    const el = document.getElementById(id);
+                    if (el && el.innerText !== val) {
+                        el.innerText = val;
+                        el.classList.remove('is-tick');
+                        void el.offsetWidth;
+                        el.classList.add('is-tick');
+                    }
+                });
 
                 const inlineBadges = document.querySelectorAll('.inline-timer-badge');
                 inlineBadges.forEach(badge => {

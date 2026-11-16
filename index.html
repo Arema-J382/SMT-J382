@@ -760,14 +760,14 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     <div id="tab-content-team" class="tab-pane hidden">
                         <div class="panel stat">
                             <div>
-                                <p class="stat-label">Karyawan sedang istirahat</p>
+                                <p class="stat-label">Total karyawan sedang istirahat</p>
                                 <h3 id="team-active-count-text" class="team-count">0 Orang Aktif</h3>
                             </div>
                             <div class="stat-chip" style="background:#ffe3e8;color:#be123c"><svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
                         </div>
 
                         <div class="panel">
-                            <p class="panel-title">Daftar rekan kerja &amp; total waktu istirahat hari ini</p>
+                            <p class="panel-title">Daftar rekan kerja sedang istirahat hari ini</p>
                             <div id="team-istirahat-list-container" class="list-scroll team-scroll touch-scroll">
                                 <p class="empty">Memuat data tim...</p>
                             </div>
@@ -2295,7 +2295,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     keteranganSelect.disabled = true;
                     btnWrapper.innerHTML = `
                         <button onclick="handleSelesaiIstirahat()" class="btn-danger">
-                            Selesai Istirahat (${activeRecord.keterangan})
+                            SELESAI (${activeRecord.keterangan})
                         </button>
                     `;
                     largeTimerCard.classList.remove('hidden');

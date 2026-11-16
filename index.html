@@ -1108,7 +1108,9 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         async function registerServiceWorker() {
             if (!('serviceWorker' in navigator)) return null;
             try {
-                return await navigator.serviceWorker.register('/sw.js');
+                const reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
+                reg.update().catch(() => {});   // selalu ambil sw.js terbaru
+                return reg;
             } catch (e) {
                 console.error('Gagal mendaftarkan service worker:', e);
                 return null;
@@ -1120,11 +1122,41 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             navigator.serviceWorker.addEventListener('message', (event) => {
                 const msg = event.data || {};
                 if (msg.type === 'BREAK_ALERT_PUSH') {
-                    // Cadangan: jika timer lokal belum memicu alarm, picu sekarang
-                    if (msg.alertNo === 1 && !alertTriggered45) { alertTriggered45 = true; triggerBreakAlert(1); }
-                    if (msg.alertNo === 2 && !alertTriggered60) { alertTriggered60 = true; triggerBreakAlert(2); }
+                    if (msg.shown) {
+                        // Notifikasi sudah ditampilkan oleh service worker -> cukup sinkronkan penanda (tanpa bunyi ganda)
+                        if (msg.alertNo === 1) alertTriggered45 = true;
+                        if (msg.alertNo === 2) alertTriggered60 = true;
+                    } else {
+                        // Cadangan: jika timer lokal belum memicu alarm, picu sekarang
+                        if (msg.alertNo === 1 && !alertTriggered45) { alertTriggered45 = true; triggerBreakAlert(1); }
+                        if (msg.alertNo === 2 && !alertTriggered60) { alertTriggered60 = true; triggerBreakAlert(2); }
+                    }
                 }
+                // Langganan push berubah/kedaluwarsa -> daftarkan ulang
+                if (msg.type === 'PUSH_SUB_CHANGED') pushRefreshIfNeeded(true);
             });
+        }
+
+        // Cek apakah langganan lama memakai VAPID key yang sama dengan key saat ini
+        function pushKeyMatches(sub) {
+            try {
+                const cur = sub.options && sub.options.applicationServerKey;
+                if (!cur) return true;
+                const a = new Uint8Array(cur);
+                const b = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+                if (a.length !== b.length) return false;
+                for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+                return true;
+            } catch (e) { return true; }
+        }
+
+        // Kirim konfigurasi ke service worker (dipakai saat langganan diperbarui otomatis di latar belakang)
+        async function pushSendConfigToSW(nip) {
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const target = reg.active || navigator.serviceWorker.controller;
+                if (target) target.postMessage({ type: 'PUSH_CONFIG', url: SUPABASE_URL, anon: SUPABASE_ANON_KEY, vapid: VAPID_PUBLIC_KEY, nip: nip });
+            } catch (e) {}
         }
 
         // Daftarkan perangkat ini ke push server (dipanggil saat login / halaman dimuat)
@@ -1140,6 +1172,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 const reg = await navigator.serviceWorker.ready;
 
                 let sub = await reg.pushManager.getSubscription();
+                if (sub && !pushKeyMatches(sub)) {
+                    // Langganan lama dibuat dengan VAPID key berbeda -> push akan ditolak server. Buat ulang.
+                    try { await supabaseClient.from('push_subscriptions').delete().eq('endpoint', sub.endpoint); } catch (e) {}
+                    await sub.unsubscribe();
+                    sub = null;
+                }
                 if (!sub) {
                     sub = await reg.pushManager.subscribe({
                         userVisibleOnly: true,
@@ -1158,6 +1196,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     }, { onConflict: 'endpoint' });
 
                 if (error) console.error('Gagal menyimpan push subscription:', error.message);
+                pushSendConfigToSW(nip);
             } catch (e) {
                 console.error('Gagal mengaktifkan push notifikasi:', e);
             }
@@ -1231,15 +1270,16 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 requireInteraction: true,
                 vibrate: [500, 200, 500, 200, 500]
             };
-            try {
-                new Notification("Portal Karyawan", options);
-                return;
-            } catch (e) {
-                // Android Chrome tidak mengizinkan new Notification(), pakai service worker
-            }
+            // Utamakan service worker (satu jalur dengan push server -> tidak ada bunyi ganda & berfungsi di Android/iOS)
             try {
                 const reg = await navigator.serviceWorker.ready;
                 await reg.showNotification("Portal Karyawan", options);
+                return;
+            } catch (e) {
+                console.log("Service worker belum siap, memakai notifikasi biasa:", e);
+            }
+            try {
+                new Notification("Portal Karyawan", options);
             } catch (e) {
                 console.log("Gagal menampilkan notifikasi:", e);
             }
@@ -1279,6 +1319,22 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 ensurePushSubscription(savedNip);
             }
         });
+
+        // Segarkan langganan push saat tablet/HP "bangun" dari idle/sleep atau internet kembali tersambung
+        let _pushLastEnsure = 0;
+        function pushRefreshIfNeeded(force) {
+            const nip = localStorage.getItem('emp_nip');
+            if (!nip || !('Notification' in window) || Notification.permission !== 'granted') return;
+            if (!force && Date.now() - _pushLastEnsure < 5 * 60 * 1000) return;
+            _pushLastEnsure = Date.now();
+            ensurePushSubscription(nip);
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') pushRefreshIfNeeded(false);
+        });
+        window.addEventListener('online', () => pushRefreshIfNeeded(true));
+        window.addEventListener('focus', () => pushRefreshIfNeeded(false));
+        setInterval(() => pushRefreshIfNeeded(false), 30 * 60 * 1000);
 
         // Ambil data terbaru dari database secara real-time
         async function fetchLatestUserData(nip) {

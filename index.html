@@ -1633,7 +1633,17 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             } catch (e) {
                 console.error('Gagal mengirim pengingat:', e);
                 btn.classList.remove('is-sending');
-                showToast('Gagal mengirim pengingat. Coba lagi.');
+                let status = '', detail = '';
+                try {
+                    if (e && e.context && typeof e.context.json === 'function') {
+                        status = e.context.status || '';
+                        const b = await e.context.json();
+                        detail = (b && (b.error || b.message)) || '';
+                    }
+                } catch (x) {}
+                if (status === 404) showToast('Gagal: function "send-reminder-push" belum di-deploy di Supabase.');
+                else if (status || detail) showToast('Gagal mengirim pengingat (' + (status || 'error') + (detail ? ': ' + detail : '') + ')');
+                else showToast('Gagal terhubung ke function "send-reminder-push". Pastikan sudah di-deploy.');
             }
         }
 

@@ -415,6 +415,18 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .tb-live-chip .live-dot{width:6px;height:6px}
 .tb-live-chip.off{color:#b45309;background:var(--amber-soft)}
 .tb-live-chip.off .live-dot{background:#f59e0b;animation:none}
+/* Penanda "hanya hari ini" pada kartu Status peminjaman tablet */
+.tb-today-bar{display:flex;align-items:center;gap:9px;margin:0 0 12px;padding:9px 12px;border-radius:14px;
+  background:linear-gradient(135deg,#eef0ff,#f5f0ff);border:1px solid #dcd9ff;color:var(--brand);
+  animation:fadeIn .45s var(--ease) backwards}
+.tb-today-bar svg{width:16px;height:16px;flex-shrink:0}
+.tb-today-label{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--ink-2);line-height:1.3}
+.tb-today-tag{flex-shrink:0;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.06em;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 6px 12px -6px rgba(79,70,229,.6)}
+.tb-empty-today{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 12px;text-align:center;font-size:12.5px;color:var(--muted);
+  border-radius:18px;background:#f6f7fe;border:1px dashed #cfd2f3;animation:fadeIn .45s var(--ease) backwards}
+.tb-empty-today svg{width:34px;height:34px;color:var(--brand);opacity:.55}
+.tb-empty-today b{display:block;font-size:13px;color:var(--ink-2);font-weight:700}
 .tb-list{max-height:30rem;gap:10px}
 .tb-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:#f6f7fe;border:1px solid var(--line);
   animation:rise .42s var(--ease) backwards;animation-delay:calc(var(--i,0) * 45ms);transition:transform .2s var(--ease),box-shadow .2s,background .3s}
@@ -963,6 +975,11 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             <div class="tb-title-row">
                                 <p class="panel-title">Status peminjaman tablet</p>
                                 <span id="tb-live-chip" class="tb-live-chip off"><span class="live-dot"></span><span id="tb-live-text">Menyambung</span></span>
+                            </div>
+                            <div class="tb-today-bar">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>
+                                <span id="tb-today-label" class="tb-today-label">Hari ini</span>
+                                <span class="tb-today-tag">HARI INI</span>
                             </div>
                             <div id="tb-list-container" class="list-scroll tb-list touch-scroll">
                                 <p class="empty">Memuat data tablet...</p>
@@ -2856,10 +2873,31 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         let tabletBusy = false;         // sedang upload / simpan
         let tabletPhotoBusy = false;    // sedang mengompres foto
         let tabletUserTouched = false;  // pengguna sudah memilih sendiri di dropdown
+        let tabletDayStamp = '';        // tanggal (YYYY-MM-DD) saat daftar terakhir dimuat
 
         // ---------- Helper ----------
         function tbKey(v) { return String(v ?? '').trim().toUpperCase(); }
         function tbPad(n) { return String(n).padStart(2, '0'); }
+        // Tanggal "hari ini" (lokal, format YYYY-MM-DD) - sama dengan format kolom tgl saat PINJAM
+        function tbTodayISO() { return riwayatLocalISO(new Date()); }
+        function tbTomorrowISO() {
+            const d = new Date();
+            return riwayatLocalISO(new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1));
+        }
+        function tbIsToday(tgl) { return !!tgl && String(tgl).substring(0, 10) === tbTodayISO(); }
+        function tbUpdateTodayLabel() {
+            const el = document.getElementById('tb-today-label');
+            if (el) el.innerText = riwayatFormatPanjang(tbTodayISO());
+        }
+        // Jika tanggal berganti (lewat tengah malam) saat halaman terbuka, muat ulang daftar hari ini
+        function tbCheckDayChange() {
+            const now = tbTodayISO();
+            if (tabletDayStamp && tabletDayStamp !== now) {
+                tabletDayStamp = now;
+                tbUpdateTodayLabel();
+                tabletScheduleReload();
+            }
+        }
         function tbMyNip() { return Number(localStorage.getItem('emp_nip')) || 0; }
         function tbElapsedSecs(startIso) {
             const t = Date.parse(startIso);
@@ -2905,6 +2943,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             tbDdSync();
             tabletSwitchTab('pinjam', true);
             document.getElementById('tb-list-container').innerHTML = '<p class="empty">Memuat data tablet...</p>';
+            tbUpdateTodayLabel();
 
             tabletLoadAll();
             tabletSetupRealtime();
@@ -2967,10 +3006,14 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         // ---------- Muat data ----------
         async function tabletLoadAll() {
             const reqId = ++tabletLoadId;
+            const todayIso = tbTodayISO();
+            const tomorrowIso = tbTomorrowISO();
+            tabletDayStamp = todayIso;
             try {
                 const [rm, rr, ra] = await Promise.all([
                     supabaseClient.from(TABLET_TABLE_MASTER).select('*').order('nama_tab_sts', { ascending: true }),
-                    supabaseClient.from(TABLET_TABLE_STATUS).select('*').order('id', { ascending: false }).limit(TABLET_LIST_LIMIT),
+                    // Daftar kartu: HANYA data tanggal hari ini
+                    supabaseClient.from(TABLET_TABLE_STATUS).select('*').gte('tgl', todayIso).lt('tgl', tomorrowIso).order('id', { ascending: false }).limit(TABLET_LIST_LIMIT),
                     supabaseClient.from(TABLET_TABLE_STATUS).select('*').eq('status', TABLET_STATUS_PINJAM)
                 ]);
                 if (rm.error) throw rm.error;
@@ -2983,8 +3026,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 tabletActiveMap = {};
                 (ra.data || []).forEach(r => { tabletActiveMap[tbKey(r.nama_tablet)] = r; });
 
+                // tabletActiveMap (di atas) tetap memuat SEMUA tablet berstatus DIPINJAM agar logika
+                // pinjam/kembali tidak berubah. Namun kartu yang ditampilkan hanya yang tgl = hari ini.
                 const merged = {};
-                [...(rr.data || []), ...(ra.data || [])].forEach(r => { merged[`${r.id}|${r.nama_tablet}`] = r; });
+                [...(rr.data || []), ...(ra.data || [])]
+                    .filter(r => tbIsToday(r.tgl))
+                    .forEach(r => { merged[`${r.id}|${r.nama_tablet}`] = r; });
                 tabletRows = Object.values(merged).sort((a, b) => Number(b.id) - Number(a.id));
 
                 tabletRenderSelect();
@@ -3222,6 +3269,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         }
 
         function tabletTickTimers() {
+            tbCheckDayChange();
             const name = tabletSelectedName();
             const mine = name ? tbFindMine(name) : null;
             if (mine) {
@@ -3268,9 +3316,14 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         function tabletRenderCards() {
             const container = document.getElementById('tb-list-container');
             if (!container) return;
+            tbUpdateTodayLabel();
 
             if (!tabletRows.length) {
-                container.innerHTML = '<p class="empty">Belum ada data peminjaman tablet.</p>';
+                container.innerHTML = `
+                    <div class="tb-empty-today">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        <span><b>Belum ada peminjaman hari ini</b>Data peminjaman tablet hari ini akan muncul di sini.</span>
+                    </div>`;
                 return;
             }
 

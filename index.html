@@ -803,7 +803,7 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
 .ach-card-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px;padding-top:9px;border-top:1px dashed #e1e5f3}
 .ach-card-metric{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:7px 8px;border-radius:11px;background:#f8faff;border:1px solid #edf0fa}
 .ach-card-metric > span{font-size:10px;line-height:1.25;font-weight:800;color:#64748b;word-break:normal;overflow-wrap:anywhere}
-.ach-card-metric > b{display:block;max-width:100%;font-size:12px;line-height:1.35;font-weight:900;color:#26345b;font-variant-numeric:tabular-nums;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+.ach-card-metric > b{display:block;min-width:0;max-width:100%;font-size:14px;line-height:1.25;font-weight:900;letter-spacing:-.025em;color:#26345b;font-variant-numeric:tabular-nums;white-space:normal;overflow-wrap:anywhere;word-break:normal}
 .ach-card-metric--target{background:#f1f6ff;border-color:#e0eaff}
 .ach-card-metric--target > span{color:#3970c8}
 .ach-card-metric--target > b{color:#1d4ed8}
@@ -872,7 +872,7 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
   .ach-avatar{width:44px;height:44px;border-radius:14px}
   .ach-card-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   .ach-card-metric{padding:7px}
-  .ach-card-metric > b{font-size:11.5px}
+  .ach-card-metric > b{font-size:13px;line-height:1.25}
   .ach-metrics.is-three{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ach-dialog{padding:13px;border-radius:21px}
 }
@@ -882,7 +882,7 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
   .ach-rank{width:21px;height:21px;font-size:10px}
   .ach-avatar{width:40px;height:40px;border-radius:12px}
   .ach-card-metric > span{font-size:9.5px}
-  .ach-card-metric > b{font-size:10.75px}
+  .ach-card-metric > b{font-size:12px;line-height:1.25}
 }
 @media(prefers-reduced-motion:reduce){.ach-spinner{animation:none}}
 

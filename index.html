@@ -614,6 +614,92 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
 .tbr-lightbox.is-open img{transform:none}
 .tbr-lightbox p{font-size:12.5px;font-weight:600;color:#fff;text-align:center}
 .tbr-lb-x{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:38px;height:38px;border-radius:50%;font-size:24px;line-height:1;color:#fff;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center}
+
+/* =====================================================================
+   SCHEDULE (menu baru) - memakai design token yang sudah ada
+   ===================================================================== */
+.sch-menu-hero .menu-hero-icon{background:linear-gradient(135deg,#10b981,#0ea5e9);box-shadow:0 12px 20px -8px rgba(16,185,129,.55)}
+
+/* --- Kalender (bulan & tahun terkunci, hanya tanggal yang bisa diketuk) --- */
+.sch-cal{padding:14px 14px 16px}
+.sch-cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.sch-period{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,#eef0ff,#e6e2ff);
+  border:1px solid #dcd9ff;color:var(--brand);font-weight:800;font-size:15px;letter-spacing:-.01em;user-select:none}
+.sch-period svg{width:15px;height:15px;opacity:.75}
+.sch-period .sch-lock{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#fff;font-size:10px;font-weight:700;color:var(--muted)}
+.sch-nav{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--line);color:var(--ink-2);flex-shrink:0;
+  transition:transform .15s var(--ease),background .2s,opacity .2s}
+.sch-nav:hover{background:#f1f2ff}.sch-nav:active{transform:scale(.9)}.sch-nav:disabled{opacity:.35;cursor:default}
+.sch-dow,.sch-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.sch-dow span{text-align:center;font-size:10.5px;font-weight:700;color:var(--muted);padding:2px 0 6px}
+.sch-dow span:last-child{color:#e11d48}
+.sch-day{position:relative;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:13px;font-size:13.5px;font-weight:600;color:var(--ink);
+  background:#f4f5fd;border:1px solid transparent;cursor:pointer;font-variant-numeric:tabular-nums;
+  transition:transform .18s var(--ease),background .2s,color .2s,box-shadow .25s,border-color .2s}
+.sch-day:hover{background:#e9ebff;transform:translateY(-1px)}
+.sch-day:active{transform:scale(.9)}
+.sch-day.is-sun{color:#e11d48}
+.sch-day.is-today{border-color:#8b83f5;color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(99,91,240,.12)}
+.sch-day.is-today::after{content:"";position:absolute;bottom:5px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:currentColor}
+.sch-day.is-sel{color:#fff;border-color:transparent;background:linear-gradient(135deg,#4f46e5,#6d4df0);box-shadow:0 10px 18px -8px rgba(79,70,229,.8);animation:schPop .38s var(--ease)}
+.sch-day.is-sel::after{background:#fff}
+.sch-blank{aspect-ratio:1/1}
+@keyframes schPop{0%{transform:scale(.8)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+
+/* --- Kepala tanggal terpilih --- */
+.sch-date-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.sch-date-num{width:54px;height:54px;border-radius:18px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;
+  background:linear-gradient(135deg,#10b981,#0ea5e9);box-shadow:0 12px 20px -10px rgba(14,165,233,.7)}
+.sch-date-num b{font-size:21px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.sch-date-num small{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.9;margin-top:2px}
+.sch-date-txt{min-width:0;flex:1}
+.sch-date-txt h3{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.sch-date-txt p{font-size:12px;color:var(--muted);margin-top:2px}
+.sch-today-pill{padding:4px 10px;border-radius:999px;font-size:10.5px;font-weight:700;color:#047857;background:var(--ok-soft);flex-shrink:0}
+
+/* --- Chip filter --- */
+.sch-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.sch-chips::-webkit-scrollbar{display:none}
+.sch-chip{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:700;color:var(--c,var(--ink-2));
+  background:var(--bg,#f4f5fd);border:1.5px solid var(--bd,var(--line));transition:transform .15s var(--ease),box-shadow .2s,background .2s,color .2s}
+.sch-chip:active{transform:scale(.94)}
+.sch-chip em{font-style:normal;min-width:20px;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.75);font-size:11px;text-align:center}
+.sch-chip.is-on{color:#fff;background:var(--c,var(--brand));border-color:transparent;box-shadow:0 8px 16px -8px var(--c,var(--brand))}
+.sch-chip.is-on em{background:rgba(255,255,255,.25);color:#fff}
+
+/* --- Grup jabatan & shift --- */
+.sch-list{display:flex;flex-direction:column;gap:12px}
+.sch-job{border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 1px 2px rgba(35,35,100,.04);animation:rise .5s var(--ease) backwards;animation-delay:calc(var(--i,0) * 70ms)}
+.sch-job-head{display:flex;align-items:center;gap:10px;padding:11px 12px;background:linear-gradient(135deg,#f7f8ff,#eef0ff);border-bottom:1px solid var(--line)}
+.sch-job-ico{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+.sch-job-ico svg{width:16px;height:16px}
+.sch-job-head h4{flex:1;min-width:0;font-size:13px;font-weight:800;letter-spacing:.01em;text-transform:uppercase;word-break:break-word}
+.sch-count{flex-shrink:0;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;color:var(--brand);background:#fff;border:1px solid #dcd9ff}
+.sch-shift{padding:10px 12px 12px}
+.sch-shift + .sch-shift{border-top:1px dashed var(--line)}
+.sch-shift-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--c)}
+.sch-dot{width:9px;height:9px;border-radius:50%;background:var(--c);flex-shrink:0}
+.sch-shift-head b{margin-left:auto;padding:2px 9px;border-radius:999px;background:var(--bg);border:1px solid var(--bd);font-size:11px}
+.sch-people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.sch-person{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:var(--bg);border:1px solid var(--bd);transition:transform .2s var(--ease)}
+.sch-person:hover{transform:translateX(3px)}
+.sch-av{width:34px;height:34px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;background:var(--c)}
+.sch-pinfo{min-width:0;flex:1}
+.sch-pname{font-size:13px;font-weight:700;color:var(--ink);line-height:1.25;word-break:break-word}
+.sch-psub{font-size:11px;color:var(--ink-2);margin-top:1px;line-height:1.3;word-break:break-word}
+.sch-badge{flex-shrink:0;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.03em;color:var(--c);background:#fff;border:1px solid var(--bd);max-width:42%;text-align:center;word-break:break-word}
+
+/* --- Loading / kosong / error --- */
+.sch-skel{height:74px;border-radius:18px;background:linear-gradient(100deg,#eceefb 30%,#f8f9ff 50%,#eceefb 70%);background-size:220% 100%;animation:schShimmer 1.3s linear infinite}
+.sch-skel + .sch-skel{margin-top:10px}
+@keyframes schShimmer{to{background-position:-220% 0}}
+.sch-state{padding:22px 10px;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.55;animation:fadeIn .4s var(--ease)}
+.sch-state svg{width:34px;height:34px;margin:0 auto 8px;color:#b9b4ff}
+.sch-state.is-err{color:#be123c}.sch-state.is-err svg{color:#fb7185}
+.sch-retry{margin-top:12px;padding:9px 18px;border-radius:12px;font-size:12.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#6d4df0)}
+.sch-notice{margin-bottom:12px;padding:9px 12px;border-radius:12px;font-size:12px;line-height:1.45;color:#92400e;background:#fffaf0;border:1px solid #fde7b0}
+.sch-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#047857}
+@media (prefers-reduced-motion:reduce){.sch-job,.sch-day.is-sel,.sch-skel{animation:none !important}}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -717,6 +803,18 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                                 <div class="menu-hero-body">
                                     <h3 class="menu-hero-title">TABLET STORE</h3>
                                     <p class="menu-hero-desc">Pinjam &amp; kembalikan tablet</p>
+                                </div>
+                                <svg class="ico-sm chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+
+                            <!-- Schedule -->
+                            <button onclick="handleMenuClick('Schedule', () => openSchedule())" id="main-menu-schedule-card" class="menu-hero sch-menu-hero">
+                                <div class="menu-hero-icon">
+                                    <svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>
+                                </div>
+                                <div class="menu-hero-body">
+                                    <h3 class="menu-hero-title">SCHEDULE</h3>
+                                    <p class="menu-hero-desc">Jadwal kerja karyawan per tanggal</p>
                                 </div>
                                 <svg class="ico-sm chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                             </button>
@@ -1038,6 +1136,56 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         </div>
                     </div>
 
+                </div>
+            </div>
+
+
+            <!-- BAGIAN 5: MENU "SCHEDULE" (jadwal kerja dari tabel "schedule") -->
+            <div id="schedule-section" class="section-split hidden">
+                <div class="stack stagger">
+                    <div class="page-head">
+                        <button onclick="closeSchedule()" class="icon-btn" aria-label="Kembali">
+                            <svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <h2 class="page-title">SCHEDULE</h2>
+                        <span id="sch-live" class="sch-live" style="margin-left:auto"><span class="live-dot"></span>Live</span>
+                    </div>
+
+                    <!-- DATE PICKER: bulan & tahun terkunci (dari tabel schedule), hanya tanggal yang bisa diketuk -->
+                    <div class="panel sch-cal">
+                        <div class="sch-cal-head">
+                            <button type="button" id="sch-prev" class="sch-nav hidden" onclick="schStepPeriod(-1)" aria-label="Periode sebelumnya">
+                                <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <div class="sch-period" id="sch-period" aria-live="polite">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>
+                                <span id="sch-period-text">Memuat...</span>
+                                <span class="sch-lock" id="sch-lock-chip"><svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" style="width:11px;height:11px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>Terkunci</span>
+                            </div>
+                            <button type="button" id="sch-next" class="sch-nav hidden" onclick="schStepPeriod(1)" aria-label="Periode berikutnya">
+                                <svg class="ico-sm" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                        <div class="sch-dow"><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span></div>
+                        <div class="sch-grid" id="sch-grid" role="grid" aria-label="Pilih tanggal"></div>
+                    </div>
+
+                    <!-- INFORMASI SCHEDULE BERDASARKAN TANGGAL TERPILIH -->
+                    <div class="panel">
+                        <div id="sch-notice" class="sch-notice hidden"></div>
+                        <div class="sch-date-head">
+                            <div class="sch-date-num"><b id="sch-sel-num">--</b><small id="sch-sel-mon">---</small></div>
+                            <div class="sch-date-txt">
+                                <h3 id="sch-sel-title">Memuat jadwal...</h3>
+                                <p id="sch-sel-sub">Mohon tunggu</p>
+                            </div>
+                            <span id="sch-today-pill" class="sch-today-pill hidden">Hari ini</span>
+                        </div>
+                        <div id="sch-chips" class="sch-chips"></div>
+                        <div id="sch-list" class="sch-list">
+                            <div class="sch-skel"></div><div class="sch-skel"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2764,6 +2912,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             document.getElementById('main-menu-section').classList.remove('hidden');
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('tablet-section').classList.add('hidden');
+            document.getElementById('schedule-section').classList.add('hidden');
             
             document.getElementById('persistent-profile-container').classList.remove('hidden');
 
@@ -2827,6 +2976,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             if (teamTimerInterval) clearInterval(teamTimerInterval);
             
             tabletCleanup();
+            if (typeof schCleanup === 'function') schCleanup();
             cancelBreakPush(localStorage.getItem('emp_nip'));
             removePushSubscriptionRow();
 
@@ -2836,6 +2986,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             document.getElementById('main-menu-section').classList.add('hidden');
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('tablet-section').classList.add('hidden');
+            document.getElementById('schedule-section').classList.add('hidden');
             document.getElementById('persistent-profile-container').classList.add('hidden');
             document.getElementById('logout-btn-header').classList.add('hidden');
             
@@ -4306,6 +4457,395 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                 btn.disabled = !(tbrData && tbrData.length > 0);
             }
         }
+
+        // =========================================================================
+        // --- SCHEDULE : JADWAL KERJA KARYAWAN ---
+        // Tabel : schedule  (kolom: nama, jabatan, bulan, tahun, tgl_1 ... tgl_31)
+        // Bulan & tahun date picker DIKUNCI (diambil dari data tabel), hanya tanggal yang bisa diketuk.
+        // =========================================================================
+        const SCH_TABLE = 'schedule';
+        const SCH_LOCK_PERIOD = true;   // true = bulan/tahun terkunci. false = muncul panah untuk pindah antar periode yang ADA di tabel
+        const SCH_PAGE_SIZE = 1000;     // ukuran halaman query Supabase
+        const SCH_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        const SCH_BULAN_PENDEK = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        const SCH_HARI = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        // Nama bulan (ID/EN, panjang/pendek) -> angka 1-12, supaya kolom "bulan" boleh berisi angka ataupun teks
+        const SCH_MONTH_ALIAS = {
+            januari:1, jan:1, january:1, februari:2, feb:2, february:2, pebruari:2, maret:3, mar:3, march:3, april:4, apr:4,
+            mei:5, may:5, juni:6, jun:6, june:6, juli:7, jul:7, july:7, agustus:8, agu:8, agt:8, aug:8, august:8,
+            september:9, sep:9, sept:9, oktober:10, okt:10, oct:10, october:10, november:11, nov:11, nopember:11,
+            desember:12, des:12, dec:12, december:12
+        };
+        // Warna per jenis shift (nilai lain otomatis diberi warna dari palet cadangan)
+        const SCH_COLORS = {
+            'PAGI':  { c:'#b45309', bg:'#fff6e0', bd:'#fde7b0' },
+            'SIANG': { c:'#0369a1', bg:'#e6f4fe', bd:'#bfe3fa' },
+            'SORE':  { c:'#c2410c', bg:'#fff0e6', bd:'#fed7bd' },
+            'MALAM': { c:'#4338ca', bg:'#eef0ff', bd:'#d5d8ff' },
+            'MIDDLE':{ c:'#7e22ce', bg:'#f5ebff', bd:'#e3ccfb' },
+            'OFF':   { c:'#be123c', bg:'#fff1f3', bd:'#ffd5dc' },
+            'LIBUR': { c:'#be123c', bg:'#fff1f3', bd:'#ffd5dc' },
+            'CUTI':  { c:'#0f766e', bg:'#e6faf6', bd:'#b6ece2' }
+        };
+        const SCH_FALLBACK = [
+            { c:'#047857', bg:'#e6f9f1', bd:'#b7ecd6' }, { c:'#a21caf', bg:'#fdeafd', bd:'#f4c8f5' },
+            { c:'#0e7490', bg:'#e3f7fb', bd:'#b3e6f0' }, { c:'#a16207', bg:'#fdf6dc', bd:'#f3e3a2' },
+            { c:'#475569', bg:'#f1f5f9', bd:'#d9e0e8' }
+        ];
+        const SCH_SHIFT_ORDER = ['PAGI','MIDDLE','SIANG','SORE','MALAM'];   // urutan tampil, sisanya alfabet, OFF/LIBUR/CUTI di akhir
+        const SCH_TAIL_ORDER = ['OFF','LIBUR','CUTI'];
+
+        let schRows = [];            // seluruh baris tabel schedule
+        let schPeriods = [];         // [{y, m}] periode yang tersedia, terurut
+        let schPeriodIdx = -1;       // indeks periode aktif di schPeriods
+        let schSelDay = 1;           // tanggal terpilih
+        let schFilter = 'ALL';       // filter chip shift
+        let schLoadId = 0;
+        let schChannel = null;
+        let schReloadTimer = null;
+        let schOpen = false;
+
+        function schEsc(v) {
+            return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        }
+        function schToday() {
+            const d = new Date();
+            return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() };
+        }
+        function schParseMonth(v) {
+            if (v == null) return null;
+            const s = String(v).trim().toLowerCase();
+            if (!s) return null;
+            if (/^\d{1,2}$/.test(s)) { const n = parseInt(s, 10); return n >= 1 && n <= 12 ? n : null; }
+            return SCH_MONTH_ALIAS[s] || SCH_MONTH_ALIAS[s.replace(/\./g, '')] || null;
+        }
+        function schPick(row, keys) {
+            for (const k of keys) { if (row[k] != null && String(row[k]).trim() !== '') return String(row[k]).trim(); }
+            return '';
+        }
+        function schDaysIn(y, m) { return new Date(y, m, 0).getDate(); }
+        function schColorFor(val) {
+            if (SCH_COLORS[val]) return SCH_COLORS[val];
+            if (val === '-') return { c:'#64748b', bg:'#f4f5fb', bd:'#e1e4f0' };
+            let h = 0; for (let i = 0; i < val.length; i++) h = (h * 31 + val.charCodeAt(i)) >>> 0;
+            return SCH_FALLBACK[h % SCH_FALLBACK.length];
+        }
+        function schColorStyle(val) {
+            const k = schColorFor(val);
+            return `--c:${k.c};--bg:${k.bg};--bd:${k.bd}`;
+        }
+        function schShiftRank(val) {
+            const a = SCH_SHIFT_ORDER.indexOf(val);
+            if (a >= 0) return a;
+            const t = SCH_TAIL_ORDER.indexOf(val);
+            if (t >= 0) return 2000 + t;
+            if (val === '-') return 3000;
+            return 1000;
+        }
+
+        // ---------- Navigasi ----------
+        function openSchedule() {
+            schOpen = true;
+            document.getElementById('main-menu-section').classList.add('hidden');
+            document.getElementById('istirahat-section').classList.add('hidden');
+            document.getElementById('tablet-section').classList.add('hidden');
+            document.getElementById('schedule-section').classList.remove('hidden');
+            document.getElementById('header-title').innerText = 'Schedule';
+            document.getElementById('header-subtitle').innerText = 'Jadwal Kerja Karyawan';
+
+            schFilter = 'ALL';
+            schRows = [];
+            schPeriods = [];
+            schPeriodIdx = -1;
+            document.getElementById('sch-grid').innerHTML = '';
+            document.getElementById('sch-chips').innerHTML = '';
+            document.getElementById('sch-period-text').innerText = 'Memuat...';
+            document.getElementById('sch-notice').classList.add('hidden');
+            document.getElementById('sch-today-pill').classList.add('hidden');
+            document.getElementById('sch-sel-num').innerText = '--';
+            document.getElementById('sch-sel-mon').innerText = '---';
+            document.getElementById('sch-sel-title').innerText = 'Memuat jadwal...';
+            document.getElementById('sch-sel-sub').innerText = 'Mohon tunggu';
+            document.getElementById('sch-list').innerHTML = '<div class="sch-skel"></div><div class="sch-skel"></div>';
+            document.getElementById('sch-lock-chip').classList.toggle('hidden', !SCH_LOCK_PERIOD);
+
+            schLoad(true);
+            schSetupRealtime();
+        }
+
+        function closeSchedule() {
+            schCleanup();
+            document.getElementById('schedule-section').classList.add('hidden');
+            document.getElementById('main-menu-section').classList.remove('hidden');
+            document.getElementById('header-title').innerText = 'Portal Karyawan';
+            document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan Informa MOG';
+            const nip = localStorage.getItem('emp_nip');
+            if (nip) checkActiveBreakStatus(nip);
+        }
+
+        function schCleanup() {
+            schOpen = false;
+            schLoadId++;
+            if (schReloadTimer) { clearTimeout(schReloadTimer); schReloadTimer = null; }
+            if (schChannel) {
+                try { supabaseClient.removeChannel(schChannel); } catch (e) {}
+                schChannel = null;
+            }
+        }
+
+        // ---------- Realtime (opsional: aktif bila Realtime tabel schedule dinyalakan di Supabase) ----------
+        function schSetLive(on) {
+            const el = document.getElementById('sch-live');
+            if (el) el.style.opacity = on ? '1' : '.45';
+        }
+        function schSetupRealtime() {
+            if (schChannel) { try { supabaseClient.removeChannel(schChannel); } catch (e) {} schChannel = null; }
+            schSetLive(false);
+            try {
+                schChannel = supabaseClient
+                    .channel('schedule-live-' + Date.now())
+                    .on('postgres_changes', { event: '*', schema: 'public', table: SCH_TABLE }, () => {
+                        if (schReloadTimer) clearTimeout(schReloadTimer);
+                        schReloadTimer = setTimeout(() => schLoad(false), 400);
+                    })
+                    .subscribe((status) => { schSetLive(status === 'SUBSCRIBED'); });
+            } catch (e) { schChannel = null; }
+        }
+
+        // ---------- Ambil data ----------
+        async function schFetchAll() {
+            let all = [];
+            for (let page = 0; page < 30; page++) {
+                const from = page * SCH_PAGE_SIZE;
+                const { data, error } = await supabaseClient.from(SCH_TABLE).select('*').range(from, from + SCH_PAGE_SIZE - 1);
+                if (error) throw error;
+                all = all.concat(data || []);
+                if (!data || data.length < SCH_PAGE_SIZE) break;
+            }
+            return all;
+        }
+
+        async function schLoad(isFirst) {
+            const myId = ++schLoadId;
+            try {
+                const rows = await schFetchAll();
+                if (myId !== schLoadId || !schOpen) return;
+                schRows = rows.map(r => ({ raw: r, y: parseInt(r.tahun, 10), m: schParseMonth(r.bulan) }))
+                              .filter(r => r.y && r.m);
+
+                // periode yang tersedia (bulan + tahun unik dari tabel)
+                const seen = {};
+                schRows.forEach(r => { seen[r.y * 100 + r.m] = { y: r.y, m: r.m }; });
+                schPeriods = Object.keys(seen).map(Number).sort((a, b) => a - b).map(k => seen[k]);
+
+                if (!schPeriods.length) { schRenderEmptyAll(); return; }
+
+                const keepKey = (!isFirst && schPeriodIdx >= 0 && schPeriods[schPeriodIdx]) ? schPeriods[schPeriodIdx] : null;
+                const t = schToday();
+                let notice = '';
+
+                if (isFirst || !keepKey) {
+                    // buka pertama kali: otomatis ke tanggal hari ini
+                    let idx = schPeriods.findIndex(p => p.y === t.y && p.m === t.m);
+                    if (idx >= 0) {
+                        schSelDay = t.d;
+                    } else {
+                        // bulan ini belum ada di tabel -> pakai periode terdekat
+                        const nowKey = t.y * 12 + t.m;
+                        let best = 0, bestDiff = Infinity;
+                        schPeriods.forEach((p, i) => { const d = Math.abs(p.y * 12 + p.m - nowKey); if (d < bestDiff) { bestDiff = d; best = i; } });
+                        idx = best;
+                        schSelDay = 1;
+                        notice = `Jadwal ${SCH_BULAN[t.m - 1]} ${t.y} belum tersedia. Menampilkan periode ${SCH_BULAN[schPeriods[idx].m - 1]} ${schPeriods[idx].y}.`;
+                    }
+                    schPeriodIdx = idx;
+                } else {
+                    const idx = schPeriods.findIndex(p => p.y === keepKey.y && p.m === keepKey.m);
+                    schPeriodIdx = idx >= 0 ? idx : schPeriods.length - 1;
+                }
+
+                const nb = document.getElementById('sch-notice');
+                if (notice) { nb.innerText = notice; nb.classList.remove('hidden'); } else if (isFirst) { nb.classList.add('hidden'); }
+
+                const p = schPeriods[schPeriodIdx];
+                if (schSelDay > schDaysIn(p.y, p.m)) schSelDay = schDaysIn(p.y, p.m);
+
+                schRenderCalendar();
+                schRenderDetail(false);
+            } catch (err) {
+                if (myId !== schLoadId || !schOpen) return;
+                console.error('Gagal memuat schedule:', err);
+                if (isFirst || !schRows.length) schRenderError(err && err.message ? err.message : String(err));
+            }
+        }
+
+        // ---------- Tampilan kalender ----------
+        function schRenderCalendar() {
+            const p = schPeriods[schPeriodIdx];
+            if (!p) return;
+            document.getElementById('sch-period-text').innerText = `${SCH_BULAN[p.m - 1]} ${p.y}`;
+
+            const prev = document.getElementById('sch-prev');
+            const next = document.getElementById('sch-next');
+            const showNav = !SCH_LOCK_PERIOD && schPeriods.length > 1;
+            prev.classList.toggle('hidden', !showNav);
+            next.classList.toggle('hidden', !showNav);
+            prev.disabled = schPeriodIdx <= 0;
+            next.disabled = schPeriodIdx >= schPeriods.length - 1;
+
+            const t = schToday();
+            const total = schDaysIn(p.y, p.m);
+            const offset = (new Date(p.y, p.m - 1, 1).getDay() + 6) % 7;   // minggu dimulai Senin
+            let html = '';
+            for (let i = 0; i < offset; i++) html += '<span class="sch-blank"></span>';
+            for (let d = 1; d <= total; d++) {
+                const dow = new Date(p.y, p.m - 1, d).getDay();
+                const cls = ['sch-day'];
+                if (dow === 0) cls.push('is-sun');
+                if (t.y === p.y && t.m === p.m && t.d === d) cls.push('is-today');
+                if (d === schSelDay) cls.push('is-sel');
+                html += `<button type="button" class="${cls.join(' ')}" data-day="${d}" role="gridcell" aria-label="Tanggal ${d} ${SCH_BULAN[p.m - 1]} ${p.y}" aria-pressed="${d === schSelDay}">${d}</button>`;
+            }
+            const grid = document.getElementById('sch-grid');
+            grid.innerHTML = html;
+            grid.onclick = function (ev) {
+                const btn = ev.target.closest('.sch-day');
+                if (btn) schSelectDay(parseInt(btn.getAttribute('data-day'), 10));
+            };
+        }
+
+        function schSelectDay(d) {
+            if (d === schSelDay) return;
+            schSelDay = d;
+            schFilter = 'ALL';
+            document.querySelectorAll('#sch-grid .sch-day').forEach(b => {
+                const on = parseInt(b.getAttribute('data-day'), 10) === d;
+                b.classList.toggle('is-sel', on);
+                b.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+            schRenderDetail(true);
+        }
+
+        function schStepPeriod(dir) {
+            const n = schPeriodIdx + dir;
+            if (n < 0 || n >= schPeriods.length) return;
+            schPeriodIdx = n;
+            const t = schToday();
+            const p = schPeriods[n];
+            schSelDay = (p.y === t.y && p.m === t.m) ? t.d : 1;
+            schFilter = 'ALL';
+            document.getElementById('sch-notice').classList.add('hidden');
+            schRenderCalendar();
+            schRenderDetail(true);
+        }
+
+        // ---------- Informasi jadwal per tanggal ----------
+        function schRenderDetail(animate) {
+            const p = schPeriods[schPeriodIdx];
+            if (!p) return;
+            const d = schSelDay;
+            const key = 'tgl_' + d;
+            const dateObj = new Date(p.y, p.m - 1, d);
+            const t = schToday();
+            const isToday = t.y === p.y && t.m === p.m && t.d === d;
+
+            document.getElementById('sch-sel-num').innerText = d;
+            document.getElementById('sch-sel-mon').innerText = SCH_BULAN_PENDEK[p.m - 1];
+            document.getElementById('sch-sel-title').innerText = `${SCH_HARI[dateObj.getDay()]}, ${d} ${SCH_BULAN[p.m - 1]} ${p.y}`;
+            document.getElementById('sch-today-pill').classList.toggle('hidden', !isToday);
+
+            // baris untuk periode ini
+            const people = schRows.filter(r => r.y === p.y && r.m === p.m).map(r => {
+                const raw = r.raw;
+                let val = raw[key] == null ? '' : String(raw[key]).trim().toUpperCase();
+                if (!val) val = '-';
+                return {
+                    nama: schPick(raw, ['nama', 'nama_kar', 'nama_karyawan', 'name']) || '(Tanpa nama)',
+                    jabatan: (schPick(raw, ['jabatan', 'jabatan_kar', 'posisi']) || 'TANPA JABATAN').toUpperCase(),
+                    val
+                };
+            });
+
+            document.getElementById('sch-sel-sub').innerText = `${people.length} karyawan terjadwal`;
+
+            // chip filter (hitung per nilai shift)
+            const counts = {};
+            people.forEach(x => { counts[x.val] = (counts[x.val] || 0) + 1; });
+            const vals = Object.keys(counts).sort((a, b) => schShiftRank(a) - schShiftRank(b) || a.localeCompare(b));
+            if (schFilter !== 'ALL' && !counts[schFilter]) schFilter = 'ALL';
+
+            let chips = `<button type="button" class="sch-chip ${schFilter === 'ALL' ? 'is-on' : ''}" data-f="ALL">Semua<em>${people.length}</em></button>`;
+            vals.forEach(v => {
+                const label = v === '-' ? 'TIDAK DIISI' : v;
+                chips += `<button type="button" class="sch-chip ${schFilter === v ? 'is-on' : ''}" style="${schColorStyle(v)}" data-f="${schEsc(v)}">${schEsc(label)}<em>${counts[v]}</em></button>`;
+            });
+            const chipBox = document.getElementById('sch-chips');
+            chipBox.innerHTML = people.length ? chips : '';
+            chipBox.onclick = function (ev) {
+                const b = ev.target.closest('.sch-chip');
+                if (!b) return;
+                schFilter = b.getAttribute('data-f');
+                schRenderDetail(false);
+            };
+
+            const list = document.getElementById('sch-list');
+            if (!people.length) {
+                list.innerHTML = `<div class="sch-state"><svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>Belum ada data jadwal untuk periode ini.</div>`;
+                return;
+            }
+
+            // grouping: jabatan -> nilai tanggal (PAGI / SIANG / OFF / lainnya)
+            const byJob = {};
+            people.forEach(x => {
+                if (schFilter !== 'ALL' && x.val !== schFilter) return;
+                (byJob[x.jabatan] = byJob[x.jabatan] || {});
+                (byJob[x.jabatan][x.val] = byJob[x.jabatan][x.val] || []).push(x);
+            });
+            const jobs = Object.keys(byJob).sort((a, b) => a.localeCompare(b));
+            const dateShort = `${d} ${SCH_BULAN_PENDEK[p.m - 1]} ${p.y}`;
+            const icoJob = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>';
+
+            let html = '';
+            jobs.forEach((job, ji) => {
+                const groups = byJob[job];
+                const gvals = Object.keys(groups).sort((a, b) => schShiftRank(a) - schShiftRank(b) || a.localeCompare(b));
+                const totalJob = gvals.reduce((s, v) => s + groups[v].length, 0);
+                html += `<section class="sch-job" style="--i:${ji}"><div class="sch-job-head"><span class="sch-job-ico">${icoJob}</span><h4>${schEsc(job)}</h4><span class="sch-count">${totalJob} orang</span></div>`;
+                gvals.forEach(v => {
+                    const arr = groups[v].slice().sort((a, b) => a.nama.localeCompare(b.nama));
+                    const label = v === '-' ? 'TIDAK DIISI' : v;
+                    html += `<div class="sch-shift" style="${schColorStyle(v)}"><div class="sch-shift-head"><span class="sch-dot"></span>${schEsc(label)}<b>${arr.length}</b></div><ul class="sch-people">`;
+                    arr.forEach(x => {
+                        html += `<li class="sch-person"><span class="sch-av">${schEsc(x.nama.charAt(0).toUpperCase())}</span><div class="sch-pinfo"><p class="sch-pname">${schEsc(x.nama)}</p><p class="sch-psub">${schEsc(x.jabatan)} &bull; ${schEsc(dateShort)}</p></div><span class="sch-badge">${schEsc(label)}</span></li>`;
+                    });
+                    html += '</ul></div>';
+                });
+                html += '</section>';
+            });
+            list.innerHTML = html || '<div class="sch-state">Tidak ada data untuk filter ini.</div>';
+            if (animate) list.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function schRenderEmptyAll() {
+            document.getElementById('sch-grid').innerHTML = '';
+            document.getElementById('sch-chips').innerHTML = '';
+            document.getElementById('sch-period-text').innerText = 'Belum ada data';
+            document.getElementById('sch-sel-title').innerText = 'Jadwal belum tersedia';
+            document.getElementById('sch-sel-sub').innerText = 'Tabel schedule masih kosong';
+            document.getElementById('sch-list').innerHTML = `<div class="sch-state"><svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>Belum ada data jadwal pada tabel &quot;schedule&quot;.</div>`;
+        }
+
+        function schRenderError(msg) {
+            document.getElementById('sch-period-text').innerText = 'Gagal memuat';
+            document.getElementById('sch-sel-title').innerText = 'Jadwal tidak dapat dimuat';
+            document.getElementById('sch-sel-sub').innerText = 'Periksa koneksi / izin tabel';
+            document.getElementById('sch-list').innerHTML = `<div class="sch-state is-err"><svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>${schEsc(msg)}<br><button type="button" class="sch-retry" onclick="schRetry()">Coba lagi</button></div>`;
+        }
+
+        function schRetry() {
+            document.getElementById('sch-list').innerHTML = '<div class="sch-skel"></div><div class="sch-skel"></div>';
+            schLoad(true);
+        }
     </script>
 
 <!-- NAVIGASI TOMBOL BACK HP (History API) -->
@@ -4328,7 +4868,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         var el = document.getElementById(id);
         return !el || el.classList.contains('hidden');
     }
-    function isSubMenuOpen() { return !isHidden('istirahat-section') || !isHidden('tablet-section'); }
+    function isSubMenuOpen() { return !isHidden('istirahat-section') || !isHidden('tablet-section') || !isHidden('schedule-section'); }
     function isDialogOpen()  { return overlay.classList.contains('is-open'); }
 
     function openExitDialog() {
@@ -4429,6 +4969,23 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         origCloseTablet.apply(this, arguments);
     };
 
+    // ---- Bungkus openSchedule / closeSchedule (Schedule) ----
+    var origOpenSchedule = window.openSchedule;
+    window.openSchedule = function () {
+        origOpenSchedule.apply(this, arguments);
+        if (!(history.state && history.state.portal === STATE_SUB)) {
+            history.pushState({ portal: STATE_SUB }, '');
+        }
+    };
+    var origCloseSchedule = window.closeSchedule;
+    window.closeSchedule = function (fromPopState) {
+        if (fromPopState !== true && history.state && history.state.portal === STATE_SUB) {
+            history.back();          // popstate yang akan memanggil origCloseSchedule
+            return;
+        }
+        origCloseSchedule.apply(this, arguments);
+    };
+
     // ---- Tombol Back HP ----
     window.addEventListener('popstate', function (e) {
         var st = e.state && e.state.portal;
@@ -4446,6 +5003,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         // 1) Sedang di sub-menu (semua tab Istirahat) -> kembali ke Menu Utama
         if (isSubMenuOpen()) {
             if (!isHidden('tablet-section')) window.closeTabletStore(true);
+            else if (!isHidden('schedule-section')) window.closeSchedule(true);
             else window.closeIstirahatMenu(true);
             if (st === STATE_GUARD) history.pushState({ portal: STATE_MAIN }, '');
             return;

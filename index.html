@@ -700,6 +700,23 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
 .sch-notice{margin-bottom:12px;padding:9px 12px;border-radius:12px;font-size:12px;line-height:1.45;color:#92400e;background:#fffaf0;border:1px solid #fde7b0}
 .sch-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#047857}
 @media (prefers-reduced-motion:reduce){.sch-job,.sch-day.is-sel,.sch-skel{animation:none !important}}
+
+/* --- Pencarian & filter --- */
+.sch-tools{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:6px}
+.sch-search{position:relative;display:block;min-width:0}
+.sch-search svg{position:absolute;left:11px;top:50%;width:15px;height:15px;margin-top:-7.5px;color:var(--muted);pointer-events:none}
+.sch-search input{width:100%;min-width:0;padding:12px 8px 12px 31px;border-radius:14px;background:#fff;border:1px solid var(--line);color:var(--ink);font-weight:500;outline:none;
+  font-size:14px !important;box-shadow:var(--shadow);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+.sch-search input:focus{border-color:#8b83f5;box-shadow:0 0 0 4px rgba(99,91,240,.16)}
+.sch-search input::-webkit-search-cancel-button{-webkit-appearance:none}
+select.sch-sel{min-width:0;padding:12px 24px 12px 10px;background-color:#fff;background-position:right 8px center;background-size:13px;font-size:14px !important;font-weight:600;
+  text-overflow:ellipsis;box-shadow:var(--shadow)}
+select.sch-sel.is-set{border-color:#8b83f5;color:var(--brand);background-color:#f1f0ff}
+/* --- Foto karyawan --- */
+.sch-av{position:relative;overflow:hidden}
+.sch-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s var(--ease)}
+.sch-av img.is-ready{opacity:1}
+.sch-av{width:40px;height:40px;border-radius:13px}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -1170,6 +1187,16 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                         <div class="sch-grid" id="sch-grid" role="grid" aria-label="Pilih tanggal"></div>
                     </div>
 
+                    <!-- PENCARIAN (NIP / NAMA) + FILTER JABATAN + FILTER NILAI (dropdown terisi otomatis dari data) -->
+                    <div class="sch-tools">
+                        <label class="sch-search">
+                            <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+                            <input type="search" id="sch-search" placeholder="NIP / Nama" autocomplete="off" aria-label="Cari berdasarkan NIP atau nama" oninput="schOnSearch()">
+                        </label>
+                        <select id="sch-f-job" class="field sch-sel" title="Filter jabatan" aria-label="Filter jabatan" onchange="schOnFilter()"><option value="ALL">Jabatan</option></select>
+                        <select id="sch-f-val" class="field sch-sel" title="Filter nilai" aria-label="Filter nilai" onchange="schOnFilter()"><option value="ALL">Nilai</option></select>
+                    </div>
+
                     <!-- INFORMASI SCHEDULE BERDASARKAN TANGGAL TERPILIH -->
                     <div class="panel">
                         <div id="sch-notice" class="sch-notice hidden"></div>
@@ -1181,7 +1208,6 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                             </div>
                             <span id="sch-today-pill" class="sch-today-pill hidden">Hari ini</span>
                         </div>
-                        <div id="sch-chips" class="sch-chips"></div>
                         <div id="sch-list" class="sch-list">
                             <div class="sch-skel"></div><div class="sch-skel"></div>
                         </div>
@@ -4499,7 +4525,15 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         let schPeriods = [];         // [{y, m}] periode yang tersedia, terurut
         let schPeriodIdx = -1;       // indeks periode aktif di schPeriods
         let schSelDay = 1;           // tanggal terpilih
-        let schFilter = 'ALL';       // filter chip shift
+        let schQuery = '';           // kata kunci pencarian NIP / nama
+        let schFJob = 'ALL';         // filter jabatan
+        let schFVal = 'ALL';         // filter nilai (PAGI/SIANG/OFF/...)
+        const SCH_JOB_FIRST = ['PS', 'SMT'];   // urutan jabatan: PS dulu, lalu SMT, lalu sisanya (alfabet)
+        const SCH_PHOTO_BUCKET = 'FOTO SALES';
+        let schPhotoCache = {};      // nip -> objectURL ('' bila tidak ada foto)
+        let schPhotoIndex = null;    // nip -> nama file di bucket (dari list)
+        let schPhotoQueue = [];
+        let schPhotoActive = 0;
         let schLoadId = 0;
         let schChannel = null;
         let schReloadTimer = null;
@@ -4553,12 +4587,12 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             document.getElementById('header-title').innerText = 'Schedule';
             document.getElementById('header-subtitle').innerText = 'Jadwal Kerja Karyawan';
 
-            schFilter = 'ALL';
+            schQuery = ''; schFJob = 'ALL'; schFVal = 'ALL';
+            document.getElementById('sch-search').value = '';
             schRows = [];
             schPeriods = [];
             schPeriodIdx = -1;
             document.getElementById('sch-grid').innerHTML = '';
-            document.getElementById('sch-chips').innerHTML = '';
             document.getElementById('sch-period-text').innerText = 'Memuat...';
             document.getElementById('sch-notice').classList.add('hidden');
             document.getElementById('sch-today-pill').classList.add('hidden');
@@ -4587,6 +4621,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             schOpen = false;
             schLoadId++;
             if (schReloadTimer) { clearTimeout(schReloadTimer); schReloadTimer = null; }
+            schPhotoQueue = [];
             if (schChannel) {
                 try { supabaseClient.removeChannel(schChannel); } catch (e) {}
                 schChannel = null;
@@ -4717,7 +4752,6 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
         function schSelectDay(d) {
             if (d === schSelDay) return;
             schSelDay = d;
-            schFilter = 'ALL';
             document.querySelectorAll('#sch-grid .sch-day').forEach(b => {
                 const on = parseInt(b.getAttribute('data-day'), 10) === d;
                 b.classList.toggle('is-sel', on);
@@ -4733,10 +4767,97 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             const t = schToday();
             const p = schPeriods[n];
             schSelDay = (p.y === t.y && p.m === t.m) ? t.d : 1;
-            schFilter = 'ALL';
             document.getElementById('sch-notice').classList.add('hidden');
             schRenderCalendar();
             schRenderDetail(true);
+        }
+
+        // ---------- Foto karyawan (bucket "FOTO SALES", nama file = NIP) ----------
+        async function schBuildPhotoIndex() {
+            if (schPhotoIndex) return schPhotoIndex;
+            schPhotoIndex = {};
+            try {
+                const { data, error } = await supabaseClient.storage.from(SCH_PHOTO_BUCKET).list('', { limit: 5000 });
+                if (!error && data) data.forEach(f => {
+                    const base = String(f.name).replace(/\.(jpe?g|png|webp)$/i, '');
+                    if (!schPhotoIndex[base]) schPhotoIndex[base] = f.name;
+                });
+            } catch (e) {}
+            return schPhotoIndex;
+        }
+        async function schFetchPhoto(nip) {
+            if (schPhotoCache[nip] !== undefined) return schPhotoCache[nip];
+            const idx = await schBuildPhotoIndex();
+            const tries = idx[nip] ? [idx[nip]] : [String(nip), nip + '.jpg', nip + '.jpeg', nip + '.png', nip + '.JPG', nip + '.JPEG', nip + '.PNG'];
+            // bila list berhasil tetapi NIP tidak ada di dalamnya -> tidak ada foto (hemat request)
+            const useTries = (Object.keys(idx).length && !idx[nip]) ? [] : tries;
+            let url = '';
+            for (const path of useTries) {
+                try {
+                    const { data, error } = await supabaseClient.storage.from(SCH_PHOTO_BUCKET).download(path);
+                    if (!error && data) { url = URL.createObjectURL(data); break; }
+                } catch (e) {}
+            }
+            schPhotoCache[nip] = url;
+            return url;
+        }
+        function schApplyPhoto(nip, url) {
+            if (!url) return;
+            document.querySelectorAll('.sch-av[data-nip="' + nip + '"]').forEach(av => {
+                if (av.querySelector('img')) return;
+                const img = new Image();
+                img.alt = '';
+                img.onload = () => img.classList.add('is-ready');
+                img.src = url;
+                av.appendChild(img);
+            });
+        }
+        function schPhotoPump() {
+            while (schPhotoActive < 4 && schPhotoQueue.length) {
+                const nip = schPhotoQueue.shift();
+                schPhotoActive++;
+                schFetchPhoto(nip).then(url => { if (schOpen) schApplyPhoto(nip, url); })
+                    .finally(() => { schPhotoActive--; schPhotoPump(); });
+            }
+        }
+        function schHydratePhotos() {
+            const seen = {};
+            schPhotoQueue = [];
+            document.querySelectorAll('#sch-list .sch-av[data-nip]').forEach(av => {
+                const nip = av.getAttribute('data-nip');
+                if (!nip || seen[nip]) return;
+                seen[nip] = true;
+                if (schPhotoCache[nip] !== undefined) schApplyPhoto(nip, schPhotoCache[nip]);
+                else schPhotoQueue.push(nip);
+            });
+            schPhotoPump();
+        }
+
+        // ---------- Pencarian & filter ----------
+        let schSearchTimer = null;
+        function schOnSearch() {
+            if (schSearchTimer) clearTimeout(schSearchTimer);
+            schSearchTimer = setTimeout(() => {
+                schQuery = document.getElementById('sch-search').value.trim().toLowerCase();
+                schRenderDetail(false);
+            }, 180);
+        }
+        function schOnFilter() {
+            schFJob = document.getElementById('sch-f-job').value;
+            schFVal = document.getElementById('sch-f-val').value;
+            schRenderDetail(false);
+        }
+        function schFillSelect(id, values, current, baseLabel, labelFn) {
+            const sel = document.getElementById(id);
+            let html = `<option value="ALL">${schEsc(baseLabel)}</option>`;
+            values.forEach(v => { html += `<option value="${schEsc(v)}">${schEsc(labelFn ? labelFn(v) : v)}</option>`; });
+            sel.innerHTML = html;
+            sel.value = current;
+            sel.classList.toggle('is-set', current !== 'ALL');
+        }
+        function schJobRank(job) {
+            const i = SCH_JOB_FIRST.indexOf(job);
+            return i >= 0 ? i : 100;
         }
 
         // ---------- Informasi jadwal per tanggal ----------
@@ -4754,54 +4875,59 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             document.getElementById('sch-sel-title').innerText = `${SCH_HARI[dateObj.getDay()]}, ${d} ${SCH_BULAN[p.m - 1]} ${p.y}`;
             document.getElementById('sch-today-pill').classList.toggle('hidden', !isToday);
 
-            // baris untuk periode ini
+            // seluruh karyawan pada periode ini
             const people = schRows.filter(r => r.y === p.y && r.m === p.m).map(r => {
                 const raw = r.raw;
                 let val = raw[key] == null ? '' : String(raw[key]).trim().toUpperCase();
                 if (!val) val = '-';
                 return {
+                    nip: schPick(raw, ['nip', 'nip_kar', 'nik']),
                     nama: schPick(raw, ['nama', 'nama_kar', 'nama_karyawan', 'name']) || '(Tanpa nama)',
                     jabatan: (schPick(raw, ['jabatan', 'jabatan_kar', 'posisi']) || 'TANPA JABATAN').toUpperCase(),
                     val
                 };
             });
 
-            document.getElementById('sch-sel-sub').innerText = `${people.length} karyawan terjadwal`;
+            // dropdown filter otomatis dari data (PS -> SMT -> lainnya; nilai urut PAGI, SIANG, dst)
+            const jobList = Array.from(new Set(people.map(x => x.jabatan)))
+                .sort((a, b) => schJobRank(a) - schJobRank(b) || a.localeCompare(b));
+            const valList = Array.from(new Set(people.map(x => x.val)))
+                .sort((a, b) => schShiftRank(a) - schShiftRank(b) || a.localeCompare(b));
+            if (schFJob !== 'ALL' && jobList.indexOf(schFJob) < 0) schFJob = 'ALL';
+            if (schFVal !== 'ALL' && valList.indexOf(schFVal) < 0) schFVal = 'ALL';
+            schFillSelect('sch-f-job', jobList, schFJob, 'Jabatan');
+            schFillSelect('sch-f-val', valList, schFVal, 'Nilai', v => v === '-' ? 'TIDAK DIISI' : v);
 
-            // chip filter (hitung per nilai shift)
-            const counts = {};
-            people.forEach(x => { counts[x.val] = (counts[x.val] || 0) + 1; });
-            const vals = Object.keys(counts).sort((a, b) => schShiftRank(a) - schShiftRank(b) || a.localeCompare(b));
-            if (schFilter !== 'ALL' && !counts[schFilter]) schFilter = 'ALL';
-
-            let chips = `<button type="button" class="sch-chip ${schFilter === 'ALL' ? 'is-on' : ''}" data-f="ALL">Semua<em>${people.length}</em></button>`;
-            vals.forEach(v => {
-                const label = v === '-' ? 'TIDAK DIISI' : v;
-                chips += `<button type="button" class="sch-chip ${schFilter === v ? 'is-on' : ''}" style="${schColorStyle(v)}" data-f="${schEsc(v)}">${schEsc(label)}<em>${counts[v]}</em></button>`;
-            });
-            const chipBox = document.getElementById('sch-chips');
-            chipBox.innerHTML = people.length ? chips : '';
-            chipBox.onclick = function (ev) {
-                const b = ev.target.closest('.sch-chip');
-                if (!b) return;
-                schFilter = b.getAttribute('data-f');
-                schRenderDetail(false);
-            };
+            // terapkan pencarian + filter
+            const q = schQuery;
+            const shown = people.filter(x =>
+                (schFJob === 'ALL' || x.jabatan === schFJob) &&
+                (schFVal === 'ALL' || x.val === schFVal) &&
+                (!q || x.nama.toLowerCase().indexOf(q) >= 0 || String(x.nip).toLowerCase().indexOf(q) >= 0)
+            );
+            const filtered = shown.length !== people.length;
+            document.getElementById('sch-sel-sub').innerText = filtered
+                ? `${shown.length} dari ${people.length} karyawan`
+                : `${people.length} karyawan terjadwal`;
 
             const list = document.getElementById('sch-list');
+            const icoEmpty = '<svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>';
             if (!people.length) {
-                list.innerHTML = `<div class="sch-state"><svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>Belum ada data jadwal untuk periode ini.</div>`;
+                list.innerHTML = `<div class="sch-state">${icoEmpty}Belum ada data jadwal untuk periode ini.</div>`;
+                return;
+            }
+            if (!shown.length) {
+                list.innerHTML = `<div class="sch-state">${icoEmpty}Tidak ada karyawan yang cocok dengan pencarian / filter.</div>`;
                 return;
             }
 
-            // grouping: jabatan -> nilai tanggal (PAGI / SIANG / OFF / lainnya)
+            // grouping: jabatan (PS, SMT, lainnya) -> nilai tanggal (PAGI / SIANG / OFF / lainnya)
             const byJob = {};
-            people.forEach(x => {
-                if (schFilter !== 'ALL' && x.val !== schFilter) return;
+            shown.forEach(x => {
                 (byJob[x.jabatan] = byJob[x.jabatan] || {});
                 (byJob[x.jabatan][x.val] = byJob[x.jabatan][x.val] || []).push(x);
             });
-            const jobs = Object.keys(byJob).sort((a, b) => a.localeCompare(b));
+            const jobs = Object.keys(byJob).sort((a, b) => schJobRank(a) - schJobRank(b) || a.localeCompare(b));
             const dateShort = `${d} ${SCH_BULAN_PENDEK[p.m - 1]} ${p.y}`;
             const icoJob = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>';
 
@@ -4816,19 +4942,21 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
                     const label = v === '-' ? 'TIDAK DIISI' : v;
                     html += `<div class="sch-shift" style="${schColorStyle(v)}"><div class="sch-shift-head"><span class="sch-dot"></span>${schEsc(label)}<b>${arr.length}</b></div><ul class="sch-people">`;
                     arr.forEach(x => {
-                        html += `<li class="sch-person"><span class="sch-av">${schEsc(x.nama.charAt(0).toUpperCase())}</span><div class="sch-pinfo"><p class="sch-pname">${schEsc(x.nama)}</p><p class="sch-psub">${schEsc(x.jabatan)} &bull; ${schEsc(dateShort)}</p></div><span class="sch-badge">${schEsc(label)}</span></li>`;
+                        const cached = x.nip ? schPhotoCache[x.nip] : '';
+                        const imgTag = cached ? `<img class="is-ready" alt="" src="${schEsc(cached)}">` : '';
+                        const nipTxt = x.nip ? `NIP ${schEsc(x.nip)} &bull; ` : '';
+                        html += `<li class="sch-person"><span class="sch-av" ${x.nip ? `data-nip="${schEsc(x.nip)}"` : ''}>${schEsc(x.nama.charAt(0).toUpperCase())}${imgTag}</span><div class="sch-pinfo"><p class="sch-pname">${schEsc(x.nama)}</p><p class="sch-psub">${nipTxt}${schEsc(x.jabatan)} &bull; ${schEsc(dateShort)}</p></div><span class="sch-badge">${schEsc(label)}</span></li>`;
                     });
                     html += '</ul></div>';
                 });
                 html += '</section>';
             });
-            list.innerHTML = html || '<div class="sch-state">Tidak ada data untuk filter ini.</div>';
-            if (animate) list.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            list.innerHTML = html;
+            schHydratePhotos();
         }
 
         function schRenderEmptyAll() {
             document.getElementById('sch-grid').innerHTML = '';
-            document.getElementById('sch-chips').innerHTML = '';
             document.getElementById('sch-period-text').innerText = 'Belum ada data';
             document.getElementById('sch-sel-title').innerText = 'Jadwal belum tersedia';
             document.getElementById('sch-sel-sub').innerText = 'Tabel schedule masih kosong';

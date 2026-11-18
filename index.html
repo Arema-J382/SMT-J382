@@ -722,9 +722,14 @@ select.sch-sel.is-set{border-color:#8b83f5;color:var(--brand);background-color:#
 .sch-sum{padding:14px}
 .sch-sum .panel-title{margin-bottom:10px}
 .sch-sum-date{font-weight:600;color:var(--muted)}
-.sch-sum-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.sch-sum-list{display:flex;flex-direction:column;gap:10px}
+.sch-sum-group{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;animation:rise .45s var(--ease) backwards;animation-delay:calc(var(--i,0) * 60ms)}
+.sch-sum-job{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;background:linear-gradient(135deg,#f7f8ff,#eef0ff);border-bottom:1px solid var(--line)}
+.sch-sum-job b{font-size:12.5px;font-weight:800;letter-spacing:.01em;text-transform:uppercase;color:var(--ink);word-break:break-word}
+.sch-sum-job span{flex-shrink:0;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;color:var(--brand);background:#fff;border:1px solid #dcd9ff}
+.sch-sum-items{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:10px}
 .sch-sum-item{display:flex;align-items:center;gap:7px;min-width:0;padding:8px 10px;border-radius:12px;background:var(--bg);border:1px solid var(--bd);color:var(--c);
-  font-size:11.5px;font-weight:800;line-height:1.25;letter-spacing:.01em;animation:rise .45s var(--ease) backwards;animation-delay:calc(var(--i,0) * 35ms)}
+  font-size:11.5px;font-weight:800;line-height:1.25;letter-spacing:.01em}
 .sch-sum-item i{width:8px;height:8px;border-radius:50%;background:var(--c);flex-shrink:0}
 .sch-sum-item span{min-width:0;word-break:break-word}
 .sch-sum-empty{grid-column:1/-1;text-align:center;font-size:12px;color:var(--muted);padding:6px 0}
@@ -4924,11 +4929,18 @@ select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
             // ringkasan jumlah orang per jabatan + nilai (sesuai tanggal terpilih, tidak terpengaruh pencarian/filter)
             const sumMap = {};
             people.forEach(x => { const k = x.jabatan + '\u0001' + x.val; sumMap[k] = sumMap[k] || { job: x.jabatan, val: x.val, n: 0 }; sumMap[k].n++; });
-            const sumItems = Object.keys(sumMap).map(k => sumMap[k])
-                .sort((a, b) => schJobRank(a.job) - schJobRank(b.job) || a.job.localeCompare(b.job) || schShiftRank(a.val) - schShiftRank(b.val) || a.val.localeCompare(b.val));
+            const sumByJob = {};
+            Object.keys(sumMap).forEach(k => { const s = sumMap[k]; (sumByJob[s.job] = sumByJob[s.job] || []).push(s); });
+            const sumJobs = Object.keys(sumByJob).sort((a, b) => schJobRank(a) - schJobRank(b) || a.localeCompare(b));
             document.getElementById('sch-sum-date').innerText = `\u2022 ${d} ${SCH_BULAN_PENDEK[p.m - 1]} ${p.y}`;
-            document.getElementById('sch-sum-list').innerHTML = sumItems.length
-                ? sumItems.map((s, i) => `<div class="sch-sum-item" style="${schColorStyle(s.val)};--i:${i}"><i></i><span>${schEsc(s.job)} ${schEsc(s.val === '-' ? 'TIDAK DIISI' : s.val)} : ${s.n} ORANG</span></div>`).join('')
+            document.getElementById('sch-sum-list').innerHTML = sumJobs.length
+                ? sumJobs.map((job, ji) => {
+                    const arr = sumByJob[job].sort((a, b) => schShiftRank(a.val) - schShiftRank(b.val) || a.val.localeCompare(b.val));
+                    const tot = arr.reduce((s, x) => s + x.n, 0);
+                    return `<div class="sch-sum-group" style="--i:${ji}"><div class="sch-sum-job"><b>${schEsc(job)}</b><span>${tot} ORANG</span></div><div class="sch-sum-items">`
+                        + arr.map(s => `<div class="sch-sum-item" style="${schColorStyle(s.val)}"><i></i><span>${schEsc(s.val === '-' ? 'TIDAK DIISI' : s.val)} : ${s.n} ORANG</span></div>`).join('')
+                        + '</div></div>';
+                }).join('')
                 : '<p class="sch-sum-empty">Belum ada data.</p>';
 
             // terapkan pencarian + filter

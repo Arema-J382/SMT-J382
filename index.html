@@ -717,6 +717,18 @@ select.sch-sel.is-set{border-color:#8b83f5;color:var(--brand);background-color:#
 .sch-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s var(--ease)}
 .sch-av img.is-ready{opacity:1}
 .sch-av{width:40px;height:40px;border-radius:13px}
+
+/* --- Ringkasan per jabatan + nilai --- */
+.sch-sum{padding:14px}
+.sch-sum .panel-title{margin-bottom:10px}
+.sch-sum-date{font-weight:600;color:var(--muted)}
+.sch-sum-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.sch-sum-item{display:flex;align-items:center;gap:7px;min-width:0;padding:8px 10px;border-radius:12px;background:var(--bg);border:1px solid var(--bd);color:var(--c);
+  font-size:11.5px;font-weight:800;line-height:1.25;letter-spacing:.01em;animation:rise .45s var(--ease) backwards;animation-delay:calc(var(--i,0) * 35ms)}
+.sch-sum-item i{width:8px;height:8px;border-radius:50%;background:var(--c);flex-shrink:0}
+.sch-sum-item span{min-width:0;word-break:break-word}
+.sch-sum-empty{grid-column:1/-1;text-align:center;font-size:12px;color:var(--muted);padding:6px 0}
+select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -1193,8 +1205,14 @@ select.sch-sel.is-set{border-color:#8b83f5;color:var(--brand);background-color:#
                             <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
                             <input type="search" id="sch-search" placeholder="NIP / Nama" autocomplete="off" aria-label="Cari berdasarkan NIP atau nama" oninput="schOnSearch()">
                         </label>
-                        <select id="sch-f-job" class="field sch-sel" title="Filter jabatan" aria-label="Filter jabatan" onchange="schOnFilter()"><option value="ALL">Jabatan</option></select>
-                        <select id="sch-f-val" class="field sch-sel" title="Filter nilai" aria-label="Filter nilai" onchange="schOnFilter()"><option value="ALL">Nilai</option></select>
+                        <select id="sch-f-job" class="field sch-sel" title="Filter jabatan" aria-label="Filter jabatan" onchange="schOnFilter()"><option value="ALL" disabled hidden>Jabatan</option></select>
+                        <select id="sch-f-val" class="field sch-sel" title="Filter nilai" aria-label="Filter nilai" onchange="schOnFilter()"><option value="ALL" disabled hidden>Nilai</option></select>
+                    </div>
+
+                    <!-- RINGKASAN JUMLAH ORANG PER JABATAN + NILAI (sesuai tanggal terpilih) -->
+                    <div class="panel sch-sum" id="sch-sum">
+                        <p class="panel-title">Ringkasan <span id="sch-sum-date" class="sch-sum-date"></span></p>
+                        <div id="sch-sum-list" class="sch-sum-list"></div>
                     </div>
 
                     <!-- INFORMASI SCHEDULE BERDASARKAN TANGGAL TERPILIH -->
@@ -4843,13 +4861,18 @@ select.sch-sel.is-set{border-color:#8b83f5;color:var(--brand);background-color:#
             }, 180);
         }
         function schOnFilter() {
-            schFJob = document.getElementById('sch-f-job').value;
-            schFVal = document.getElementById('sch-f-val').value;
+            const jobSel = document.getElementById('sch-f-job');
+            const valSel = document.getElementById('sch-f-val');
+            if (jobSel.value === 'RESET') jobSel.value = 'ALL';
+            if (valSel.value === 'RESET') valSel.value = 'ALL';
+            schFJob = jobSel.value;
+            schFVal = valSel.value;
             schRenderDetail(false);
         }
         function schFillSelect(id, values, current, baseLabel, labelFn) {
             const sel = document.getElementById(id);
-            let html = `<option value="ALL">${schEsc(baseLabel)}</option>`;
+            // opsi pertama (disembunyikan dari daftar) hanya sebagai teks awal; daftar berisi SEMUA + nilai dari data
+            let html = `<option value="ALL" disabled hidden>${schEsc(baseLabel)}</option><option value="RESET">SEMUA</option>`;
             values.forEach(v => { html += `<option value="${schEsc(v)}">${schEsc(labelFn ? labelFn(v) : v)}</option>`; });
             sel.innerHTML = html;
             sel.value = current;
@@ -4897,6 +4920,16 @@ select.sch-sel.is-set{border-color:#8b83f5;color:var(--brand);background-color:#
             if (schFVal !== 'ALL' && valList.indexOf(schFVal) < 0) schFVal = 'ALL';
             schFillSelect('sch-f-job', jobList, schFJob, 'Jabatan');
             schFillSelect('sch-f-val', valList, schFVal, 'Nilai', v => v === '-' ? 'TIDAK DIISI' : v);
+
+            // ringkasan jumlah orang per jabatan + nilai (sesuai tanggal terpilih, tidak terpengaruh pencarian/filter)
+            const sumMap = {};
+            people.forEach(x => { const k = x.jabatan + '\u0001' + x.val; sumMap[k] = sumMap[k] || { job: x.jabatan, val: x.val, n: 0 }; sumMap[k].n++; });
+            const sumItems = Object.keys(sumMap).map(k => sumMap[k])
+                .sort((a, b) => schJobRank(a.job) - schJobRank(b.job) || a.job.localeCompare(b.job) || schShiftRank(a.val) - schShiftRank(b.val) || a.val.localeCompare(b.val));
+            document.getElementById('sch-sum-date').innerText = `\u2022 ${d} ${SCH_BULAN_PENDEK[p.m - 1]} ${p.y}`;
+            document.getElementById('sch-sum-list').innerHTML = sumItems.length
+                ? sumItems.map((s, i) => `<div class="sch-sum-item" style="${schColorStyle(s.val)};--i:${i}"><i></i><span>${schEsc(s.job)} ${schEsc(s.val === '-' ? 'TIDAK DIISI' : s.val)} : ${s.n} ORANG</span></div>`).join('')
+                : '<p class="sch-sum-empty">Belum ada data.</p>';
 
             // terapkan pencarian + filter
             const q = schQuery;

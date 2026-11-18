@@ -787,26 +787,37 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
 .ach-search-wrap svg{width:18px;height:18px;flex-shrink:0}
 .ach-search-wrap input{width:100%;min-width:0;border:0!important;outline:0;background:transparent!important;box-shadow:none!important;color:var(--ink);font-size:14px!important;padding:12px 0}
 .ach-list{display:flex;flex-direction:column;gap:10px;min-width:0}
-.ach-person-card{width:100%;display:flex;align-items:flex-start;gap:10px;padding:12px;text-align:left;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 5px 18px -14px rgba(35,35,100,.36);transition:transform .2s var(--ease),box-shadow .25s,border-color .2s;animation:rise .38s var(--ease) backwards;animation-delay:calc(var(--i,0) * 30ms)}
+.ach-person-card{width:100%;display:flex;align-items:flex-start;gap:10px;padding:13px;text-align:left;border:1px solid #e5e8f7;border-radius:19px;background:linear-gradient(145deg,#fff 0%,#fcfcff 100%);box-shadow:0 6px 20px -15px rgba(35,35,100,.38);transition:transform .2s var(--ease),box-shadow .25s,border-color .2s;animation:rise .38s var(--ease) backwards;animation-delay:calc(var(--i,0) * 30ms)}
 .ach-person-card:hover{transform:translateY(-2px);border-color:#c9c5ff;box-shadow:var(--shadow)}
 .ach-person-card:active{transform:scale(.99)}
-.ach-rank{width:25px;height:25px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:9px;background:#eef0ff;color:#4f46e5;font-size:11px;font-weight:900;font-variant-numeric:tabular-nums}
-.ach-avatar{position:relative;width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:15px;background:linear-gradient(135deg,#e8eaff,#dcd8ff);color:#5145cd;font-size:17px;font-weight:900;box-shadow:inset 0 0 0 1px rgba(79,70,229,.08)}
+.ach-rank{width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;border-radius:9px;background:linear-gradient(145deg,#eef0ff,#e4e7ff);color:#4f46e5;font-size:11px;font-weight:900;font-variant-numeric:tabular-nums;box-shadow:inset 0 0 0 1px #dfe2ff}
+.ach-avatar{position:relative;width:50px;height:50px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:16px;background:linear-gradient(135deg,#e8eaff,#dcd8ff);color:#5145cd;font-size:17px;font-weight:900;box-shadow:inset 0 0 0 1px rgba(79,70,229,.1),0 4px 10px -7px rgba(35,35,100,.5)}
 .ach-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s var(--ease)}
 .ach-avatar img.is-ready{opacity:1}
 .ach-card-main{display:block;min-width:0;flex:1}
 .ach-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0}
-.ach-card-name{display:block;min-width:0;font-size:13px;font-weight:800;line-height:1.3;color:var(--ink);word-break:break-word}
-.ach-card-nip{display:block;margin-top:2px;font-size:10.5px;color:var(--muted);font-weight:600}
-.ach-card-chevron{width:16px;height:16px;flex-shrink:0;margin-top:1px;color:#a5a7c4}
-.ach-card-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px;padding-top:9px;border-top:1px dashed #e4e6f4}
-.ach-card-metric{min-width:0;display:flex;flex-direction:column;gap:4px}
-.ach-card-metric span{font-size:9.5px;line-height:1.2;font-weight:700;color:var(--muted);word-break:break-word}
-.ach-card-metric b{display:block;max-width:100%;font-size:11.5px;line-height:1.3;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ach-card-name{display:block;min-width:0;font-size:13.5px;font-weight:900;line-height:1.35;color:#172554;word-break:normal;overflow-wrap:anywhere}
+.ach-card-nip{display:inline-flex;align-items:center;max-width:100%;margin-top:4px;padding:2px 7px;border-radius:7px;background:#f0f4ff;color:#64748b;font-size:10.5px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
+.ach-card-chevron{width:16px;height:16px;flex-shrink:0;margin-top:1px;color:#9298b8}
+.ach-card-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px;padding-top:9px;border-top:1px dashed #e1e5f3}
+.ach-card-metric{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:7px 8px;border-radius:11px;background:#f8faff;border:1px solid #edf0fa}
+.ach-card-metric > span{font-size:10px;line-height:1.25;font-weight:800;color:#64748b;word-break:normal;overflow-wrap:anywhere}
+.ach-card-metric > b{display:block;max-width:100%;font-size:12px;line-height:1.35;font-weight:900;color:#26345b;font-variant-numeric:tabular-nums;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+.ach-card-metric--target{background:#f1f6ff;border-color:#e0eaff}
+.ach-card-metric--target > span{color:#3970c8}
+.ach-card-metric--target > b{color:#1d4ed8}
+.ach-card-metric--mtd{background:#f6f2ff;border-color:#ebe2ff}
+.ach-card-metric--mtd > span{color:#8053bd}
+.ach-card-metric--mtd > b{color:#6d28d9}
+.ach-card-metric--percent{background:#fff8ed;border-color:#ffebc7}
+.ach-card-metric--percent > span{color:#a16207}
+.ach-card-metric--gap{background:#fff5f5;border-color:#ffe3e3}
+.ach-card-metric--gap > span{color:#c05a55}
+.ach-card-metric--gap > b{color:#b45309}
 .ach-card-metric b.is-below,.ach-value.is-below{color:#be123c;background:#fff0f2}
 .ach-card-metric b.is-above,.ach-value.is-above{color:#047857;background:#e8f9f1}
 .ach-card-metric b.is-equal,.ach-value.is-equal{color:#475569;background:#f1f5f9}
-.ach-card-metric b.is-below,.ach-card-metric b.is-above,.ach-card-metric b.is-equal{display:inline-block;align-self:flex-start;padding:3px 6px;border-radius:8px}
+.ach-card-metric b.is-below,.ach-card-metric b.is-above,.ach-card-metric b.is-equal{display:inline-block;align-self:flex-start;padding:3px 7px;border-radius:8px}
 .ach-loading,.ach-empty{display:flex;align-items:center;justify-content:center;gap:10px;min-height:100px;padding:22px;text-align:center;border-radius:18px;background:#fff;border:1px dashed #d8daf0;color:var(--muted);font-size:12.5px;line-height:1.5}
 .ach-spinner{width:20px;height:20px;border:2.5px solid #e5e7fb;border-top-color:#5b50df;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 .ach-empty.is-error{display:block;color:#be123c;background:#fff6f7;border-color:#fecdd3}
@@ -855,11 +866,20 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
 .ach-color-legend b{color:var(--ink-2)}
 @media(max-width:390px){
   .ach-person-card{gap:8px;padding:10px}
-  .ach-rank{width:22px;height:22px}
-  .ach-avatar{width:42px;height:42px;border-radius:13px}
-  .ach-card-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .ach-rank{width:23px;height:23px}
+  .ach-avatar{width:44px;height:44px;border-radius:14px}
+  .ach-card-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .ach-card-metric{padding:7px}
+  .ach-card-metric > b{font-size:11.5px}
   .ach-metrics.is-three{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ach-dialog{padding:13px;border-radius:21px}
+}
+@media(max-width:340px){
+  .ach-person-card{gap:7px;padding:9px}
+  .ach-rank{width:21px;height:21px;font-size:10px}
+  .ach-avatar{width:40px;height:40px;border-radius:12px}
+  .ach-card-metric > span{font-size:9.5px}
+  .ach-card-metric > b{font-size:10.75px}
 }
 @media(prefers-reduced-motion:reduce){.ach-spinner{animation:none}}
 
@@ -5720,6 +5740,17 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
                 return !q || name.includes(q) || nip.includes(q);
             });
 
+            // Ranking selalu mengikuti persentase sales tertinggi ke terendah.
+            // Data tanpa persentase valid ditempatkan paling bawah; urutan asli dipakai untuk nilai seri.
+            visible.sort((a, b) => {
+                const pctA = achPercentNumber(a.row.persentase_sales);
+                const pctB = achPercentNumber(b.row.persentase_sales);
+                if (pctA === null && pctB !== null) return 1;
+                if (pctB === null && pctA !== null) return -1;
+                if (pctA !== null && pctB !== null && pctA !== pctB) return pctB - pctA;
+                return a.index - b.index;
+            });
+
             document.getElementById('ach-count').innerText = `${visible.length} Karyawan`;
             if (!visible.length) {
                 list.innerHTML = `<div class="ach-empty">${achRows.length ? 'Tidak ada karyawan yang cocok dengan pencarian.' : 'Belum ada data pada tabel ach_smt.'}</div>`;
@@ -5742,10 +5773,10 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
                         <span class="ach-card-heading"><span class="ach-card-name">${achEsc(nama)}</span><svg class="ach-card-chevron" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
                         <span class="ach-card-nip">NIP: ${achEsc(nip || '-')}</span>
                         <span class="ach-card-metrics">
-                            <span class="ach-card-metric"><span>Target Sales</span><b>${achEsc(achFormatAmount(row.target_sales))}</b></span>
-                            <span class="ach-card-metric"><span>MTD Sales</span><b>${achEsc(achFormatAmount(row.mtd_sales))}</b></span>
-                            <span class="ach-card-metric"><span>Persentase Sales</span>${achPercentValueHtml(row.persentase_sales, row.smtd)}</span>
-                            <span class="ach-card-metric"><span>Kekurangan Sales</span><b>${achEsc(achFormatAmount(row.kekurangan_sales))}</b></span>
+                            <span class="ach-card-metric ach-card-metric--target"><span>Target Sales</span><b>${achEsc(achFormatAmount(row.target_sales))}</b></span>
+                            <span class="ach-card-metric ach-card-metric--mtd"><span>MTD Sales</span><b>${achEsc(achFormatAmount(row.mtd_sales))}</b></span>
+                            <span class="ach-card-metric ach-card-metric--percent"><span>Persentase Sales</span>${achPercentValueHtml(row.persentase_sales, row.smtd)}</span>
+                            <span class="ach-card-metric ach-card-metric--gap"><span>Kekurangan Sales</span><b>${achEsc(achFormatAmount(row.kekurangan_sales))}</b></span>
                         </span>
                     </span>
                 </button>`;

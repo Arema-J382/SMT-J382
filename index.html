@@ -787,7 +787,8 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
 .ach-search-wrap svg{width:18px;height:18px;flex-shrink:0}
 .ach-search-wrap input{width:100%;min-width:0;border:0!important;outline:0;background:transparent!important;box-shadow:none!important;color:var(--ink);font-size:14px!important;padding:12px 0}
 .ach-list{display:flex;flex-direction:column;gap:10px;min-width:0}
-.ach-person-card{width:100%;display:flex;align-items:flex-start;gap:10px;padding:13px;text-align:left;border:1px solid #e5e8f7;border-radius:19px;background:linear-gradient(145deg,#fff 0%,#fcfcff 100%);box-shadow:0 6px 20px -15px rgba(35,35,100,.38);transition:transform .2s var(--ease),box-shadow .25s,border-color .2s;animation:rise .38s var(--ease) backwards;animation-delay:calc(var(--i,0) * 30ms)}
+.ach-person-card{width:100%;display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:13px;text-align:left;border:1px solid #e5e8f7;border-radius:19px;background:linear-gradient(145deg,#fff 0%,#fcfcff 100%);box-shadow:0 6px 20px -15px rgba(35,35,100,.38);transition:transform .2s var(--ease),box-shadow .25s,border-color .2s;animation:rise .38s var(--ease) backwards;animation-delay:calc(var(--i,0) * 30ms)}
+.ach-card-person{display:flex;align-items:flex-start;gap:10px;min-width:0;width:100%}
 .ach-person-card:hover{transform:translateY(-2px);border-color:#c9c5ff;box-shadow:var(--shadow)}
 .ach-person-card:active{transform:scale(.99)}
 .ach-rank{width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;border-radius:9px;background:linear-gradient(145deg,#eef0ff,#e4e7ff);color:#4f46e5;font-size:11px;font-weight:900;font-variant-numeric:tabular-nums;box-shadow:inset 0 0 0 1px #dfe2ff}
@@ -865,7 +866,8 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
 .ach-color-legend{margin-top:10px;padding:9px 10px;border-radius:11px;background:#f7f8fe;color:var(--muted);font-size:10.5px;line-height:1.45}
 .ach-color-legend b{color:var(--ink-2)}
 @media(max-width:390px){
-  .ach-person-card{gap:8px;padding:10px}
+  .ach-person-card{gap:9px;padding:10px}
+  .ach-card-person{gap:8px}
   .ach-rank{width:23px;height:23px}
   .ach-avatar{width:44px;height:44px;border-radius:14px}
   .ach-card-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
@@ -875,7 +877,8 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
   .ach-dialog{padding:13px;border-radius:21px}
 }
 @media(max-width:340px){
-  .ach-person-card{gap:7px;padding:9px}
+  .ach-person-card{gap:8px;padding:9px}
+  .ach-card-person{gap:7px}
   .ach-rank{width:21px;height:21px;font-size:10px}
   .ach-avatar{width:40px;height:40px;border-radius:12px}
   .ach-card-metric > span{font-size:9.5px}
@@ -5764,20 +5767,22 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
                 const nama = String(row.nama || (nip ? `NIP ${nip}` : 'Nama tidak tersedia'));
                 const initial = nama.trim().charAt(0).toLocaleUpperCase('id-ID') || 'A';
                 return `<button type="button" class="ach-person-card" style="--i:${displayIndex}" data-ach-index="${item.index}" aria-label="Lihat detail achievement ${achEsc(nama)}">
-                    <span class="ach-rank">${displayIndex + 1}</span>
-                    <span class="ach-avatar">
-                        <img class="ach-photo" data-nip="${achEsc(nip)}" alt="Foto ${achEsc(nama)}" loading="lazy">
-                        <span class="ach-initial">${achEsc(initial)}</span>
-                    </span>
-                    <span class="ach-card-main">
-                        <span class="ach-card-heading"><span class="ach-card-name">${achEsc(nama)}</span><svg class="ach-card-chevron" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
-                        <span class="ach-card-nip">NIP: ${achEsc(nip || '-')}</span>
-                        <span class="ach-card-metrics">
-                            <span class="ach-card-metric ach-card-metric--target"><span>Target Sales</span><b>${achEsc(achFormatAmount(row.target_sales))}</b></span>
-                            <span class="ach-card-metric ach-card-metric--mtd"><span>MTD Sales</span><b>${achEsc(achFormatAmount(row.mtd_sales))}</b></span>
-                            <span class="ach-card-metric ach-card-metric--percent"><span>Persentase Sales</span>${achPercentValueHtml(row.persentase_sales, row.smtd)}</span>
-                            <span class="ach-card-metric ach-card-metric--gap"><span>Kekurangan Sales</span><b>${achEsc(achFormatAmount(row.kekurangan_sales))}</b></span>
+                    <span class="ach-card-person">
+                        <span class="ach-rank">${displayIndex + 1}</span>
+                        <span class="ach-avatar">
+                            <img class="ach-photo" data-nip="${achEsc(nip)}" alt="Foto ${achEsc(nama)}" loading="lazy">
+                            <span class="ach-initial">${achEsc(initial)}</span>
                         </span>
+                        <span class="ach-card-main">
+                            <span class="ach-card-heading"><span class="ach-card-name">${achEsc(nama)}</span><svg class="ach-card-chevron" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+                            <span class="ach-card-nip">NIP: ${achEsc(nip || '-')}</span>
+                        </span>
+                    </span>
+                    <span class="ach-card-metrics">
+                        <span class="ach-card-metric ach-card-metric--target"><span>Target Sales</span><b>${achEsc(achFormatAmount(row.target_sales))}</b></span>
+                        <span class="ach-card-metric ach-card-metric--mtd"><span>MTD Sales</span><b>${achEsc(achFormatAmount(row.mtd_sales))}</b></span>
+                        <span class="ach-card-metric ach-card-metric--percent"><span>Persentase Sales</span>${achPercentValueHtml(row.persentase_sales, row.smtd)}</span>
+                        <span class="ach-card-metric ach-card-metric--gap"><span>Kekurangan Sales</span><b>${achEsc(achFormatAmount(row.kekurangan_sales))}</b></span>
                     </span>
                 </button>`;
             }).join('');

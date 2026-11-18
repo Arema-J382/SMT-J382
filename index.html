@@ -494,7 +494,7 @@ select.field{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .tb-dd-list{display:flex;flex-direction:column;gap:6px;padding:6px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}
 .tb-dd-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 11px;border-radius:12px;text-align:left;background:#f6f7fe;border:1px solid transparent;cursor:pointer;
   transition:transform .15s var(--ease),background .2s,border-color .2s;animation:rise .35s var(--ease) backwards;animation-delay:calc(var(--i,0) * 35ms)}
-.tb-dd-item:hover{background:#eceefb}
+.tb-dd-item:hover{background:#eceefb;transform:translateX(3px)}
 .tb-dd-item:active{transform:scale(.98)}
 .tb-dd-item.is-selected{background:#eef0ff;border-color:#b9b4ff}
 .tb-dd-item.is-borrowed{background:#f0fdf6;border-color:#bbf0d6}
@@ -3047,13 +3047,23 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             }
         }
 
+        // ---------- Pengurutan dropdown: natural sort (Tablet 1, 2, 3 ... 10, 11), bukan 1, 10, 11, 2 ----------
+        function tbNaturalCompare(a, b) {
+            return String(a == null ? '' : a).localeCompare(String(b == null ? '' : b), 'id', { numeric: true, sensitivity: 'base' });
+        }
+        function tabletAktifSorted() {
+            return tabletMaster
+                .filter(r => tbKey(r.status_sts) === TABLET_MASTER_AKTIF)
+                .sort((a, b) => tbNaturalCompare(a.nama_tab_sts, b.nama_tab_sts));
+        }
+
         // ---------- Dropdown (data dari tabel koneksi_tablet) ----------
         function tabletRenderSelect() {
             const sel = document.getElementById('tb-select');
             if (!sel) return;
 
             const prev = sel.value;
-            const aktif = tabletMaster.filter(r => tbKey(r.status_sts) === TABLET_MASTER_AKTIF);
+            const aktif = tabletAktifSorted();
 
             if (!aktif.length) {
                 sel.innerHTML = '<option value="">Belum ada tablet aktif</option>';
@@ -3118,7 +3128,7 @@ textarea.tb-note.has-text{background:#fff;border-color:#8b83f5}
             if (!list) return;
             const sel = document.getElementById('tb-select');
             const current = sel ? sel.value : '';
-            const aktif = tabletMaster.filter(r => tbKey(r.status_sts) === TABLET_MASTER_AKTIF);
+            const aktif = tabletAktifSorted();
 
             if (!aktif.length) {
                 list.innerHTML = '<p class="tb-dd-empty">Belum ada tablet aktif</p>';

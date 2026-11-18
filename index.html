@@ -748,6 +748,28 @@ button.sch-sum-item.is-on i{background:#fff}
   background:linear-gradient(135deg,#4f46e5,#6d4df0);box-shadow:0 8px 14px -8px rgba(79,70,229,.8);transition:transform .15s var(--ease)}
 .sch-active-btn:active{transform:scale(.94)}
 .sch-active-btn svg{width:12px;height:12px}
+
+/* ====== POLES TAMPILAN & ANIMASI (tambahan, tidak mengubah fungsi) ====== */
+html{scroll-behavior:smooth}
+::selection{background:rgba(124,92,245,.25)}
+.panel,.row-item,.rh-item,.tb-card{transition:transform .28s var(--ease),box-shadow .28s var(--ease),border-color .25s,background .25s}
+@media (hover:hover){
+  .row-item:hover,.rh-item:hover,.tb-card:hover{transform:translateY(-2px);box-shadow:0 14px 26px -16px rgba(35,35,100,.32);border-color:#d6d9f3}
+  .panel:hover{box-shadow:0 2px 4px rgba(35,35,100,.05),0 16px 32px -14px rgba(35,35,100,.2)}
+}
+.btn-primary,.btn-danger,.logout-btn{transition:transform .18s var(--ease),box-shadow .25s var(--ease),filter .2s,background .25s}
+button:focus-visible,a:focus-visible{outline:3px solid rgba(124,92,245,.5);outline-offset:2px}
+input,select{transition:border-color .2s,box-shadow .25s,background-color .2s}
+input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
+.avatar img:not(.hidden){animation:imgFadeIn .5s var(--ease) both}
+@keyframes imgFadeIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:none}}
+.empty{animation:emptyIn .45s var(--ease) both}
+@keyframes emptyIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.list-scroll,.app-content{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html,.list-scroll,.app-content{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -1312,7 +1334,10 @@ button.sch-sum-item.is-on i{background:#fff}
         const SUPABASE_URL = 'https://vxsopsnopeurnxdkfsbe.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4c29wc25vcGV1cm54ZGtmc2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NzM4MjgsImV4cCI6MjEwOTE0OTgyOH0.53GRhBd5Pvjjcqbh4M9ok7HKfqJs7klyxPqomXMEzus'; 
 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },   // aplikasi tidak memakai Supabase Auth -> matikan timer/penyimpanan sesi
+            realtime: { params: { eventsPerSecond: 5 } }
+        });
 
         // Notifikasi pop-up modern (menggantikan kotak alert bawaan browser)
         function showToast(message) {
@@ -1334,6 +1359,235 @@ button.sch-sum-item.is-on i{background:#fff}
             timer = setTimeout(dismiss, Math.min(9000, 2600 + text.length * 40));
         }
         window.alert = showToast;
+
+        // =========================================================================
+        // LAPISAN HEMAT SUPABASE  (cache lokal + dedupe request + jeda reload)
+        // Tujuan: menekan "Cached Egress" (unduh foto berulang) dan "Log Ingestion"
+        // (jumlah request/event ke Supabase) TANPA mengubah fungsi utama aplikasi.
+        // =========================================================================
+        const SMTCache = (() => {
+            const mem = new Map();
+            let dbp = null;
+            function open() {
+                if (dbp) return dbp;
+                dbp = new Promise(resolve => {
+                    try {
+                        const rq = indexedDB.open('smt_cache_v1', 1);
+                        rq.onupgradeneeded = () => { try { rq.result.createObjectStore('kv'); } catch (e) {} };
+                        rq.onsuccess = () => resolve(rq.result);
+                        rq.onerror = () => resolve(null);
+                        rq.onblocked = () => resolve(null);
+                    } catch (e) { resolve(null); }
+                });
+                return dbp;
+            }
+            async function get(key) {
+                const m = mem.get(key);
+                if (m) {
+                    if (!m.exp || m.exp > Date.now()) return m.val;
+                    mem.delete(key);
+                }
+                const db = await open();
+                if (!db) return undefined;
+                return new Promise(resolve => {
+                    try {
+                        const rq = db.transaction('kv', 'readonly').objectStore('kv').get(key);
+                        rq.onsuccess = () => {
+                            const v = rq.result;
+                            if (!v || (v.exp && v.exp < Date.now())) return resolve(undefined);
+                            mem.set(key, v);
+                            resolve(v.val);
+                        };
+                        rq.onerror = () => resolve(undefined);
+                    } catch (e) { resolve(undefined); }
+                });
+            }
+            async function set(key, val, ttlMs) {
+                const rec = { val: val, exp: ttlMs ? Date.now() + ttlMs : 0 };
+                mem.set(key, rec);
+                const db = await open();
+                if (!db) return;
+                try { db.transaction('kv', 'readwrite').objectStore('kv').put(rec, key); } catch (e) {}
+            }
+            async function del(key) {
+                mem.delete(key);
+                const db = await open();
+                if (!db) return;
+                try { db.transaction('kv', 'readwrite').objectStore('kv').delete(key); } catch (e) {}
+            }
+            return { get, set, del };
+        })();
+
+        // Daftar fungsi yang dijalankan saat tab/aplikasi kembali terlihat
+        const _smtVisibleHandlers = [];
+        function smtOnVisible(fn) { _smtVisibleHandlers.push(fn); }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState !== 'visible') return;
+            _smtVisibleHandlers.forEach(fn => { try { fn(); } catch (e) {} });
+        });
+
+        // Penanda "data berubah karena aksi saya sendiri" -> cache riwayat otomatis tidak dipakai
+        function smtEpoch() { try { return localStorage.getItem('smt_epoch') || '0'; } catch (e) { return '0'; } }
+        function smtBumpEpoch() { try { localStorage.setItem('smt_epoch', String(Date.now())); } catch (e) {} }
+        // Rentang tanggal yang mencakup hari ini/kemarin = cache singkat (60 dtk); rentang lama = 30 menit
+        function smtRangeTtl(end) {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            const y = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            return String(end) >= y ? 60 * 1000 : 30 * 60 * 1000;
+        }
+
+        let schHiddenDirty = false;
+
+        // ---------- Nama karyawan: cache 12 jam, hanya minta NIP yang diperlukan ----------
+        const NAMA_TTL = 12 * 3600 * 1000;
+        async function namaMapGet(nips) {
+            const out = {};
+            const uniq = [...new Set((nips || []).map(n => String(n)).filter(Boolean))];
+            const cached = await Promise.all(uniq.map(n => SMTCache.get('nama:' + n)));
+            const missing = [];
+            uniq.forEach((n, i) => { if (cached[i]) out[n] = cached[i]; else missing.push(n); });
+            for (let i = 0; i < missing.length; i += 150) {
+                const chunk = missing.slice(i, i + 150).map(Number).filter(x => !isNaN(x));
+                if (!chunk.length) continue;
+                const { data, error } = await supabaseClient
+                    .from('data_karyawan')
+                    .select('nip_kar, nama_kar')
+                    .in('nip_kar', chunk);
+                if (error) throw error;
+                for (const k of (data || [])) {
+                    out[String(k.nip_kar)] = k.nama_kar;
+                    SMTCache.set('nama:' + k.nip_kar, k.nama_kar, NAMA_TTL);
+                }
+            }
+            return out;
+        }
+
+        // ---------- Foto karyawan (bucket "FOTO SALES"): diunduh SEKALI lalu disimpan di perangkat ----------
+        const FOTO_BUCKET = 'FOTO SALES';
+        const FOTO_TTL_OK = 7 * 24 * 3600 * 1000;     // foto tersimpan 7 hari di perangkat
+        const FOTO_TTL_NONE = 6 * 3600 * 1000;        // "tidak ada foto" diingat 6 jam
+        const FOTO_INDEX_TTL = 6 * 3600 * 1000;       // daftar file bucket diingat 6 jam
+        const FOTO_EXT_DEFAULT = ['', '.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG'];
+        const _fotoInflight = {};
+        const _fotoUrlMemo = {};
+
+        function fotoUrl(nip, blob) {
+            const k = String(nip);
+            const m = _fotoUrlMemo[k];
+            if (m && m.blob === blob) return m.url;
+            const url = URL.createObjectURL(blob);
+            _fotoUrlMemo[k] = { blob: blob, url: url };
+            return url;
+        }
+
+        async function fotoCachePeek(nip) {
+            const c = await SMTCache.get('foto:' + nip);
+            if (!c) return undefined;
+            return c.none ? null : c.blob;
+        }
+
+        async function fotoIndexLoad() {
+            const c = await SMTCache.get('foto:index');
+            if (c) return c;
+            if (_fotoInflight.__index) return _fotoInflight.__index;
+            _fotoInflight.__index = (async () => {
+                const idx = {};
+                let ok = false;
+                try {
+                    for (let page = 0; page < 10; page++) {
+                        const { data, error } = await supabaseClient.storage.from(FOTO_BUCKET).list('', { limit: 1000, offset: page * 1000 });
+                        if (error) { ok = false; break; }
+                        ok = true;
+                        (data || []).forEach(f => {
+                            const base = String(f.name).replace(/\.(jpe?g|png|webp)$/i, '');
+                            if (!idx[base]) idx[base] = f.name;
+                        });
+                        if (!data || data.length < 1000) break;
+                    }
+                } catch (e) { ok = false; }
+                if (ok && Object.keys(idx).length) await SMTCache.set('foto:index', idx, FOTO_INDEX_TTL);
+                return idx;
+            })().finally(() => { delete _fotoInflight.__index; });
+            return _fotoInflight.__index;
+        }
+
+        async function fotoSalesDownload(nip, idx) {
+            const n = String(nip);
+            let tries;
+            if (idx && Object.keys(idx).length) {
+                if (!idx[n]) return { blob: null, definitive: true };   // tidak ada di bucket -> 0 request
+                tries = [idx[n]];
+            } else {
+                tries = FOTO_EXT_DEFAULT.map(e => n + e);
+                let hint = null;
+                try { hint = localStorage.getItem('foto_ext_hint'); } catch (e) {}
+                if (hint !== null) {                                  // coba ekstensi yang terakhir berhasil lebih dulu
+                    const hp = n + hint;
+                    tries = [hp].concat(tries.filter(t => t !== hp));
+                }
+            }
+            for (const path of tries) {
+                try {
+                    const { data, error } = await supabaseClient.storage.from(FOTO_BUCKET).download(path);
+                    if (!error && data) {
+                        try { localStorage.setItem('foto_ext_hint', path.slice(n.length)); } catch (e) {}
+                        return { blob: data, definitive: true };
+                    }
+                } catch (e) {}
+            }
+            return { blob: null, definitive: navigator.onLine !== false };
+        }
+
+        // Perkecil foto (maks. 192px, JPEG) sebelum disimpan agar cache ringan
+        function fotoMakeThumb(blob, size) {
+            size = size || 192;
+            return new Promise(resolve => {
+                try {
+                    if (!blob || blob.size < 12 * 1024) return resolve(blob);
+                    const url = URL.createObjectURL(blob);
+                    const img = new Image();
+                    img.onload = () => {
+                        try {
+                            const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+                            const side = Math.min(w, h);
+                            if (!side || side <= size) { URL.revokeObjectURL(url); return resolve(blob); }
+                            const c = document.createElement('canvas');
+                            c.width = size; c.height = size;
+                            const ctx = c.getContext('2d');
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, size, size);
+                            ctx.drawImage(img, (w - side) / 2, (h - side) / 2, side, side, 0, 0, size, size);
+                            c.toBlob(b => { URL.revokeObjectURL(url); resolve(b && b.size < blob.size ? b : blob); }, 'image/jpeg', 0.82);
+                        } catch (e) { URL.revokeObjectURL(url); resolve(blob); }
+                    };
+                    img.onerror = () => { URL.revokeObjectURL(url); resolve(blob); };
+                    img.src = url;
+                } catch (e) { resolve(blob); }
+            });
+        }
+
+        // Ambil foto: memori -> penyimpanan perangkat -> (baru) Supabase. Request yang sama digabung jadi satu.
+        function fotoSalesGet(nip, idxHint) {
+            const n = String(nip);
+            const key = 'foto:' + n;
+            if (_fotoInflight[key]) return _fotoInflight[key];
+            const p = (async () => {
+                const c = await SMTCache.get(key);
+                if (c) return c.none ? null : c.blob;
+                const idx = idxHint || await SMTCache.get('foto:index') || null;
+                const r = await fotoSalesDownload(n, idx);
+                if (r.blob) {
+                    const th = await fotoMakeThumb(r.blob);
+                    await SMTCache.set(key, { blob: th }, FOTO_TTL_OK);
+                    return th;
+                }
+                if (r.definitive && !(idx && Object.keys(idx).length)) await SMTCache.set(key, { none: true }, FOTO_TTL_NONE);
+                return null;
+            })().finally(() => { delete _fotoInflight[key]; });
+            _fotoInflight[key] = p;
+            return p;
+        }
 
         let realtimeChannel = null;
         let teamRealtimeChannel = null;
@@ -1444,6 +1698,7 @@ button.sch-sum-item.is-on i{background:#fff}
                 if (sub && !pushKeyMatches(sub)) {
                     // Langganan lama dibuat dengan VAPID key berbeda -> push akan ditolak server. Buat ulang.
                     try { await supabaseClient.from('push_subscriptions').delete().eq('endpoint', sub.endpoint); } catch (e) {}
+                    try { localStorage.removeItem('push_sub_sig'); } catch (e) {}
                     await sub.unsubscribe();
                     sub = null;
                 }
@@ -1455,6 +1710,13 @@ button.sch-sum-item.is-on i{background:#fff}
                 }
 
                 const json = sub.toJSON();
+                // Hemat: langganan yang sama tidak di-upsert ulang ke database (maks. 1x per 12 jam)
+                const subSig = nip + '|' + json.endpoint;
+                const subTs = Number(localStorage.getItem('push_sub_ts') || 0);
+                if (localStorage.getItem('push_sub_sig') === subSig && (Date.now() - subTs) < 12 * 3600 * 1000) {
+                    pushSendConfigToSW(nip);
+                    return;
+                }
                 const { error } = await supabaseClient
                     .from('push_subscriptions')
                     .upsert({
@@ -1465,6 +1727,10 @@ button.sch-sum-item.is-on i{background:#fff}
                     }, { onConflict: 'endpoint' });
 
                 if (error) console.error('Gagal menyimpan push subscription:', error.message);
+                else {
+                    localStorage.setItem('push_sub_sig', subSig);
+                    localStorage.setItem('push_sub_ts', String(Date.now()));
+                }
                 pushSendConfigToSW(nip);
             } catch (e) {
                 console.error('Gagal mengaktifkan push notifikasi:', e);
@@ -1491,6 +1757,12 @@ button.sch-sum-item.is-on i{background:#fff}
                     }
                 });
 
+                // Hemat: jadwal yang sama persis tidak dikirim ulang ke server (hapus+upsert)
+                const schSig = nip + '|' + rows.map(r => r.alert_no + ':' + r.fire_at).join(',');
+                const lastSig = localStorage.getItem('brk_sched_sig');
+                const lastTs = Number(localStorage.getItem('brk_sched_ts') || 0);
+                if (lastSig === schSig && (Date.now() - lastTs) < 6 * 3600 * 1000) return;
+
                 await supabaseClient.from('break_alert_schedule')
                     .delete().eq('nip', nip).eq('sent', false);
 
@@ -1498,6 +1770,12 @@ button.sch-sum-item.is-on i{background:#fff}
                     const { error } = await supabaseClient.from('break_alert_schedule')
                         .upsert(rows, { onConflict: 'nip,alert_no,fire_at', ignoreDuplicates: true });
                     if (error) console.error('Gagal menjadwalkan push:', error.message);
+                    else {
+                        localStorage.setItem('brk_sched_sig', schSig);
+                        localStorage.setItem('brk_sched_ts', String(Date.now()));
+                    }
+                } else {
+                    localStorage.removeItem('brk_sched_sig');
                 }
             } catch (e) {
                 console.error('Gagal menjadwalkan push:', e);
@@ -1505,18 +1783,23 @@ button.sch-sum-item.is-on i{background:#fff}
         }
 
         // Batalkan jadwal alarm yang belum terkirim (istirahat selesai / logout)
-        async function cancelBreakPush(nipParam) {
+        async function cancelBreakPush(nipParam, force) {
             try {
                 const nip = Number(nipParam || localStorage.getItem('emp_nip'));
                 if (!nip) return;
+                // Hemat: bila tidak ada jadwal yang dibuat dari perangkat ini, tidak perlu request hapus
+                if (!force && !localStorage.getItem('brk_sched_sig')) return;
                 await supabaseClient.from('break_alert_schedule')
                     .delete().eq('nip', nip).eq('sent', false);
+                localStorage.removeItem('brk_sched_sig');
+                localStorage.removeItem('brk_sched_ts');
             } catch (e) {
                 console.error('Gagal membatalkan jadwal push:', e);
             }
         }
 
         async function removePushSubscriptionRow() {
+            try { localStorage.removeItem('push_sub_sig'); } catch (e) {}
             try {
                 if (!('serviceWorker' in navigator)) return;
                 const reg = await navigator.serviceWorker.getRegistration();
@@ -1608,6 +1891,10 @@ button.sch-sum-item.is-on i{background:#fff}
         // Ambil data terbaru dari database secara real-time
         async function fetchLatestUserData(nip) {
             try {
+                // Hemat: nama hanya disegarkan paling sering 1x per 30 menit
+                const last = Number(localStorage.getItem('emp_nama_ts') || 0);
+                if (localStorage.getItem('emp_nama') && (Date.now() - last) < 30 * 60 * 1000) return;
+
                 const { data, error } = await supabaseClient
                     .from('data_karyawan')
                     .select('nip_kar, nama_kar')
@@ -1615,6 +1902,7 @@ button.sch-sum-item.is-on i{background:#fff}
                     .maybeSingle();
 
                 if (!error && data) {
+                    localStorage.setItem('emp_nama_ts', String(Date.now()));
                     localStorage.setItem('emp_nama', data.nama_kar);
                     document.getElementById('user-nama').innerText = data.nama_kar;
                     document.getElementById('user-initials').innerText = data.nama_kar.charAt(0).toUpperCase();
@@ -1623,29 +1911,16 @@ button.sch-sum-item.is-on i{background:#fff}
                 console.error("Gagal memperbarui data:", e);
             }
         }
+        smtOnVisible(() => { const n = localStorage.getItem('emp_nip'); if (n) fetchLatestUserData(n); });
 
         // Sinkronisasi Realtime Supabase
         function setupRealtimeSync(nip) {
+            // Hemat: koneksi realtime permanen per pengguna dihapus (nama hampir tidak pernah berubah).
+            // Nama tetap diperbarui otomatis lewat fetchLatestUserData saat aplikasi dibuka / kembali aktif.
             if (realtimeChannel) {
-                supabaseClient.removeChannel(realtimeChannel);
+                try { supabaseClient.removeChannel(realtimeChannel); } catch (e) {}
+                realtimeChannel = null;
             }
-
-            realtimeChannel = supabaseClient
-                .channel('public:data_karyawan:' + nip)
-                .on('postgres_changes', {
-                    event: '*',
-                    schema: 'public',
-                    table: 'data_karyawan',
-                    filter: `nip_kar=eq.${nip}`
-                }, payload => {
-                    if (payload.new && payload.new.nama_kar) {
-                        const updatedNama = payload.new.nama_kar;
-                        localStorage.setItem('emp_nama', updatedNama);
-                        document.getElementById('user-nama').innerText = updatedNama;
-                        document.getElementById('user-initials').innerText = updatedNama.charAt(0).toUpperCase();
-                    }
-                })
-                .subscribe();
         }
 
         // Fungsi Membunyikan Alarm Web (Tes Manual)
@@ -1738,6 +2013,7 @@ button.sch-sum-item.is-on i{background:#fff}
         }
 
         function closeIstirahatMenu() {
+            teardownTeamRealtime();
             if (timerInterval) clearInterval(timerInterval);
             if (teamTimerInterval) clearInterval(teamTimerInterval);
             if (teamRealtimeChannel) {
@@ -1762,6 +2038,7 @@ button.sch-sum-item.is-on i{background:#fff}
 
             const tabSwitcher = document.getElementById('tab-switcher');
             if (tabSwitcher) tabSwitcher.dataset.tab = tabName;
+            if (tabName !== 'team') teardownTeamRealtime();   // hemat: tutup realtime bila bukan tab Team
 
             if (tabName === 'pribadi') {
                 if (teamTimerInterval) clearInterval(teamTimerInterval);
@@ -1886,15 +2163,25 @@ button.sch-sum-item.is-on i{background:#fff}
             const container = document.getElementById('team-istirahat-list-container');
             const countText = document.getElementById('team-active-count-text');
 
-            container.innerHTML = `<p class="empty">Memuat data tim...</p>`;
+            if (!container.querySelector('.row-team')) {
+                container.innerHTML = `<p class="empty">Memuat data tim...</p>`;
+            }
 
             try {
+                // Hemat: hanya kolom yang dipakai
                 const { data: allRecords, error: errIstirahat } = await supabaseClient
                     .from('data_istirahat')
-                    .select('*')
+                    .select('id, nip, jam_mulai, jam_selesai, keterangan')
                     .eq('tanggal', today);
 
                 if (errIstirahat) throw errIstirahat;
+
+                // Hemat: data sama dengan tampilan sekarang -> tidak perlu query nama/foto & render ulang
+                const sig = JSON.stringify(allRecords || []);
+                if (container.querySelector('.row-team') && container.dataset.sig === sig) {
+                    startTeamLiveTimers();
+                    return;
+                }
 
                 const activeMap = {}; 
                 const completedSecsMap = {}; 
@@ -1921,23 +2208,14 @@ button.sch-sum-item.is-on i{background:#fff}
                 countText.innerText = `${activeNips.length} Orang Aktif`;
 
                 if (activeNips.length === 0) {
+                    container.dataset.sig = '';
                     container.innerHTML = `<p class="empty">Tidak ada karyawan yang sedang beristirahat saat ini.</p>`;
                     if (teamTimerInterval) clearInterval(teamTimerInterval);
                     return;
                 }
 
-                const { data: karData, error: errKar } = await supabaseClient
-                    .from('data_karyawan')
-                    .select('nip_kar, nama_kar');
-
-                if (errKar) throw errKar;
-
-                const karMap = {};
-                if (karData) {
-                    karData.forEach(k => {
-                        karMap[k.nip_kar] = k.nama_kar;
-                    });
-                }
+                // Hemat: hanya nama karyawan yang sedang istirahat (bukan seluruh tabel), dengan cache 12 jam
+                const karMap = await namaMapGet(activeNips);
 
                 let html = '';
                 activeNips.forEach((nipStr, idx) => {
@@ -1970,6 +2248,7 @@ button.sch-sum-item.is-on i{background:#fff}
                 });
 
                 container.innerHTML = html;
+                container.dataset.sig = sig;
 
                 activeNips.forEach(nipStr => {
                     loadTeamMemberPhoto(Number(nipStr));
@@ -1979,40 +2258,24 @@ button.sch-sum-item.is-on i{background:#fff}
 
             } catch (err) {
                 console.error("Gagal memuat team istirahat:", err.message);
+                container.dataset.sig = '';
                 container.innerHTML = `<p class="empty empty-err">Gagal memuat team istirahat.</p>`;
             }
         }
 
         async function loadTeamMemberPhoto(nip) {
-            const photoImg = document.getElementById(`team-photo-${nip}`);
-            const userInitials = document.getElementById(`team-initials-${nip}`);
-            if (!photoImg || !userInitials) return;
-
-            const possiblePaths = [
-                nip.toString(),
-                `${nip}.jpg`,
-                `${nip}.jpeg`,
-                `${nip}.png`,
-                `${nip}.JPG`,
-                `${nip}.JPEG`,
-                `${nip}.PNG`
-            ];
-
-            for (const path of possiblePaths) {
-                try {
-                    const { data, error } = await supabaseClient.storage
-                        .from('FOTO SALES')
-                        .download(path);
-
-                    if (!error && data) {
-                        const objectUrl = URL.createObjectURL(data);
-                        photoImg.src = objectUrl;
-                        photoImg.classList.remove('hidden');
-                        userInitials.classList.add('hidden');
-                        break;
-                    }
-                } catch (e) {}
-            }
+            if (!document.getElementById(`team-photo-${nip}`)) return;
+            try {
+                // Foto diambil dari cache perangkat; ke Supabase hanya bila belum pernah diunduh
+                const blob = await fotoSalesGet(nip);
+                const photoImg = document.getElementById(`team-photo-${nip}`);
+                const userInitials = document.getElementById(`team-initials-${nip}`);
+                if (blob && photoImg && userInitials) {
+                    photoImg.src = fotoUrl(nip, blob);
+                    photoImg.classList.remove('hidden');
+                    userInitials.classList.add('hidden');
+                }
+            } catch (e) {}
         }
 
         function startTeamLiveTimers() {
@@ -2047,19 +2310,49 @@ button.sch-sum-item.is-on i{background:#fff}
             }, 1000);
         }
 
-        function setupTeamIstirahatRealtime() {
+        let teamReloadTimer = null;
+        let teamDirty = false;
+
+        function teardownTeamRealtime() {
+            if (teamReloadTimer) { clearTimeout(teamReloadTimer); teamReloadTimer = null; }
             if (teamRealtimeChannel) {
-                supabaseClient.removeChannel(teamRealtimeChannel);
+                try { supabaseClient.removeChannel(teamRealtimeChannel); } catch (e) {}
+                teamRealtimeChannel = null;
             }
+        }
+
+        function teamTabIsOpen() {
+            const tab = document.getElementById('tab-content-team');
+            const sec = document.getElementById('istirahat-section');
+            return !!tab && !!sec && !tab.classList.contains('hidden') && !sec.classList.contains('hidden');
+        }
+
+        // Gabungkan banyak event beruntun menjadi 1x muat ulang; tunda bila layar tidak terlihat
+        function teamScheduleReload() {
+            if (!teamTabIsOpen()) return;
+            if (document.visibilityState === 'hidden') { teamDirty = true; return; }
+            if (teamReloadTimer) clearTimeout(teamReloadTimer);
+            teamReloadTimer = setTimeout(() => {
+                teamReloadTimer = null;
+                teamDirty = false;
+                loadTeamIstirahatData();
+            }, 800);
+        }
+        smtOnVisible(() => { if (teamDirty) teamScheduleReload(); });
+
+        function setupTeamIstirahatRealtime() {
+            teardownTeamRealtime();
+            const today = new Date().toISOString().split('T')[0];
 
             teamRealtimeChannel = supabaseClient
                 .channel('public:team_istirahat_live')
                 .on('postgres_changes', {
                     event: '*',
                     schema: 'public',
-                    table: 'data_istirahat'
+                    table: 'data_istirahat',
+                    filter: `tanggal=eq.${today}`      // hemat: hanya perubahan data hari ini
                 }, payload => {
-                    loadTeamIstirahatData();
+                    teamScheduleReload();
                 })
                 .subscribe();
         }
@@ -2152,34 +2445,40 @@ button.sch-sum-item.is-on i{background:#fff}
 
             try {
                 // Ambil seluruh data pada rentang tanggal (per halaman 1000 baris agar tidak terpotong)
+                // Hemat: hasil disimpan sebentar di perangkat + hanya kolom yang dipakai + nama hanya untuk NIP terkait
                 let rows = [];
-                const PAGE = 1000;
-                let from = 0;
-                while (true) {
-                    const { data, error } = await supabaseClient
-                        .from('data_istirahat')
-                        .select('*')
-                        .gte('tanggal', start)
-                        .lte('tanggal', end)
-                        .order('tanggal', { ascending: true })
-                        .order('id', { ascending: true })
-                        .range(from, from + PAGE - 1);
-                    if (error) throw error;
-                    rows = rows.concat(data || []);
-                    if (!data || data.length < PAGE) break;
-                    from += PAGE;
-                }
-
-                if (requestId !== riwayatRequestId) return;
-
-                // Nama karyawan
                 const karMap = {};
-                if (rows.length > 0) {
-                    const { data: karData, error: errKar } = await supabaseClient
-                        .from('data_karyawan')
-                        .select('nip_kar, nama_kar');
-                    if (errKar) throw errKar;
-                    if (karData) karData.forEach(k => { karMap[String(k.nip_kar)] = k.nama_kar; });
+                const cacheKey = `rw${smtEpoch()}:${start}|${end}`;
+                const hit = await SMTCache.get(cacheKey);
+                if (hit) {
+                    rows = hit.rows;
+                    Object.assign(karMap, hit.karMap);
+                } else {
+                    const PAGE = 1000;
+                    let from = 0;
+                    while (true) {
+                        const { data, error } = await supabaseClient
+                            .from('data_istirahat')
+                            .select('id, tanggal, nip, jam_mulai, jam_selesai')
+                            .gte('tanggal', start)
+                            .lte('tanggal', end)
+                            .order('tanggal', { ascending: true })
+                            .order('id', { ascending: true })
+                            .range(from, from + PAGE - 1);
+                        if (error) throw error;
+                        rows = rows.concat(data || []);
+                        if (!data || data.length < PAGE) break;
+                        from += PAGE;
+                    }
+
+                    if (requestId !== riwayatRequestId) return;
+
+                    // Nama karyawan
+                    if (rows.length > 0) {
+                        const nm = await namaMapGet(rows.map(r => r.nip));
+                        Object.keys(nm).forEach(k => { karMap[String(k)] = nm[k]; });
+                    }
+                    await SMTCache.set(cacheKey, { rows: rows, karMap: karMap }, smtRangeTtl(end));
                 }
 
                 if (requestId !== riwayatRequestId) return;
@@ -2324,27 +2623,10 @@ button.sch-sum-item.is-on i{background:#fff}
         async function fetchRiwayatPhoto(nip) {
             if (nip in riwayatPhotoBlobs) return riwayatPhotoBlobs[nip];
 
-            const possiblePaths = [
-                nip.toString(),
-                `${nip}.jpg`,
-                `${nip}.jpeg`,
-                `${nip}.png`,
-                `${nip}.JPG`,
-                `${nip}.JPEG`,
-                `${nip}.PNG`
-            ];
-
             let found = null;
-            for (const path of possiblePaths) {
-                try {
-                    const { data, error } = await supabaseClient.storage
-                        .from('FOTO SALES')
-                        .download(path);
-                    if (!error && data) { found = data; break; }
-                } catch (e) {}
-            }
+            try { found = await fotoSalesGet(nip); } catch (e) {}
             riwayatPhotoBlobs[nip] = found;
-            if (found) riwayatPhotoUrls[nip] = URL.createObjectURL(found);
+            if (found) riwayatPhotoUrls[nip] = fotoUrl(nip, found);
             return found;
         }
 
@@ -2538,15 +2820,29 @@ button.sch-sum-item.is-on i{background:#fff}
         }
 
         // --- CEK STATUS ISTIRAHAT AKTIF UNTUK CARD MENU UTAMA ---
-        async function checkActiveBreakStatus(nip) {
+        // Hemat: panggilan bersamaan digabung; bila data sudah dimuat pemanggil, tidak query ulang
+        let _cabsInflight = null;
+        function checkActiveBreakStatus(nip, prefetched) {
+            if (prefetched) return checkActiveBreakStatusImpl(nip, prefetched);
+            if (_cabsInflight) return _cabsInflight;
+            _cabsInflight = checkActiveBreakStatusImpl(nip).finally(() => { _cabsInflight = null; });
+            return _cabsInflight;
+        }
+
+        async function checkActiveBreakStatusImpl(nip, prefetched) {
             const today = new Date().toISOString().split('T')[0];
             try {
-                const { data, error } = await supabaseClient
-                    .from('data_istirahat')
-                    .select('*')
-                    .eq('nip', nip)
-                    .eq('tanggal', today)
-                    .order('id', { ascending: false });
+                let data, error;
+                if (prefetched) {
+                    data = prefetched; error = null;
+                } else {
+                    ({ data, error } = await supabaseClient
+                        .from('data_istirahat')
+                        .select('*')
+                        .eq('nip', nip)
+                        .eq('tanggal', today)
+                        .order('id', { ascending: false }));
+                }
 
                 const card = document.getElementById('main-menu-istirahat-card');
                 const iconContainer = document.getElementById('main-menu-istirahat-icon');
@@ -2664,7 +2960,7 @@ button.sch-sum-item.is-on i{background:#fff}
                 if (!data || data.length === 0) {
                     container.innerHTML = `<p class="empty">Belum ada riwayat istirahat hari ini.</p>`;
                     totalTextEl.innerText = '0 Jam 0 Menit 0 Detik';
-                    await checkActiveBreakStatus(nip);
+                    await checkActiveBreakStatus(nip, data || []);
                     return;
                 }
 
@@ -2713,7 +3009,7 @@ button.sch-sum-item.is-on i{background:#fff}
                 const ts = totalSecsAll % 60;
                 totalTextEl.innerText = `${th} Jam ${tm} Menit ${ts} Detik`;
 
-                await checkActiveBreakStatus(nip);
+                await checkActiveBreakStatus(nip, data || []);
 
             } catch (err) {
                 console.error("Gagal memuat riwayat istirahat:", err.message);
@@ -2831,6 +3127,7 @@ button.sch-sum-item.is-on i{background:#fff}
 
                 if (error) throw error;
 
+                smtBumpEpoch();
                 alert("Waktu istirahat dimulai.");
                 loadIstirahatHistory();
             } catch (err) {
@@ -2849,11 +3146,16 @@ button.sch-sum-item.is-on i{background:#fff}
                                 String(now.getSeconds()).padStart(2, '0');
 
             try {
-                const { data: currentData } = await supabaseClient
-                    .from('data_istirahat')
-                    .select('jam_mulai')
-                    .eq('id', activeIstirahatId)
-                    .single();
+                // Hemat: jam mulai sudah diketahui dari data yang dimuat; query hanya sebagai cadangan
+                let currentData = activeStartTime ? { jam_mulai: activeStartTime } : null;
+                if (!currentData) {
+                    const r0 = await supabaseClient
+                        .from('data_istirahat')
+                        .select('jam_mulai')
+                        .eq('id', activeIstirahatId)
+                        .single();
+                    currentData = r0.data;
+                }
 
                 let durasiStr = '-';
                 if (currentData && currentData.jam_mulai) {
@@ -2882,7 +3184,8 @@ button.sch-sum-item.is-on i{background:#fff}
 
                 if (error) throw error;
 
-                cancelBreakPush(localStorage.getItem('emp_nip'));
+                cancelBreakPush(localStorage.getItem('emp_nip'), true);
+                smtBumpEpoch();
                 alert("Waktu istirahat selesai.");
                 activeIstirahatId = null;
                 activeStartTime = null;
@@ -2992,37 +3295,20 @@ button.sch-sum-item.is-on i{background:#fff}
             // Cek status istirahat aktif untuk styling card utama
             await checkActiveBreakStatus(nip);
 
-            // Memuat foto otomatis dari Bucket "FOTO SALES"
+            // Memuat foto otomatis dari Bucket "FOTO SALES" (disimpan di perangkat, tidak diunduh berulang)
             const photoImg = document.getElementById('user-photo');
             const userInitials = document.getElementById('user-initials');
-            
-            const possiblePaths = [
-                nip.toString(),
-                `${nip}.jpg`,
-                `${nip}.jpeg`,
-                `${nip}.png`,
-                `${nip}.JPG`,
-                `${nip}.JPEG`,
-                `${nip}.PNG`
-            ];
 
             let photoLoaded = false;
-            for (const path of possiblePaths) {
-                try {
-                    const { data, error } = await supabaseClient.storage
-                        .from('FOTO SALES')
-                        .download(path);
-
-                    if (!error && data) {
-                        const objectUrl = URL.createObjectURL(data);
-                        photoImg.src = objectUrl;
-                        photoImg.classList.remove('hidden');
-                        userInitials.classList.add('hidden');
-                        photoLoaded = true;
-                        break;
-                    }
-                } catch (err) {}
-            }
+            try {
+                const blob = await fotoSalesGet(nip);
+                if (blob) {
+                    photoImg.src = fotoUrl(nip, blob);
+                    photoImg.classList.remove('hidden');
+                    userInitials.classList.add('hidden');
+                    photoLoaded = true;
+                }
+            } catch (err) {}
 
             if (!photoLoaded) {
                 photoImg.classList.add('hidden');
@@ -3034,6 +3320,7 @@ button.sch-sum-item.is-on i{background:#fff}
 
         // Fungsi Keluar / Logout
         function handleLogout() {
+            teardownTeamRealtime();
             if (realtimeChannel) {
                 supabaseClient.removeChannel(realtimeChannel);
             }
@@ -3046,7 +3333,7 @@ button.sch-sum-item.is-on i{background:#fff}
             
             tabletCleanup();
             if (typeof schCleanup === 'function') schCleanup();
-            cancelBreakPush(localStorage.getItem('emp_nip'));
+            cancelBreakPush(localStorage.getItem('emp_nip'), true);
             removePushSubscriptionRow();
 
             localStorage.removeItem('emp_nip');
@@ -3200,10 +3487,15 @@ button.sch-sum-item.is-on i{background:#fff}
             txt.innerText = on ? 'Live' : 'Menyambung';
         }
 
+        let tabletMasterDirty = true;     // daftar tablet (master) jarang berubah -> di-cache
+        let tabletMasterTs = 0;
+        let tabletHiddenDirty = false;
         function tabletScheduleReload() {
+            if (document.visibilityState === 'hidden') { tabletHiddenDirty = true; return; }
             if (tabletReloadTimer) clearTimeout(tabletReloadTimer);
-            tabletReloadTimer = setTimeout(tabletLoadAll, 250);
+            tabletReloadTimer = setTimeout(tabletLoadAll, 800);
         }
+        smtOnVisible(() => { if (tabletHiddenDirty) { tabletHiddenDirty = false; tabletScheduleReload(); } });
 
         function tabletTeardownRealtime() {
             if (tabletRealtimeChannel) { supabaseClient.removeChannel(tabletRealtimeChannel); tabletRealtimeChannel = null; }
@@ -3216,7 +3508,7 @@ button.sch-sum-item.is-on i{background:#fff}
             tabletRealtimeChannel = supabaseClient
                 .channel('public:tablet_store_live')
                 .on('postgres_changes', { event: '*', schema: 'public', table: TABLET_TABLE_STATUS }, () => tabletScheduleReload())
-                .on('postgres_changes', { event: '*', schema: 'public', table: TABLET_TABLE_MASTER }, () => tabletScheduleReload())
+                .on('postgres_changes', { event: '*', schema: 'public', table: TABLET_TABLE_MASTER }, () => { tabletMasterDirty = true; tabletScheduleReload(); })
                 .subscribe(status => {
                     tabletSetLive(status === 'SUBSCRIBED');
                     if (status === 'SUBSCRIBED') tabletScheduleReload();   // sinkron ulang setelah (re)connect
@@ -3229,9 +3521,12 @@ button.sch-sum-item.is-on i{background:#fff}
             const todayIso = tbTodayISO();
             const tomorrowIso = tbTomorrowISO();
             tabletDayStamp = todayIso;
+            const needMaster = tabletMasterDirty || !tabletMaster.length || (Date.now() - tabletMasterTs) > 15 * 60 * 1000;
             try {
                 const [rm, rr, ra] = await Promise.all([
-                    supabaseClient.from(TABLET_TABLE_MASTER).select('*').order('nama_tab_sts', { ascending: true }),
+                    needMaster
+                        ? supabaseClient.from(TABLET_TABLE_MASTER).select('*').order('nama_tab_sts', { ascending: true })
+                        : Promise.resolve({ data: tabletMaster, error: null }),
                     // Daftar kartu: HANYA data tanggal hari ini
                     supabaseClient.from(TABLET_TABLE_STATUS).select('*').gte('tgl', todayIso).lt('tgl', tomorrowIso).order('id', { ascending: false }).limit(TABLET_LIST_LIMIT),
                     supabaseClient.from(TABLET_TABLE_STATUS).select('*').eq('status', TABLET_STATUS_PINJAM)
@@ -3242,6 +3537,7 @@ button.sch-sum-item.is-on i{background:#fff}
                 if (reqId !== tabletLoadId) return;
 
                 tabletMaster = rm.data || [];
+                if (needMaster) { tabletMasterDirty = false; tabletMasterTs = Date.now(); }
 
                 tabletActiveMap = {};
                 (ra.data || []).forEach(r => { tabletActiveMap[tbKey(r.nama_tablet)] = r; });
@@ -3765,7 +4061,7 @@ button.sch-sum-item.is-on i{background:#fff}
             const path = `${prefix}/${nip}_${Date.now()}.jpg`;
             const { error } = await supabaseClient.storage
                 .from(TABLET_BUCKET)
-                .upload(path, blob, { contentType: 'image/jpeg', cacheControl: '3600', upsert: false });
+                .upload(path, blob, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: false });
             if (error) throw new Error('Upload foto gagal: ' + error.message);
             const { data } = supabaseClient.storage.from(TABLET_BUCKET).getPublicUrl(path);
             return data.publicUrl;
@@ -3837,7 +4133,7 @@ button.sch-sum-item.is-on i{background:#fff}
                 console.error('Gagal meminjam tablet:', err);
                 alert('Gagal meminjam tablet: ' + (err.message || err));
             } finally {
-                await tabletLoadAll();
+                smtBumpEpoch(); await tabletLoadAll();
                 tabletSetBusy(false);
             }
         }
@@ -3879,7 +4175,7 @@ button.sch-sum-item.is-on i{background:#fff}
                 console.error('Gagal mengembalikan tablet:', err);
                 alert('Gagal mengembalikan tablet: ' + (err.message || err));
             } finally {
-                await tabletLoadAll();
+                smtBumpEpoch(); await tabletLoadAll();
                 tabletSetBusy(false);
             }
         }
@@ -4148,22 +4444,28 @@ button.sch-sum-item.is-on i{background:#fff}
             container.innerHTML = '<p class="empty">Memuat riwayat peminjaman tablet...</p>';
 
             try {
-                let rows = [];
-                const PAGE = 1000;
-                let from = 0;
-                while (true) {
-                    const { data, error } = await supabaseClient
-                        .from(TABLET_TABLE_STATUS)
-                        .select('*')
-                        .gte('tgl', start)
-                        .lte('tgl', end)
-                        .order('tgl', { ascending: true })
-                        .order('id', { ascending: true })
-                        .range(from, from + PAGE - 1);
-                    if (error) throw error;
-                    rows = rows.concat(data || []);
-                    if (!data || data.length < PAGE) break;
-                    from += PAGE;
+                // Hemat: hasil rentang tanggal disimpan sebentar di perangkat
+                const tbCacheKey = `tb${smtEpoch()}:${start}|${end}`;
+                let rows = await SMTCache.get(tbCacheKey);
+                if (!rows) {
+                    rows = [];
+                    const PAGE = 1000;
+                    let from = 0;
+                    while (true) {
+                        const { data, error } = await supabaseClient
+                            .from(TABLET_TABLE_STATUS)
+                            .select('*')
+                            .gte('tgl', start)
+                            .lte('tgl', end)
+                            .order('tgl', { ascending: true })
+                            .order('id', { ascending: true })
+                            .range(from, from + PAGE - 1);
+                        if (error) throw error;
+                        rows = rows.concat(data || []);
+                        if (!data || data.length < PAGE) break;
+                        from += PAGE;
+                    }
+                    await SMTCache.set(tbCacheKey, rows, smtRangeTtl(end));
                 }
                 if (requestId !== tbrRequestId) return;
 
@@ -4684,14 +4986,24 @@ button.sch-sum-item.is-on i{background:#fff}
                     .channel('schedule-live-' + Date.now())
                     .on('postgres_changes', { event: '*', schema: 'public', table: SCH_TABLE }, () => {
                         if (schReloadTimer) clearTimeout(schReloadTimer);
-                        schReloadTimer = setTimeout(() => schLoad(false), 400);
+                        // Hemat: gabungkan banyak perubahan (mis. edit jadwal massal) jadi 1x muat ulang; tunda bila layar tersembunyi
+                        schReloadTimer = setTimeout(() => {
+                            if (document.visibilityState === 'hidden') { schHiddenDirty = true; return; }
+                            schLoad(false);
+                        }, 2500);
                     })
                     .subscribe((status) => { schSetLive(status === 'SUBSCRIBED'); });
             } catch (e) { schChannel = null; }
         }
+        smtOnVisible(() => { if (schHiddenDirty && schOpen) { schHiddenDirty = false; schLoad(false); } });
 
         // ---------- Ambil data ----------
-        async function schFetchAll() {
+        async function schFetchAll(force) {
+            // Hemat: tabel jadwal (seluruh bulan) disimpan 5 menit di perangkat; realtime memaksa ambil ulang
+            if (!force) {
+                const cached = await SMTCache.get('sch:rows');
+                if (cached) return cached;
+            }
             let all = [];
             for (let page = 0; page < 30; page++) {
                 const from = page * SCH_PAGE_SIZE;
@@ -4700,13 +5012,14 @@ button.sch-sum-item.is-on i{background:#fff}
                 all = all.concat(data || []);
                 if (!data || data.length < SCH_PAGE_SIZE) break;
             }
+            await SMTCache.set('sch:rows', all, 5 * 60 * 1000);
             return all;
         }
 
         async function schLoad(isFirst) {
             const myId = ++schLoadId;
             try {
-                const rows = await schFetchAll();
+                const rows = await schFetchAll(!isFirst);
                 if (myId !== schLoadId || !schOpen) return;
                 schRows = rows.map(r => ({ raw: r, y: parseInt(r.tahun, 10), m: schParseMonth(r.bulan) }))
                               .filter(r => r.y && r.m);
@@ -4818,29 +5131,17 @@ button.sch-sum-item.is-on i{background:#fff}
         // ---------- Foto karyawan (bucket "FOTO SALES", nama file = NIP) ----------
         async function schBuildPhotoIndex() {
             if (schPhotoIndex) return schPhotoIndex;
-            schPhotoIndex = {};
-            try {
-                const { data, error } = await supabaseClient.storage.from(SCH_PHOTO_BUCKET).list('', { limit: 5000 });
-                if (!error && data) data.forEach(f => {
-                    const base = String(f.name).replace(/\.(jpe?g|png|webp)$/i, '');
-                    if (!schPhotoIndex[base]) schPhotoIndex[base] = f.name;
-                });
-            } catch (e) {}
+            schPhotoIndex = await fotoIndexLoad();   // daftar file bucket di-cache 6 jam
             return schPhotoIndex;
         }
         async function schFetchPhoto(nip) {
             if (schPhotoCache[nip] !== undefined) return schPhotoCache[nip];
-            const idx = await schBuildPhotoIndex();
-            const tries = idx[nip] ? [idx[nip]] : [String(nip), nip + '.jpg', nip + '.jpeg', nip + '.png', nip + '.JPG', nip + '.JPEG', nip + '.PNG'];
-            // bila list berhasil tetapi NIP tidak ada di dalamnya -> tidak ada foto (hemat request)
-            const useTries = (Object.keys(idx).length && !idx[nip]) ? [] : tries;
-            let url = '';
-            for (const path of useTries) {
-                try {
-                    const { data, error } = await supabaseClient.storage.from(SCH_PHOTO_BUCKET).download(path);
-                    if (!error && data) { url = URL.createObjectURL(data); break; }
-                } catch (e) {}
+            let blob = await fotoCachePeek(nip);          // sudah ada di perangkat -> tanpa request apa pun
+            if (blob === undefined) {
+                const idx = await schBuildPhotoIndex();
+                blob = await fotoSalesGet(nip, idx);
             }
+            const url = blob ? fotoUrl(nip, blob) : '';
             schPhotoCache[nip] = url;
             return url;
         }

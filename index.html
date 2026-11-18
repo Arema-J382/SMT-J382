@@ -1442,7 +1442,7 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
                     </div>
                     <p id="ach-updated" class="ach-updated">Data akan dimuat saat menu dibuka.</p>
                 </div>
-                <div class="page-footer"><p>Achievement SMT &bull; Data Supabase</p></div>
+                <div class="page-footer"><p>Achievement SMT &bull; Informa MOG</p></div>
             </div>
 
         </div>
@@ -5719,7 +5719,7 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
                 if (search.value) search.value = '';
                 achRenderList();
                 const timeText = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date());
-                document.getElementById('ach-updated').innerText = (result.fromCache ? 'Data dari cache perangkat' : 'Data diperbarui dari Supabase') + ' • ' + timeText + ' • Tekan tombol refresh untuk mengambil data terbaru.';
+                document.getElementById('ach-updated').innerText = (result.fromCache ? 'Update' : 'Data diperbarui dari Supabase') + ' • ' + timeText + ' • Tekan tombol refresh untuk mengambil data terbaru.';
             } catch (error) {
                 if (!achOpen || myId !== achLoadId) return;
                 console.error('Gagal memuat Achievement SMT:', error);
@@ -5885,7 +5885,7 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
             const initial = nama.trim().charAt(0).toLocaleUpperCase('id-ID') || 'A';
             document.getElementById('ach-detail-name').innerText = nama;
             document.getElementById('ach-detail-nip').innerText = 'NIP: ' + (nip || '-');
-            document.getElementById('ach-detail-benchmark').innerText = 'Acuan warna persentase: SMtD ' + achFormatPercent(row.smtd);
+            document.getElementById('ach-detail-benchmark').innerText = 'SMtD : ' + achFormatPercent(row.smtd);
             const detailPhoto = document.getElementById('ach-detail-photo');
             detailPhoto.removeAttribute('src');
             detailPhoto.classList.add('hidden');

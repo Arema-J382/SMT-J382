@@ -770,6 +770,99 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
   html,.list-scroll,.app-content{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+/* =====================================================================
+   ACHIEVEMENT SMT - ringkasan, foto bertahap, dan popup detail
+   ===================================================================== */
+.ach-menu-hero .menu-hero-icon{background:linear-gradient(135deg,#f59e0b,#ea580c);box-shadow:0 12px 20px -8px rgba(234,88,12,.48)}
+.ach-refresh{margin-left:auto;flex-shrink:0;color:#4f46e5}
+.ach-refresh.is-loading svg{animation:spin 1s linear infinite}
+.ach-intro{display:flex;align-items:center;gap:11px;padding:13px}
+.ach-intro-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;background:linear-gradient(135deg,#f59e0b,#ea580c);box-shadow:0 9px 18px -10px rgba(234,88,12,.7)}
+.ach-intro-icon svg{width:22px;height:22px}
+.ach-intro-copy{min-width:0;flex:1}
+.ach-intro-title{font-size:13px;font-weight:800;color:var(--ink)}
+.ach-intro-sub{font-size:11px;line-height:1.45;color:var(--muted);margin-top:3px}
+.ach-count{flex-shrink:0;padding:5px 9px;border-radius:999px;background:#fff7e8;border:1px solid #fde2ad;color:#a16207;font-size:10.5px;font-weight:800;white-space:nowrap}
+.ach-search-wrap{display:flex;align-items:center;gap:10px;padding:0 14px;min-height:48px;border-radius:15px;background:#fff;border:1px solid var(--line);box-shadow:0 4px 12px -10px rgba(35,35,100,.3);color:var(--muted)}
+.ach-search-wrap svg{width:18px;height:18px;flex-shrink:0}
+.ach-search-wrap input{width:100%;min-width:0;border:0!important;outline:0;background:transparent!important;box-shadow:none!important;color:var(--ink);font-size:14px!important;padding:12px 0}
+.ach-list{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ach-person-card{width:100%;display:flex;align-items:flex-start;gap:10px;padding:12px;text-align:left;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 5px 18px -14px rgba(35,35,100,.36);transition:transform .2s var(--ease),box-shadow .25s,border-color .2s;animation:rise .38s var(--ease) backwards;animation-delay:calc(var(--i,0) * 30ms)}
+.ach-person-card:hover{transform:translateY(-2px);border-color:#c9c5ff;box-shadow:var(--shadow)}
+.ach-person-card:active{transform:scale(.99)}
+.ach-rank{width:25px;height:25px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:9px;background:#eef0ff;color:#4f46e5;font-size:11px;font-weight:900;font-variant-numeric:tabular-nums}
+.ach-avatar{position:relative;width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:15px;background:linear-gradient(135deg,#e8eaff,#dcd8ff);color:#5145cd;font-size:17px;font-weight:900;box-shadow:inset 0 0 0 1px rgba(79,70,229,.08)}
+.ach-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s var(--ease)}
+.ach-avatar img.is-ready{opacity:1}
+.ach-card-main{display:block;min-width:0;flex:1}
+.ach-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0}
+.ach-card-name{display:block;min-width:0;font-size:13px;font-weight:800;line-height:1.3;color:var(--ink);word-break:break-word}
+.ach-card-nip{display:block;margin-top:2px;font-size:10.5px;color:var(--muted);font-weight:600}
+.ach-card-chevron{width:16px;height:16px;flex-shrink:0;margin-top:1px;color:#a5a7c4}
+.ach-card-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px;padding-top:9px;border-top:1px dashed #e4e6f4}
+.ach-card-metric{min-width:0;display:flex;flex-direction:column;gap:4px}
+.ach-card-metric span{font-size:9.5px;line-height:1.2;font-weight:700;color:var(--muted);word-break:break-word}
+.ach-card-metric b{display:block;max-width:100%;font-size:11.5px;line-height:1.3;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ach-card-metric b.is-below,.ach-value.is-below{color:#be123c;background:#fff0f2}
+.ach-card-metric b.is-above,.ach-value.is-above{color:#047857;background:#e8f9f1}
+.ach-card-metric b.is-equal,.ach-value.is-equal{color:#475569;background:#f1f5f9}
+.ach-card-metric b.is-below,.ach-card-metric b.is-above,.ach-card-metric b.is-equal{display:inline-block;align-self:flex-start;padding:3px 6px;border-radius:8px}
+.ach-loading,.ach-empty{display:flex;align-items:center;justify-content:center;gap:10px;min-height:100px;padding:22px;text-align:center;border-radius:18px;background:#fff;border:1px dashed #d8daf0;color:var(--muted);font-size:12.5px;line-height:1.5}
+.ach-spinner{width:20px;height:20px;border:2.5px solid #e5e7fb;border-top-color:#5b50df;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+.ach-empty.is-error{display:block;color:#be123c;background:#fff6f7;border-color:#fecdd3}
+.ach-retry{display:inline-flex;margin-top:10px;padding:8px 13px;border-radius:10px;background:#4f46e5;color:#fff;font-size:11.5px;font-weight:700}
+.ach-updated{text-align:center;font-size:10.5px;line-height:1.5;color:var(--muted);padding:0 8px}
+
+/* Popup detail Achievement */
+.ach-overlay{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(18,18,55,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s var(--ease),visibility .25s}
+.ach-overlay.is-open{opacity:1;visibility:visible;pointer-events:auto}
+.ach-dialog{width:100%;max-width:560px;max-height:min(92dvh,900px);overflow-y:auto;padding:18px;border-radius:25px;background:#f8f9ff;border:1px solid rgba(255,255,255,.7);box-shadow:0 32px 80px -26px rgba(9,9,45,.65);transform:translateY(22px) scale(.97);transition:transform .3s var(--ease);-webkit-overflow-scrolling:touch}
+.ach-overlay.is-open .ach-dialog{transform:none}
+.ach-dialog-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+.ach-dialog-kicker{font-size:10px;letter-spacing:.1em;font-weight:900;color:#77799e}
+.ach-close-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#eceefb;color:#55577e;font-size:25px;line-height:1;transition:transform .18s var(--ease),background .2s}
+.ach-close-btn:hover{background:#e1e3f5}.ach-close-btn:active{transform:scale(.9)}
+.ach-detail-profile{display:flex;align-items:center;gap:14px;padding:13px;border-radius:19px;background:linear-gradient(135deg,#292879,#5144cb 62%,#7b5cf2);color:#fff;box-shadow:0 14px 26px -17px rgba(79,70,229,.85)}
+.ach-detail-avatar{position:relative;width:68px;height:68px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border-radius:21px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);font-size:24px;font-weight:900}
+.ach-detail-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s var(--ease)}
+.ach-detail-avatar img.is-ready{opacity:1}
+.ach-detail-identity{min-width:0;flex:1}
+.ach-detail-identity h2{font-size:16px;font-weight:900;line-height:1.3;word-break:break-word}
+.ach-detail-identity p{font-size:11px;line-height:1.45;color:rgba(255,255,255,.78);margin-top:3px}
+.ach-detail-identity p:last-child{color:#e8e7ff}
+.ach-detail-content{display:flex;flex-direction:column;gap:14px;margin-top:15px}
+.ach-detail-section{padding:13px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 5px 18px -16px rgba(35,35,100,.3)}
+.ach-detail-section-head{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.ach-section-icon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:10px;background:#eef0ff;color:#5145cd}
+.ach-section-icon svg{width:17px;height:17px}
+.ach-detail-section-head h3{font-size:12px;line-height:1.3;font-weight:900;letter-spacing:.045em;color:var(--ink)}
+.ach-detail-section-head p{font-size:10px;color:var(--muted);margin-top:2px}
+.ach-subgroup{padding:11px;border:1px solid #e8e9f6;border-radius:14px;background:#fafbff}
+.ach-subgroup + .ach-subgroup{margin-top:9px}
+.ach-subgroup h4{font-size:11.5px;font-weight:900;color:#4f46e5;margin-bottom:9px;letter-spacing:.02em}
+.ach-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.ach-metrics.is-three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ach-metric{min-width:0;padding:9px 10px;border-radius:11px;background:#fff;border:1px solid #eceefa}
+.ach-metric span{display:block;font-size:10px;font-weight:700;line-height:1.3;color:var(--muted)}
+.ach-value{display:inline-block;max-width:100%;margin-top:5px;padding:2px 0;font-size:13px;line-height:1.35;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ach-value.is-below,.ach-value.is-above,.ach-value.is-equal{padding:3px 7px;border-radius:8px}
+.ach-keterangan{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding:11px 12px;border-radius:13px;background:#f4f5fb;border:1px solid #e5e7f3}
+.ach-keterangan-label{font-size:11px;font-weight:800;color:#55577e;line-height:1.35}
+.ach-keterangan-status{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.04em;white-space:nowrap;color:#475569;background:#e9ebf4}
+.ach-keterangan-status.is-success{color:#047857;background:#d9f7e9;border:1px solid #9fe8c6;box-shadow:0 5px 12px -9px rgba(4,120,87,.65)}
+.ach-keterangan-status.is-failed{color:#be123c;background:#ffe2e8;border:1px solid #ffbac8;box-shadow:0 5px 12px -9px rgba(190,18,60,.65)}
+.ach-color-legend{margin-top:10px;padding:9px 10px;border-radius:11px;background:#f7f8fe;color:var(--muted);font-size:10.5px;line-height:1.45}
+.ach-color-legend b{color:var(--ink-2)}
+@media(max-width:390px){
+  .ach-person-card{gap:8px;padding:10px}
+  .ach-rank{width:22px;height:22px}
+  .ach-avatar{width:42px;height:42px;border-radius:13px}
+  .ach-card-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .ach-metrics.is-three{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ach-dialog{padding:13px;border-radius:21px}
+}
+@media(prefers-reduced-motion:reduce){.ach-spinner{animation:none}}
+
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -873,6 +966,18 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
                                 <div class="menu-hero-body">
                                     <h3 class="menu-hero-title">TABLET STORE</h3>
                                     <p class="menu-hero-desc">Pinjam &amp; kembalikan tablet</p>
+                                </div>
+                                <svg class="ico-sm chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+
+                            <!-- Achievement SMT -->
+                            <button type="button" onclick="openAchievement()" id="main-menu-achievement-card" class="menu-hero ach-menu-hero">
+                                <div class="menu-hero-icon">
+                                    <svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8m-4-4v4m-5-17h10l1 5a6 6 0 01-12 0l1-5zm0 0H4v2a4 4 0 004 4m8-6h4v2a4 4 0 01-4 4M9 5V3h6v2"/></svg>
+                                </div>
+                                <div class="menu-hero-body">
+                                    <h3 class="menu-hero-title">ACHIEVEMENT SMT</h3>
+                                    <p class="menu-hero-desc">Monitoring pencapaian sales &amp; derivatif</p>
                                 </div>
                                 <svg class="ico-sm chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                             </button>
@@ -1280,6 +1385,65 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
                 </div>
             </div>
 
+            <!-- BAGIAN 6: ACHIEVEMENT SMT (data dari tabel ach_smt) -->
+            <div id="achievement-section" class="section-split hidden">
+                <div class="stack stagger">
+                    <div class="page-head">
+                        <button type="button" onclick="closeAchievement()" class="icon-btn" aria-label="Kembali">
+                            <svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <h2 class="page-title">ACHIEVEMENT SMT</h2>
+                        <button type="button" id="ach-refresh-btn" class="icon-btn ach-refresh" onclick="achLoad(true)" aria-label="Perbarui data" title="Perbarui data">
+                            <svg class="ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7v5h-5M4 17v-5h5m-4.5-5A8 8 0 0118.5 7L20 12M4 12l1.5 5A8 8 0 0019.5 17"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="panel ach-intro">
+                        <div class="ach-intro-icon">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.3 4.66L19.5 8.4l-3.75 3.65.89 5.16L12 14.77l-4.64 2.44.89-5.16L4.5 8.4l5.2-.74L12 3zM5 21h14"/></svg>
+                        </div>
+                        <div class="ach-intro-copy">
+                            <p class="ach-intro-title">Ringkasan Pencapaian Sales</p>
+                            <p class="ach-intro-sub">Pilih foto atau nama karyawan untuk melihat rincian Achievement 80:20 dan Achievement Derivatif.</p>
+                        </div>
+                        <span id="ach-count" class="ach-count">0 Karyawan</span>
+                    </div>
+
+                    <label class="ach-search-wrap" for="ach-search">
+                        <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+                        <input type="search" id="ach-search" placeholder="Cari nama atau NIP..." autocomplete="off" aria-label="Cari nama atau NIP Achievement SMT" oninput="achRenderList()">
+                    </label>
+
+                    <div id="ach-list" class="ach-list" aria-live="polite">
+                        <div class="ach-loading"><span class="ach-spinner"></span><span>Memuat data Achievement SMT...</span></div>
+                    </div>
+                    <p id="ach-updated" class="ach-updated">Data akan dimuat saat menu dibuka.</p>
+                </div>
+                <div class="page-footer"><p>Achievement SMT &bull; Data Supabase</p></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- POPUP DETAIL ACHIEVEMENT SMT -->
+    <div id="ach-detail-overlay" class="ach-overlay" aria-hidden="true" onclick="achDetailBackdrop(event)">
+        <div class="ach-dialog" role="dialog" aria-modal="true" aria-labelledby="ach-detail-name" onclick="event.stopPropagation()">
+            <div class="ach-dialog-topline">
+                <span class="ach-dialog-kicker">DETAIL PENCAPAIAN KARYAWAN</span>
+                <button type="button" class="ach-close-btn" onclick="achDetailClose()" aria-label="Tutup detail">&times;</button>
+            </div>
+            <div class="ach-detail-profile">
+                <div class="ach-detail-avatar">
+                    <img id="ach-detail-photo" class="hidden" alt="Foto karyawan">
+                    <span id="ach-detail-initial">A</span>
+                </div>
+                <div class="ach-detail-identity">
+                    <h2 id="ach-detail-name">-</h2>
+                    <p id="ach-detail-nip">NIP: -</p>
+                    <p id="ach-detail-benchmark">Acuan warna persentase: SMtD -</p>
+                </div>
+            </div>
+            <div id="ach-detail-content" class="ach-detail-content"></div>
         </div>
     </div>
 
@@ -3285,6 +3449,8 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('tablet-section').classList.add('hidden');
             document.getElementById('schedule-section').classList.add('hidden');
+            document.getElementById('achievement-section').classList.add('hidden');
+            achDetailClose(true);
             
             document.getElementById('persistent-profile-container').classList.remove('hidden');
 
@@ -3343,6 +3509,8 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
             document.getElementById('istirahat-section').classList.add('hidden');
             document.getElementById('tablet-section').classList.add('hidden');
             document.getElementById('schedule-section').classList.add('hidden');
+            document.getElementById('achievement-section').classList.add('hidden');
+            achDetailClose(true);
             document.getElementById('persistent-profile-container').classList.add('hidden');
             document.getElementById('logout-btn-header').classList.add('hidden');
             
@@ -5377,6 +5545,393 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
             document.getElementById('sch-list').innerHTML = '<div class="sch-skel"></div><div class="sch-skel"></div>';
             schLoad(true);
         }
+
+        // =========================================================================
+        // --- ACHIEVEMENT SMT : DATA TABEL ach_smt ---
+        // Optimasi: select kolom yang dibutuhkan saja, cache IndexedDB 3 menit,
+        // dedupe request, tanpa Realtime/polling, dan foto lazy-load memakai cache FOTO SALES.
+        // Kolom identitas yang dipakai untuk pencocokan foto adalah `nip`.
+        // =========================================================================
+        const ACH_TABLE = 'ach_smt';
+        const ACH_CACHE_KEY = 'ach:smt:rows:v1';
+        const ACH_CACHE_TTL = 3 * 60 * 1000;
+        const ACH_PAGE_SIZE = 1000;
+        const ACH_SELECT_COLUMNS = [
+            'nip', 'nama', 'target_sales', 'mtd_sales', 'persentase_sales', 'kekurangan_sales', 'smtd',
+            'target_furniture', 'mtd_furniture', 'persentase_furniture', 'kekurangan_furniture',
+            'target_acc', 'mtd_acc', 'persentase_acc', 'kekurangan_acc', 'keterangan_8020',
+            'target_fp', 'mtd_fp', 'persentase_fp',
+            'target_comser', 'mtd_comser', 'persentase_comser'
+        ].join(',');
+
+        let achOpen = false;
+        let achRows = [];
+        let achLoadId = 0;
+        let achFetchInflight = null;
+        let achPhotoObserver = null;
+        let achPhotoIndexPromise = null;
+        let achPhotoQueue = [];
+        let achPhotoActive = 0;
+        const achPhotoCache = Object.create(null);
+        const achPhotoInflight = Object.create(null);
+
+        function achEsc(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function achFormatAmount(value) {
+            if (value === null || value === undefined || String(value).trim() === '') return '-';
+            if (typeof value === 'number' && Number.isFinite(value)) {
+                return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(value);
+            }
+            const text = String(value).trim();
+            if (/^[+-]?\d+(\.\d+)?$/.test(text)) {
+                const number = Number(text);
+                if (Number.isFinite(number)) return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(number);
+            }
+            return text;
+        }
+
+        // Hasil normalisasi selalu dalam skala 0-100 agar nilai 0.85 dan 85% sebanding.
+        function achPercentNumber(value) {
+            if (value === null || value === undefined || String(value).trim() === '') return null;
+            let text = String(value).trim().replace(/\s/g, '').replace('%', '').replace(',', '.');
+            const number = Number(text);
+            if (!Number.isFinite(number)) return null;
+            return Math.abs(number) <= 1 ? number * 100 : number;
+        }
+
+        function achFormatPercent(value) {
+            const number = achPercentNumber(value);
+            if (number === null) return '-';
+            return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(number) + '%';
+        }
+
+        function achPercentClass(value, smtd) {
+            const actual = achPercentNumber(value);
+            const target = achPercentNumber(smtd);
+            if (actual === null || target === null) return 'is-equal';
+            if (actual < target) return 'is-below';
+            if (actual > target) return 'is-above';
+            return 'is-equal';
+        }
+
+        function achPercentValueHtml(value, smtd) {
+            return `<b class="${achPercentClass(value, smtd)}">${achEsc(achFormatPercent(value))}</b>`;
+        }
+
+        async function achFetchRows(force) {
+            if (!force) {
+                const cached = await SMTCache.get(ACH_CACHE_KEY);
+                if (Array.isArray(cached)) return { rows: cached, fromCache: true };
+            }
+            if (achFetchInflight) return achFetchInflight;
+
+            achFetchInflight = (async () => {
+                const allRows = [];
+                for (let page = 0; page < 100; page++) {
+                    const from = page * ACH_PAGE_SIZE;
+                    const to = from + ACH_PAGE_SIZE - 1;
+                    const { data, error } = await supabaseClient
+                        .from(ACH_TABLE)
+                        .select(ACH_SELECT_COLUMNS)
+                        .order('nama', { ascending: true })
+                        .order('nip', { ascending: true })
+                        .range(from, to);
+                    if (error) throw error;
+                    const batch = data || [];
+                    allRows.push(...batch);
+                    if (batch.length < ACH_PAGE_SIZE) break;
+                }
+                await SMTCache.set(ACH_CACHE_KEY, allRows, ACH_CACHE_TTL);
+                return { rows: allRows, fromCache: false };
+            })().finally(() => { achFetchInflight = null; });
+            return achFetchInflight;
+        }
+
+        function openAchievement() {
+            achOpen = true;
+            document.getElementById('main-menu-section').classList.add('hidden');
+            document.getElementById('istirahat-section').classList.add('hidden');
+            document.getElementById('tablet-section').classList.add('hidden');
+            document.getElementById('schedule-section').classList.add('hidden');
+            document.getElementById('achievement-section').classList.remove('hidden');
+            document.getElementById('header-title').innerText = 'Achievement SMT';
+            document.getElementById('header-subtitle').innerText = 'Monitoring pencapaian sales karyawan';
+            document.getElementById('ach-search').value = '';
+            achLoad(false);
+        }
+
+        function closeAchievement() {
+            achOpen = false;
+            achLoadId++;
+            if (achPhotoObserver) { achPhotoObserver.disconnect(); achPhotoObserver = null; }
+            achPhotoQueue = [];
+            achDetailClose(true);
+            document.getElementById('achievement-section').classList.add('hidden');
+            document.getElementById('main-menu-section').classList.remove('hidden');
+            document.getElementById('header-title').innerText = 'Portal Karyawan';
+            document.getElementById('header-subtitle').innerText = 'Sistem Informasi Karyawan Informa MOG';
+            const nip = localStorage.getItem('emp_nip');
+            if (nip) checkActiveBreakStatus(nip);
+        }
+
+        async function achLoad(force) {
+            if (!achOpen) return;
+            const myId = ++achLoadId;
+            const list = document.getElementById('ach-list');
+            const refresh = document.getElementById('ach-refresh-btn');
+            const search = document.getElementById('ach-search');
+            refresh.classList.add('is-loading');
+            refresh.disabled = true;
+            if (force || !achRows.length) {
+                list.innerHTML = '<div class="ach-loading"><span class="ach-spinner"></span><span>Memuat data Achievement SMT...</span></div>';
+            }
+            try {
+                const result = await achFetchRows(!!force);
+                if (!achOpen || myId !== achLoadId) return;
+                achRows = result.rows;
+                if (search.value) search.value = '';
+                achRenderList();
+                const timeText = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date());
+                document.getElementById('ach-updated').innerText = (result.fromCache ? 'Data dari cache perangkat' : 'Data diperbarui dari Supabase') + ' • ' + timeText + ' • Tekan tombol refresh untuk mengambil data terbaru.';
+            } catch (error) {
+                if (!achOpen || myId !== achLoadId) return;
+                console.error('Gagal memuat Achievement SMT:', error);
+                list.innerHTML = `<div class="ach-empty is-error">Gagal memuat data dari tabel <b>${ACH_TABLE}</b>.<br>${achEsc(error && error.message ? error.message : 'Periksa koneksi dan izin SELECT tabel ach_smt.')}<br><button type="button" class="ach-retry" onclick="achLoad(true)">Coba lagi</button></div>`;
+                document.getElementById('ach-count').innerText = 'Data gagal dimuat';
+                document.getElementById('ach-updated').innerText = 'Periksa nama kolom, izin RLS, dan koneksi Supabase.';
+            } finally {
+                if (myId === achLoadId) {
+                    refresh.classList.remove('is-loading');
+                    refresh.disabled = false;
+                }
+            }
+        }
+
+        function achRenderList() {
+            const list = document.getElementById('ach-list');
+            const q = String(document.getElementById('ach-search').value || '').trim().toLocaleLowerCase('id-ID');
+            const visible = achRows.map((row, index) => ({ row, index })).filter(item => {
+                const name = String(item.row.nama || '').toLocaleLowerCase('id-ID');
+                const nip = String(item.row.nip == null ? '' : item.row.nip).toLocaleLowerCase('id-ID');
+                return !q || name.includes(q) || nip.includes(q);
+            });
+
+            document.getElementById('ach-count').innerText = `${visible.length} Karyawan`;
+            if (!visible.length) {
+                list.innerHTML = `<div class="ach-empty">${achRows.length ? 'Tidak ada karyawan yang cocok dengan pencarian.' : 'Belum ada data pada tabel ach_smt.'}</div>`;
+                if (achPhotoObserver) { achPhotoObserver.disconnect(); achPhotoObserver = null; }
+                return;
+            }
+
+            list.innerHTML = visible.map((item, displayIndex) => {
+                const row = item.row;
+                const nip = row.nip == null ? '' : String(row.nip);
+                const nama = String(row.nama || (nip ? `NIP ${nip}` : 'Nama tidak tersedia'));
+                const initial = nama.trim().charAt(0).toLocaleUpperCase('id-ID') || 'A';
+                return `<button type="button" class="ach-person-card" style="--i:${displayIndex}" data-ach-index="${item.index}" aria-label="Lihat detail achievement ${achEsc(nama)}">
+                    <span class="ach-rank">${displayIndex + 1}</span>
+                    <span class="ach-avatar">
+                        <img class="ach-photo" data-nip="${achEsc(nip)}" alt="Foto ${achEsc(nama)}" loading="lazy">
+                        <span class="ach-initial">${achEsc(initial)}</span>
+                    </span>
+                    <span class="ach-card-main">
+                        <span class="ach-card-heading"><span class="ach-card-name">${achEsc(nama)}</span><svg class="ach-card-chevron" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+                        <span class="ach-card-nip">NIP: ${achEsc(nip || '-')}</span>
+                        <span class="ach-card-metrics">
+                            <span class="ach-card-metric"><span>Target Sales</span><b>${achEsc(achFormatAmount(row.target_sales))}</b></span>
+                            <span class="ach-card-metric"><span>MTD Sales</span><b>${achEsc(achFormatAmount(row.mtd_sales))}</b></span>
+                            <span class="ach-card-metric"><span>Persentase Sales</span>${achPercentValueHtml(row.persentase_sales, row.smtd)}</span>
+                            <span class="ach-card-metric"><span>Kekurangan Sales</span><b>${achEsc(achFormatAmount(row.kekurangan_sales))}</b></span>
+                        </span>
+                    </span>
+                </button>`;
+            }).join('');
+
+            list.querySelectorAll('[data-ach-index]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const index = Number(button.getAttribute('data-ach-index'));
+                    if (Number.isInteger(index) && achRows[index]) achShowDetail(achRows[index]);
+                });
+            });
+            achObservePhotos();
+        }
+
+        function achObservePhotos() {
+            if (achPhotoObserver) { achPhotoObserver.disconnect(); achPhotoObserver = null; }
+            const images = document.querySelectorAll('#ach-list .ach-photo[data-nip]');
+            if (!images.length) return;
+            if (!('IntersectionObserver' in window)) {
+                images.forEach(img => achQueuePhoto(img));
+                return;
+            }
+            achPhotoObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    achPhotoObserver.unobserve(entry.target);
+                    achQueuePhoto(entry.target);
+                });
+            }, { root: document.querySelector('.app-content'), rootMargin: '220px 0px', threshold: 0.01 });
+            images.forEach(img => {
+                const nip = img.getAttribute('data-nip');
+                if (nip && achPhotoCache[nip] !== undefined) achApplyPhoto(img, achPhotoCache[nip]);
+                else if (nip) achPhotoObserver.observe(img);
+            });
+        }
+
+        function achQueuePhoto(img) {
+            if (!img || !img.isConnected || img.dataset.photoQueued === '1') return;
+            const nip = img.getAttribute('data-nip');
+            if (!nip) return;
+            if (achPhotoCache[nip] !== undefined) { achApplyPhoto(img, achPhotoCache[nip]); return; }
+            img.dataset.photoQueued = '1';
+            achPhotoQueue.push(img);
+            achPumpPhotoQueue();
+        }
+
+        function achPumpPhotoQueue() {
+            while (achPhotoActive < 3 && achPhotoQueue.length) {
+                const img = achPhotoQueue.shift();
+                if (!img || !img.isConnected) continue;
+                const nip = img.getAttribute('data-nip');
+                if (!nip) continue;
+                achPhotoActive++;
+                achFetchPhotoForNip(nip)
+                    .then(url => { if (img.isConnected) achApplyPhoto(img, url); })
+                    .catch(() => {})
+                    .finally(() => { achPhotoActive--; achPumpPhotoQueue(); });
+            }
+        }
+
+        function achFetchPhotoForNip(nip) {
+            const key = String(nip);
+            if (Object.prototype.hasOwnProperty.call(achPhotoCache, key)) return Promise.resolve(achPhotoCache[key]);
+            if (achPhotoInflight[key]) return achPhotoInflight[key];
+            achPhotoInflight[key] = (async () => {
+                let blob = await fotoCachePeek(key);
+                if (blob === undefined) {
+                    if (!achPhotoIndexPromise) achPhotoIndexPromise = fotoIndexLoad().catch(() => ({}));
+                    const index = await achPhotoIndexPromise;
+                    blob = await fotoSalesGet(key, index || null);
+                }
+                const url = blob ? fotoUrl(key, blob) : '';
+                achPhotoCache[key] = url;
+                return url;
+            })().finally(() => { delete achPhotoInflight[key]; });
+            return achPhotoInflight[key];
+        }
+
+        function achApplyPhoto(img, url) {
+            if (!img || !url) return;
+            img.src = url;
+            img.classList.remove('hidden');
+            img.classList.add('is-ready');
+            const fallback = img.parentElement && img.parentElement.querySelector('.ach-initial, #ach-detail-initial');
+            if (fallback) fallback.classList.add('hidden');
+        }
+
+        function achDetailMetric(label, value, isPercent, smtd) {
+            const shown = isPercent ? achFormatPercent(value) : achFormatAmount(value);
+            const cls = isPercent ? achPercentClass(value, smtd) : '';
+            return `<div class="ach-metric"><span>${achEsc(label)}</span><b class="ach-value ${cls}">${achEsc(shown)}</b></div>`;
+        }
+
+        function achDetailGroup(title, metrics, row, threeColumns) {
+            return `<div class="ach-subgroup"><h4>${achEsc(title)}</h4><div class="ach-metrics${threeColumns ? ' is-three' : ''}">${metrics.map(metric => achDetailMetric(metric.label, row[metric.key], !!metric.percent, row.smtd)).join('')}</div></div>`;
+        }
+
+        function achShowDetail(row) {
+            const nip = row.nip == null ? '' : String(row.nip);
+            const nama = String(row.nama || (nip ? `NIP ${nip}` : 'Nama tidak tersedia'));
+            const initial = nama.trim().charAt(0).toLocaleUpperCase('id-ID') || 'A';
+            document.getElementById('ach-detail-name').innerText = nama;
+            document.getElementById('ach-detail-nip').innerText = 'NIP: ' + (nip || '-');
+            document.getElementById('ach-detail-benchmark').innerText = 'Acuan warna persentase: SMtD ' + achFormatPercent(row.smtd);
+            const detailPhoto = document.getElementById('ach-detail-photo');
+            detailPhoto.removeAttribute('src');
+            detailPhoto.classList.add('hidden');
+            detailPhoto.classList.remove('is-ready');
+            detailPhoto.setAttribute('data-nip', nip);
+            document.getElementById('ach-detail-initial').innerText = initial;
+            document.getElementById('ach-detail-initial').classList.remove('hidden');
+
+            const furniture = [
+                { label: 'Target Furniture', key: 'target_furniture' },
+                { label: 'MTD Furniture', key: 'mtd_furniture' },
+                { label: 'Persentase Furniture', key: 'persentase_furniture', percent: true },
+                { label: 'Kekurangan Furniture', key: 'kekurangan_furniture' }
+            ];
+            const acc = [
+                { label: 'Target ACC', key: 'target_acc' },
+                { label: 'MTD ACC', key: 'mtd_acc' },
+                { label: 'Persentase ACC', key: 'persentase_acc', percent: true },
+                { label: 'Kekurangan ACC', key: 'kekurangan_acc' }
+            ];
+            const fp = [
+                { label: 'Target Furnipro', key: 'target_fp' },
+                { label: 'MTD Furnipro', key: 'mtd_fp' },
+                { label: 'Persentase Furnipro', key: 'persentase_fp', percent: true }
+            ];
+            const comser = [
+                { label: 'Target Comser', key: 'target_comser' },
+                { label: 'MTD Comser', key: 'mtd_comser' },
+                { label: 'Persentase Comser', key: 'persentase_comser', percent: true }
+            ];
+            const statusRaw = String(row.keterangan_8020 == null ? '' : row.keterangan_8020).trim();
+            const status = statusRaw.toLocaleUpperCase('id-ID');
+            const statusClass = status === 'SUKSES' ? 'is-success' : (status === 'GAGAL' ? 'is-failed' : '');
+            const statusText = statusRaw || 'Belum ada keterangan';
+
+            document.getElementById('ach-detail-content').innerHTML = `
+                <section class="ach-detail-section">
+                    <div class="ach-detail-section-head"><span class="ach-section-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.3 4.66L19.5 8.4l-3.75 3.65.89 5.16L12 14.77l-4.64 2.44.89-5.16L4.5 8.4l5.2-.74L12 3z"/></svg></span><div><h3>ACHIEVEMENT 80:20</h3><p>Pencapaian Furniture dan ACC</p></div></div>
+                    ${achDetailGroup('ACHIEVEMENT FURNITURE', furniture, row, false)}
+                    ${achDetailGroup('ACHIEVEMENT ACC', acc, row, false)}
+                    <div class="ach-keterangan"><span class="ach-keterangan-label">Keterangan Achievement 80:20</span><strong class="ach-keterangan-status ${statusClass}">${achEsc(statusText)}</strong></div>
+                </section>
+                <section class="ach-detail-section">
+                    <div class="ach-detail-section-head"><span class="ach-section-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 19V5m0 14h16M8 15l3-4 3 2 5-7"/></svg></span><div><h3>ACHIEVEMENT DERIVATIF</h3><p>Pencapaian produk derivatif</p></div></div>
+                    ${achDetailGroup('FURNIPRO', fp, row, true)}
+                    ${achDetailGroup('COMSER', comser, row, true)}
+                </section>
+                <p class="ach-color-legend"><b>Indikator persentase:</b> merah = di bawah SMtD, hijau = di atas SMtD, abu-abu = sama dengan atau acuan SMtD belum tersedia.</p>`;
+
+            const overlay = document.getElementById('ach-detail-overlay');
+            const wasOpen = overlay.classList.contains('is-open');
+            overlay.classList.add('is-open');
+            overlay.setAttribute('aria-hidden', 'false');
+            if (!wasOpen && history.state && history.state.portal === 'portal-sub') {
+                history.pushState({ portal: 'portal-ach-detail' }, '');
+            }
+            if (nip) achQueuePhoto(detailPhoto);
+        }
+
+        function achIsDetailOpen() {
+            const overlay = document.getElementById('ach-detail-overlay');
+            return !!(overlay && overlay.classList.contains('is-open'));
+        }
+
+        function achDetailClose(fromPopState) {
+            const overlay = document.getElementById('ach-detail-overlay');
+            if (!overlay || !overlay.classList.contains('is-open')) return;
+            if (fromPopState !== true && history.state && history.state.portal === 'portal-ach-detail') {
+                history.back();
+                return;
+            }
+            overlay.classList.remove('is-open');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+
+        function achDetailBackdrop(event) {
+            if (event && event.target === event.currentTarget) achDetailClose();
+        }
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && achIsDetailOpen()) achDetailClose();
+        });
     </script>
 
 <!-- NAVIGASI TOMBOL BACK HP (History API) -->
@@ -5399,7 +5954,7 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
         var el = document.getElementById(id);
         return !el || el.classList.contains('hidden');
     }
-    function isSubMenuOpen() { return !isHidden('istirahat-section') || !isHidden('tablet-section') || !isHidden('schedule-section'); }
+    function isSubMenuOpen() { return !isHidden('istirahat-section') || !isHidden('tablet-section') || !isHidden('schedule-section') || !isHidden('achievement-section'); }
     function isDialogOpen()  { return overlay.classList.contains('is-open'); }
 
     function openExitDialog() {
@@ -5517,6 +6072,23 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
         origCloseSchedule.apply(this, arguments);
     };
 
+    // ---- Bungkus openAchievement / closeAchievement (Achievement SMT) ----
+    var origOpenAchievement = window.openAchievement;
+    window.openAchievement = function () {
+        origOpenAchievement.apply(this, arguments);
+        if (!(history.state && history.state.portal === STATE_SUB)) {
+            history.pushState({ portal: STATE_SUB }, '');
+        }
+    };
+    var origCloseAchievement = window.closeAchievement;
+    window.closeAchievement = function (fromPopState) {
+        if (fromPopState !== true && history.state && history.state.portal === STATE_SUB) {
+            history.back();          // popstate yang akan memanggil origCloseAchievement
+            return;
+        }
+        origCloseAchievement.apply(this, arguments);
+    };
+
     // ---- Tombol Back HP ----
     window.addEventListener('popstate', function (e) {
         var st = e.state && e.state.portal;
@@ -5531,9 +6103,16 @@ input:focus,select:focus{box-shadow:0 0 0 4px rgba(124,92,245,.15)}
             return;
         }
 
+        // Popup detail Achievement memiliki satu tingkat Back tersendiri.
+        if (window.achIsDetailOpen && window.achIsDetailOpen()) {
+            window.achDetailClose(true);
+            return;
+        }
+
         // 1) Sedang di sub-menu (semua tab Istirahat) -> kembali ke Menu Utama
         if (isSubMenuOpen()) {
-            if (!isHidden('tablet-section')) window.closeTabletStore(true);
+            if (!isHidden('achievement-section')) window.closeAchievement(true);
+            else if (!isHidden('tablet-section')) window.closeTabletStore(true);
             else if (!isHidden('schedule-section')) window.closeSchedule(true);
             else window.closeIstirahatMenu(true);
             if (st === STATE_GUARD) history.pushState({ portal: STATE_MAIN }, '');

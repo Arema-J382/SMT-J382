@@ -734,6 +734,20 @@ select.sch-sel.is-set{border-color:#8b83f5;color:var(--brand);background-color:#
 .sch-sum-item span{min-width:0;word-break:break-word}
 .sch-sum-empty{grid-column:1/-1;text-align:center;font-size:12px;color:var(--muted);padding:6px 0}
 select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
+
+/* --- Ringkasan bisa diklik + bilah filter aktif --- */
+button.sch-sum-item{width:100%;text-align:left;cursor:pointer;transition:transform .15s var(--ease),box-shadow .2s,background .2s,color .2s}
+button.sch-sum-item:hover{transform:translateY(-1px)}
+button.sch-sum-item:active{transform:scale(.96)}
+button.sch-sum-item.is-on{color:#fff;background:var(--c);border-color:transparent;box-shadow:0 8px 16px -8px var(--c)}
+button.sch-sum-item.is-on i{background:#fff}
+.sch-sum-hint{margin-top:10px;font-size:11px;color:var(--muted);text-align:center}
+.sch-active{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding:9px 10px 9px 12px;border-radius:14px;background:#eef0ff;border:1px solid #dcd9ff;animation:fadeIn .3s var(--ease)}
+.sch-active-text{min-width:0;font-size:12px;font-weight:700;color:var(--brand);line-height:1.35;word-break:break-word}
+.sch-active-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:7px 11px;border-radius:11px;font-size:11.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,#4f46e5,#6d4df0);box-shadow:0 8px 14px -8px rgba(79,70,229,.8);transition:transform .15s var(--ease)}
+.sch-active-btn:active{transform:scale(.94)}
+.sch-active-btn svg{width:12px;height:12px}
     </style>
     <!-- PWA: dibutuhkan agar push notifikasi jalan di iOS & bisa dipasang di layar utama -->
     <link rel="manifest" href="/manifest.json">
@@ -1230,6 +1244,12 @@ select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
                                 <p id="sch-sel-sub">Mohon tunggu</p>
                             </div>
                             <span id="sch-today-pill" class="sch-today-pill hidden">Hari ini</span>
+                        </div>
+                        <div id="sch-active" class="sch-active hidden" role="status">
+                            <span id="sch-active-text" class="sch-active-text"></span>
+                            <button type="button" class="sch-active-btn" onclick="schResetFilters()">
+                                <svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>Tampilkan semua
+                            </button>
                         </div>
                         <div id="sch-list" class="sch-list">
                             <div class="sch-skel"></div><div class="sch-skel"></div>
@@ -4883,6 +4903,24 @@ select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
             sel.value = current;
             sel.classList.toggle('is-set', current !== 'ALL');
         }
+        // Ketuk ringkasan -> tampilkan hanya jabatan + shift tersebut (ketuk lagi = kembali tampil semua)
+        function schPickSummary(job, val) {
+            if (schFJob === job && schFVal === val) {
+                schFJob = 'ALL'; schFVal = 'ALL';
+                schRenderDetail(false);
+                return;
+            }
+            schFJob = job; schFVal = val;
+            schRenderDetail(false);
+            const target = document.getElementById('sch-active');
+            if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // Kembali menampilkan semua data (hapus pencarian + semua filter)
+        function schResetFilters() {
+            schQuery = ''; schFJob = 'ALL'; schFVal = 'ALL';
+            document.getElementById('sch-search').value = '';
+            schRenderDetail(false);
+        }
         function schJobRank(job) {
             const i = SCH_JOB_FIRST.indexOf(job);
             return i >= 0 ? i : 100;
@@ -4938,10 +4976,16 @@ select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
                     const arr = sumByJob[job].sort((a, b) => schShiftRank(a.val) - schShiftRank(b.val) || a.val.localeCompare(b.val));
                     const tot = arr.reduce((s, x) => s + x.n, 0);
                     return `<div class="sch-sum-group" style="--i:${ji}"><div class="sch-sum-job"><b>${schEsc(job)}</b><span>${tot} ORANG</span></div><div class="sch-sum-items">`
-                        + arr.map(s => `<div class="sch-sum-item" style="${schColorStyle(s.val)}"><i></i><span>${schEsc(s.val === '-' ? 'TIDAK DIISI' : s.val)} : ${s.n} ORANG</span></div>`).join('')
+                        + arr.map(s => `<button type="button" class="sch-sum-item${(schFJob === job && schFVal === s.val) ? ' is-on' : ''}" style="${schColorStyle(s.val)}" data-job="${schEsc(job)}" data-val="${schEsc(s.val)}" aria-pressed="${(schFJob === job && schFVal === s.val)}"><i></i><span>${schEsc(s.val === '-' ? 'TIDAK DIISI' : s.val)} : ${s.n} ORANG</span></button>`).join('')
                         + '</div></div>';
                 }).join('')
                 : '<p class="sch-sum-empty">Belum ada data.</p>';
+            if (sumJobs.length) document.getElementById('sch-sum-list').insertAdjacentHTML('beforeend', '<p class="sch-sum-hint">Ketuk salah satu ringkasan untuk menampilkan datanya saja</p>');
+            document.getElementById('sch-sum-list').onclick = function (ev) {
+                const b = ev.target.closest('.sch-sum-item');
+                if (!b) return;
+                schPickSummary(b.getAttribute('data-job'), b.getAttribute('data-val'));
+            };
 
             // terapkan pencarian + filter
             const q = schQuery;
@@ -4954,6 +4998,19 @@ select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
             document.getElementById('sch-sel-sub').innerText = filtered
                 ? `${shown.length} dari ${people.length} karyawan`
                 : `${people.length} karyawan terjadwal`;
+
+            // bilah "filter aktif" + tombol Tampilkan semua
+            const bar = document.getElementById('sch-active');
+            const parts = [];
+            if (schFJob !== 'ALL') parts.push(schFJob);
+            if (schFVal !== 'ALL') parts.push(schFVal === '-' ? 'TIDAK DIISI' : schFVal);
+            if (schQuery) parts.push('\u201C' + schQuery + '\u201D');
+            if (parts.length) {
+                document.getElementById('sch-active-text').innerText = `Menampilkan: ${parts.join(' \u2022 ')} (${shown.length} orang)`;
+                bar.classList.remove('hidden');
+            } else {
+                bar.classList.add('hidden');
+            }
 
             const list = document.getElementById('sch-list');
             const icoEmpty = '<svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>';

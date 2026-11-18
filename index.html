@@ -843,7 +843,7 @@ select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
                                 </div>
                                 <div class="menu-hero-body">
                                     <h3 class="menu-hero-title">SCHEDULE</h3>
-                                    <p class="menu-hero-desc">Jadwal kerja karyawan per tanggal</p>
+                                    <p class="menu-hero-desc">Jadwal kerja karyawan</p>
                                 </div>
                                 <svg class="ico-sm chev" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                             </button>
@@ -1205,8 +1205,8 @@ select.sch-sel:invalid,select.sch-sel option[hidden]{color:var(--muted)}
                             <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
                             <input type="search" id="sch-search" placeholder="NIP / Nama" autocomplete="off" aria-label="Cari berdasarkan NIP atau nama" oninput="schOnSearch()">
                         </label>
-                        <select id="sch-f-job" class="field sch-sel" title="Filter jabatan" aria-label="Filter jabatan" onchange="schOnFilter()"><option value="ALL" disabled hidden>Jabatan</option></select>
-                        <select id="sch-f-val" class="field sch-sel" title="Filter nilai" aria-label="Filter nilai" onchange="schOnFilter()"><option value="ALL" disabled hidden>Nilai</option></select>
+                        <select id="sch-f-job" class="field sch-sel" title="Filter jabatan" aria-label="Filter jabatan" onchange="schOnFilter()"><option value="ALL" disabled hidden>Pilih Jabatan</option></select>
+                        <select id="sch-f-val" class="field sch-sel" title="Filter nilai" aria-label="Filter nilai" onchange="schOnFilter()"><option value="ALL" disabled hidden>Pilih Shift</option></select>
                     </div>
 
                     <!-- RINGKASAN JUMLAH ORANG PER JABATAN + NILAI (sesuai tanggal terpilih) -->
